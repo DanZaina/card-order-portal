@@ -9,9 +9,9 @@
   <defs>
     <style>
       .ct       { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; fill: #262626; }
-      .ct-name  { font-size: 9px;   font-weight: bold; letter-spacing: -0.01em; }
-      .ct-title { font-size: 5.2px; letter-spacing: 0.02em; }
-      .ct-info  { font-size: 4.5px; }
+      .ct-name  { font-size: 10px;  font-weight: bold; letter-spacing: -0.01em; }
+      .ct-title { font-size: 7.5px; letter-spacing: 0.02em; }
+      .ct-info  { font-size: 6.5px; }
     </style>
   </defs>
 

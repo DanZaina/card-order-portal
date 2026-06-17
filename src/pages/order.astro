@@ -60,11 +60,11 @@ const clientsJson = JSON.stringify(clients);
             <li class="-mx-6 mt-auto border-t border-white/10 pt-1 relative">
               <!-- Flyout menu (opens upward) -->
               <div id="user-flyout" class="hidden absolute bottom-full left-2 right-2 mb-1 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
-                <button id="nav-account-btn" type="button"
-                  class="w-full flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                <a href="/account"
+                  class="flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                   <i data-lucide="user" class="w-4 h-4 text-gray-400 shrink-0"></i>
                   My Account
-                </button>
+                </a>
                 <a href="/settings"
                   class="flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                   <i data-lucide="settings" class="w-4 h-4 text-gray-400 shrink-0"></i>
@@ -130,11 +130,11 @@ const clientsJson = JSON.stringify(clients);
               <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
               Order History
             </a>
-            <button type="button" id="mobile-nav-account-btn"
-              class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
+            <a href="/account"
+              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
               <i data-lucide="user" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
               My Account
-            </button>
+            </a>
             <a href="/settings"
               class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
               <i data-lucide="settings" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>

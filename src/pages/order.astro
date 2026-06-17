@@ -1,17 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import clients from '../data/clients.json';
+const clientsJson = JSON.stringify(clients);
 ---
 <Layout title="Place Your Order — Card Order Portal">
-  <!-- Auth guard: redirect to / if not logged in -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on('init', (user) => {
-          if (!user) window.location.href = '/';
-        });
-      }
-    });
-  </script>
+  <!-- Client data (server-injected, read by auth script) -->
+  <script id="client-data" type="application/json" set:html={clientsJson}></script>
 
   <div class="min-h-screen bg-gray-50">
     <!-- Top nav -->
@@ -48,7 +42,8 @@ import Layout from '../layouts/Layout.astro';
             <input type="text" name="company" />
             <input type="email" name="email" />
             <input type="tel" name="phone" />
-            <input type="url" name="website" />
+            <input type="text" name="extension" />
+            <input type="tel" name="cell" />
             <input type="text" name="address" />
             <input type="text" name="card_style" />
             <input type="text" name="accent_color" />
@@ -81,30 +76,34 @@ import Layout from '../layouts/Layout.astro';
                 class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-email">Email <span class="text-red-500">*</span></label>
-                <input id="f-email" name="email" type="email" placeholder="jane@acme.com"
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1" for="f-email">Email <span class="text-red-500">*</span></label>
+              <input id="f-email" name="email" type="email" placeholder="jane@company.com"
+                class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-5">
+              <div class="col-span-2 sm:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-phone">Phone <span class="text-red-500">*</span></label>
+                <input id="f-phone" name="phone" type="tel" placeholder="(705) 526-1344"
                   class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-phone">Phone <span class="text-red-500">*</span></label>
-                <input id="f-phone" name="phone" type="tel" placeholder="+1 (555) 000-0000"
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-extension">Ext.</label>
+                <input id="f-extension" name="extension" type="text" placeholder="000"
+                  class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-cell">Cell</label>
+                <input id="f-cell" name="cell" type="tel" placeholder="(705) 000-0000"
                   class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-website">Website</label>
-                <input id="f-website" name="website" type="url" placeholder="www.acme.com"
-                  class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-address">Address</label>
-                <input id="f-address" name="address" type="text" placeholder="123 Main St, City"
-                  class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
-              </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1" for="f-address">Address</label>
+              <input id="f-address" name="address" type="text" placeholder="947 Jones Road, Midland, ON"
+                class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
             </div>
 
             <!-- Card Style Picker -->
@@ -298,28 +297,29 @@ import Layout from '../layouts/Layout.astro';
   </div>
 
   <script>
-    // ── Auth + pre-populate from user_metadata ──
+    // ── Auth + pre-populate from clients.json ──
+    const CLIENT_DATA = JSON.parse(document.getElementById('client-data').textContent);
+
     document.addEventListener('DOMContentLoaded', () => {
       const navEmail = document.getElementById('nav-email');
       const navLogout = document.getElementById('nav-logout');
 
-      function prefillFromMetadata(user) {
-        const m = user.user_metadata || {};
+      function prefill(email) {
+        const data = CLIENT_DATA[email] || {};
         const set = (id, val) => {
           const el = document.getElementById(id);
           if (el && val) { el.value = val; el.dispatchEvent(new Event('input')); }
         };
-        // Pre-populate form fields from Netlify user_metadata
-        set('f-name',    m.full_name || m.name || '');
-        set('f-title',   m.job_title || m.title || '');
-        set('f-company', m.company || '');
-        set('f-email',   m.card_email || user.email || '');
-        set('f-phone',   m.phone || '');
-        set('f-website', m.website || '');
-        set('f-address', m.address || '');
+        set('f-name',      data.full_name  || '');
+        set('f-title',     data.job_title  || '');
+        set('f-company',   data.company    || '');
+        set('f-email',     data.email      || email || '');
+        set('f-phone',     data.phone      || '');
+        set('f-extension', data.extension  || '');
+        set('f-cell',      data.cell       || '');
+        set('f-address',   data.address    || '');
       }
 
-      // Read user from localStorage (set by our custom login form)
       function getUserFromStorage() {
         try {
           const raw = localStorage.getItem('gotrue.user');
@@ -328,15 +328,11 @@ import Layout from '../layouts/Layout.astro';
       }
 
       function initUser(user) {
-        if (!user) {
-          window.location.href = '/';
-          return;
-        }
+        if (!user) { window.location.href = '/'; return; }
         if (navEmail) navEmail.textContent = user.email;
-        prefillFromMetadata(user);
+        prefill(user.email);
       }
 
-      // Try widget first, fall back to localStorage
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on('init', (user) => {
           initUser(user || getUserFromStorage());
@@ -506,7 +502,8 @@ import Layout from '../layouts/Layout.astro';
       data.append('company',      document.getElementById('f-company')?.value || '');
       data.append('email',        document.getElementById('f-email')?.value || '');
       data.append('phone',        document.getElementById('f-phone')?.value || '');
-      data.append('website',      document.getElementById('f-website')?.value || '');
+      data.append('extension',    document.getElementById('f-extension')?.value || '');
+      data.append('cell',         document.getElementById('f-cell')?.value || '');
       data.append('address',      document.getElementById('f-address')?.value || '');
       data.append('card_style',   document.getElementById('f-style')?.value || 'classic');
       data.append('accent_color', document.getElementById('f-accent')?.value || '');

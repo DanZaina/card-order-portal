@@ -70,12 +70,6 @@ const clientsJson = JSON.stringify(clients);
               </div>
             </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1" for="f-company">Company Name <span class="text-red-500">*</span></label>
-              <input id="f-company" name="company" type="text" placeholder="Acme Corporation"
-                class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
-            </div>
-
             <div id="row-email" data-field-row>
               <label class="block text-sm font-medium text-gray-700 mb-1" for="f-email">Email <span class="text-red-500">*</span></label>
               <input id="f-email" name="email" type="email" placeholder="jane@company.com"
@@ -106,38 +100,7 @@ const clientsJson = JSON.stringify(clients);
                 class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
             </div>
 
-            <!-- Card Style Picker -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Card Style <span class="text-red-500">*</span></label>
-              <div class="grid grid-cols-3 gap-3" id="style-picker">
-                <button type="button" data-style="classic"
-                  class="style-btn selected flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 border-sky-500 bg-sky-50 transition-all">
-                  <div class="w-full h-8 rounded bg-white border border-gray-300"></div>
-                  <span class="text-xs font-medium text-gray-700">Classic</span>
-                </button>
-                <button type="button" data-style="dark"
-                  class="style-btn flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 border-gray-200 hover:border-gray-400 transition-all">
-                  <div class="w-full h-8 rounded bg-gray-900"></div>
-                  <span class="text-xs font-medium text-gray-700">Dark</span>
-                </button>
-                <button type="button" data-style="branded"
-                  class="style-btn flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 border-gray-200 hover:border-gray-400 transition-all">
-                  <div class="w-full h-8 rounded" id="style-branded-swatch" style="background: linear-gradient(135deg, #2563eb, #7c3aed)"></div>
-                  <span class="text-xs font-medium text-gray-700">Branded</span>
-                </button>
-              </div>
-              <input type="hidden" id="f-style" name="card_style" value="classic" />
-            </div>
-
-            <!-- Accent color (shown only for Branded) -->
-            <div id="accent-color-row" class="hidden">
-              <label class="block text-sm font-medium text-gray-700 mb-1" for="f-accent">Brand Color</label>
-              <div class="flex items-center gap-3">
-                <input id="f-accent" name="accent_color" type="color" value="#2563eb"
-                  class="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5" />
-                <span class="text-sm text-gray-500">Pick your primary brand color</span>
-              </div>
-            </div>
+            <input type="hidden" id="f-style" name="card_style" value="classic" />
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>

@@ -1,14 +1,14 @@
 {
   "dan@iongroup.ca": {
-    "full_name": "Dan Zaina",
-    "job_title": "Owner",
-    "company": "ION Professional Printing",
-    "phone": "",
+    "full_name": "Name Here",
+    "job_title": "Title Here",
+    "company": "Midland Honda",
+    "email": "employee@midlandhonda.com",
+    "phone": "(705) 526-1344",
     "extension": "",
     "cell": "",
-    "website": "www.iongroup.ca",
-    "address": "",
-    "fields": ["name", "title", "email", "phone", "extension", "cell", "website", "address"],
-    "locked": []
+    "address": "947 Jones Road, Midland, ON L4R 0G1",
+    "fields": ["name", "title", "email", "extension", "cell"],
+    "locked": ["phone", "address"]
   }
 }

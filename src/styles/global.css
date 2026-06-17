@@ -1,10 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* ── Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── IONPP Design Tokens ── */
+:root {
+  --font-family-base:     "Poppins", sans-serif;
+
+  /* Sky (IONPP primary) */
+  --sky-50:  rgb(240 249 255);
+  --sky-100: rgb(224 242 254);
+  --sky-200: rgb(186 230 253);
+  --sky-400: rgb( 56 189 248);
+  --sky-500: rgb( 14 165 233);
+  --sky-600: rgb(  2 132 199);
+  --sky-700: rgb(  3 105 161);
+
+  /* Slate */
+  --slate-50:  rgb(248 250 252);
+  --slate-100: rgb(241 245 249);
+  --slate-200: rgb(226 232 240);
+  --slate-300: rgb(203 213 225);
+  --slate-400: rgb(148 163 184);
+  --slate-500: rgb(100 116 139);
+  --slate-600: rgb( 71  85 105);
+  --slate-700: rgb( 51  65  85);
+  --slate-800: rgb( 30  41  59);
+  --slate-900: rgb( 15  23  42);
+
+  /* Semantic */
+  --color-primary:      var(--sky-500);
+  --color-primary-dark: var(--sky-700);
+  --color-text-light:   var(--slate-50);
+  --color-bg-nav:       rgba(30, 41, 59, 0.8);
+  --transition-default: all 300ms ease;
+  --transition-fast:    all 200ms ease;
+}
+
 @layer base {
-  body {
+  html, body {
+    font-family: var(--font-family-base);
     @apply bg-gray-50 text-gray-900;
   }
+}
+
+/* ── Portal button — IONPP primary sky-blue ── */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  font-family: var(--font-family-base);
+  font-weight: 500;
+  transition: var(--transition-default);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
 }

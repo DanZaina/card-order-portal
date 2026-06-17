@@ -14,6 +14,10 @@ const clientsJson = JSON.stringify(clients);
     #submit-btn   { background-color: var(--ta) !important; }
     #submit-btn:hover { background-color: var(--ta-h) !important; }
     #c-accent-bar { background-color: var(--ta) !important; }
+    /* icon alignment inside buttons */
+    button svg, a svg { display: block; }
+    /* hide native select arrow cross-browser */
+    select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
   </style>
 
   <div class="min-h-screen bg-gray-50">
@@ -112,6 +116,7 @@ const clientsJson = JSON.stringify(clients);
             <input type="number" name="quantity" />
             <textarea name="notes"></textarea>
             <input type="text" name="ordered_by" />
+            <textarea name="additional_people"></textarea>
           </form>
 
           <!-- Visible form -->
@@ -183,14 +188,19 @@ const clientsJson = JSON.stringify(clients);
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-qty">Quantity</label>
-                <select id="f-qty" name="quantity"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white">
-                  <option value="250">250 cards</option>
-                  <option value="500" selected>500 cards</option>
-                  <option value="1000">1,000 cards</option>
-                  <option value="2000">2,000 cards</option>
-                  <option value="5000">5,000 cards</option>
-                </select>
+                <div class="relative">
+                  <select id="f-qty" name="quantity"
+                    class="w-full px-4 py-3 pr-10 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white">
+                    <option value="250">250 cards</option>
+                    <option value="500" selected>500 cards</option>
+                    <option value="1000">1,000 cards</option>
+                    <option value="2000">2,000 cards</option>
+                    <option value="5000">5,000 cards</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -200,6 +210,22 @@ const clientsJson = JSON.stringify(clients);
               <textarea id="f-notes" name="notes" rows="3"
                 placeholder="Any special requests, logo notes, paper finish preferences…"
                 class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm resize-none"></textarea>
+            </div>
+
+            <!-- Additional people -->
+            <div class="border-t border-gray-100 pt-5">
+              <div class="flex items-center justify-between mb-3">
+                <div>
+                  <p class="text-sm font-medium text-gray-700">Additional people</p>
+                  <p class="text-xs text-gray-400 mt-0.5">Ordering cards for multiple people?</p>
+                </div>
+                <button type="button" id="add-person-btn"
+                  class="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-800 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                  <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                  Add person
+                </button>
+              </div>
+              <div id="extra-people-list" class="space-y-2"></div>
             </div>
 
             <!-- Error message -->
@@ -333,8 +359,8 @@ const clientsJson = JSON.stringify(clients);
                 <dd id="summary-qty" class="font-medium text-gray-900">500 cards</dd>
               </div>
               <div class="flex justify-between">
-                <dt class="text-gray-400">Style</dt>
-                <dd id="summary-style" class="font-medium text-gray-900 capitalize">Classic</dd>
+                <dt class="text-gray-400">People</dt>
+                <dd id="summary-people" class="font-medium text-gray-900">1</dd>
               </div>
             </dl>
           </div>
@@ -344,30 +370,51 @@ const clientsJson = JSON.stringify(clients);
     </div>
   </div>
 
-  <!-- ── Edit my details modal ── -->
+  <!-- ── Account modal (Details + Order History) ── -->
   <div id="edit-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4">
-      <div class="flex items-center justify-between mb-5">
-        <h3 class="text-base font-semibold text-gray-900">Edit my details</h3>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden flex flex-col" style="max-height: 90vh;">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 shrink-0">
+        <h3 class="text-base font-semibold text-gray-900">My Account</h3>
         <button id="edit-modal-close" class="text-gray-400 hover:text-gray-600 transition-colors">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
-      <div>
+      <!-- Tabs -->
+      <div class="flex border-b border-gray-100 px-6 shrink-0">
+        <button data-tab="details"
+          class="modal-tab pb-3 mr-5 text-sm font-medium border-b-2 border-gray-900 text-gray-900 transition-colors">
+          My Details
+        </button>
+        <button data-tab="history"
+          class="modal-tab pb-3 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-colors">
+          Order History
+        </button>
+      </div>
+      <!-- Tab: Details -->
+      <div id="tab-details" class="p-6">
         <label class="block text-sm font-medium text-gray-700 mb-1.5" for="edit-display-name">Display name</label>
         <input id="edit-display-name" type="text" placeholder="Your name"
           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
         <p class="text-xs text-gray-400 mt-1.5">Shown in the portal and on your card</p>
+        <div class="flex gap-3 mt-5">
+          <button id="edit-modal-cancel"
+            class="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+          <button id="edit-modal-save"
+            class="flex-1 py-2.5 px-4 rounded-xl bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium transition-colors">
+            Save
+          </button>
+        </div>
       </div>
-      <div class="flex gap-3 mt-6">
-        <button id="edit-modal-cancel"
-          class="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
-          Cancel
-        </button>
-        <button id="edit-modal-save"
-          class="flex-1 py-2.5 px-4 rounded-xl bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium transition-colors">
-          Save
-        </button>
+      <!-- Tab: History -->
+      <div id="tab-history" class="hidden flex-col overflow-hidden" style="display:none">
+        <div id="order-history-list" class="divide-y divide-gray-100 overflow-y-auto" style="max-height: 360px;"></div>
+        <div id="order-history-empty" class="px-6 py-12 text-center hidden">
+          <i data-lucide="inbox" class="w-8 h-8 text-gray-300 mx-auto mb-3"></i>
+          <p class="text-sm text-gray-400">No orders yet</p>
+        </div>
       </div>
     </div>
   </div>
@@ -458,7 +505,6 @@ const clientsJson = JSON.stringify(clients);
       document.getElementById('user-initials').textContent = initials;
       document.getElementById('nav-name').textContent      = name || email || '';
       document.getElementById('dd-name').textContent       = name || email || '';
-      // Update card name field if not locked
       const nameField = document.getElementById('f-name');
       if (nameField && !nameField.readOnly && name) {
         nameField.value = name;
@@ -470,17 +516,11 @@ const clientsJson = JSON.stringify(clients);
       if (!user) { window.location.href = '/'; return; }
       currentUser = user;
       const data = CLIENT_DATA[user.email] || {};
-
-      // localStorage name overrides clients.json
       const savedName   = localStorage.getItem('portal.displayName');
       const displayName = savedName || data.full_name || user.user_metadata?.full_name || '';
-
       updateDisplayName(displayName, user.email);
       document.getElementById('dd-email').textContent = user.email;
-
       prefill(user.email);
-
-      // If user saved a custom name, apply it on top of prefill
       if (savedName) {
         const nameField = document.getElementById('f-name');
         if (nameField && !nameField.readOnly) {
@@ -494,14 +534,141 @@ const clientsJson = JSON.stringify(clients);
       try { return JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch { return null; }
     }
 
+    // ── Extra people ──
+    let extraPeopleCount = 0;
+
+    function updatePeopleCount() {
+      const count = 1 + document.querySelectorAll('#extra-people-list [data-person]').length;
+      const el = document.getElementById('summary-people');
+      if (el) el.textContent = count;
+    }
+
+    function addExtraPerson(defaults = {}) {
+      extraPeopleCount++;
+      const id = `person-${Date.now()}`;
+      const list = document.getElementById('extra-people-list');
+      const row = document.createElement('div');
+      row.dataset.person = id;
+      row.className = 'flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2.5';
+      row.innerHTML = `
+        <div class="flex-1 grid grid-cols-2 gap-2">
+          <input type="text" placeholder="Full Name" value="${defaults.name || ''}"
+            class="person-name w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-200 outline-none text-sm bg-white" />
+          <input type="text" placeholder="Job Title" value="${defaults.title || ''}"
+            class="person-title w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-200 outline-none text-sm bg-white" />
+        </div>
+        <button type="button" data-remove="${id}"
+          class="shrink-0 text-gray-300 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-50">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>`;
+      row.querySelector(`[data-remove]`).addEventListener('click', () => {
+        row.remove();
+        updatePeopleCount();
+      });
+      list.appendChild(row);
+      updatePeopleCount();
+      row.querySelector('.person-name')?.focus();
+    }
+
+    function clearExtraPeople() {
+      const list = document.getElementById('extra-people-list');
+      if (list) list.innerHTML = '';
+      extraPeopleCount = 0;
+      updatePeopleCount();
+    }
+
+    function getExtraPeople() {
+      return Array.from(document.querySelectorAll('#extra-people-list [data-person]')).map(row => ({
+        name:  row.querySelector('.person-name')?.value.trim()  || '',
+        title: row.querySelector('.person-title')?.value.trim() || '',
+      })).filter(p => p.name);
+    }
+
+    // ── Order history ──
+    function getOrders() {
+      try { return JSON.parse(localStorage.getItem('portal.orders') || '[]'); } catch { return []; }
+    }
+
+    function saveOrder(orderData) {
+      const orders = getOrders();
+      orders.unshift({ id: Date.now(), date: new Date().toLocaleDateString(), ...orderData });
+      localStorage.setItem('portal.orders', JSON.stringify(orders.slice(0, 20))); // keep last 20
+    }
+
+    function renderHistory() {
+      const list  = document.getElementById('order-history-list');
+      const empty = document.getElementById('order-history-empty');
+      if (!list) return;
+      const orders = getOrders();
+      list.innerHTML = '';
+      if (!orders.length) {
+        empty?.classList.remove('hidden');
+        return;
+      }
+      empty?.classList.add('hidden');
+      orders.forEach(order => {
+        const item = document.createElement('div');
+        item.className = 'px-6 py-4 flex items-start justify-between gap-3 hover:bg-gray-50 transition-colors';
+        item.innerHTML = `
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-gray-900 truncate">${order.name || 'Unnamed'}</p>
+            <p class="text-xs text-gray-400 mt-0.5">${order.date} · ${Number(order.quantity || 500).toLocaleString()} cards${order.extra?.length ? ` · ${1 + order.extra.length} people` : ''}</p>
+            ${order.title ? `<p class="text-xs text-gray-500 mt-0.5">${order.title}</p>` : ''}
+          </div>
+          <button data-load-id="${order.id}" type="button"
+            class="shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 transition-colors">
+            Load
+          </button>`;
+        item.querySelector('[data-load-id]')?.addEventListener('click', () => loadOrder(order));
+        list.appendChild(item);
+      });
+    }
+
+    function loadOrder(order) {
+      const setField = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && !el.readOnly && val !== undefined) {
+          el.value = val;
+          el.dispatchEvent(new Event('input'));
+        }
+      };
+      setField('f-name',      order.name);
+      setField('f-title',     order.title);
+      setField('f-email',     order.email);
+      setField('f-phone',     order.phone);
+      setField('f-extension', order.extension);
+      setField('f-cell',      order.cell);
+      setField('f-address',   order.address);
+      setField('f-notes',     order.notes);
+      setField('f-qty',       order.quantity);
+
+      clearExtraPeople();
+      (order.extra || []).forEach(p => addExtraPerson(p));
+
+      document.getElementById('edit-modal')?.classList.add('hidden');
+    }
+
+    // ── Modal tab switching ──
+    function switchModalTab(tab) {
+      document.querySelectorAll('.modal-tab').forEach(t => {
+        const isActive = t.dataset.tab === tab;
+        t.classList.toggle('border-gray-900', isActive);
+        t.classList.toggle('text-gray-900', isActive);
+        t.classList.toggle('border-transparent', !isActive);
+        t.classList.toggle('text-gray-400', !isActive);
+      });
+      const detailsEl = document.getElementById('tab-details');
+      const historyEl = document.getElementById('tab-history');
+      if (detailsEl) detailsEl.style.display = tab === 'details' ? '' : 'none';
+      if (historyEl) historyEl.style.display  = tab === 'history' ? 'flex' : 'none';
+      if (tab === 'history') renderHistory();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-      // Render Lucide icons
       if (window.lucide) window.lucide.createIcons();
 
-      // Apply saved theme
       applyTheme(localStorage.getItem('portal.theme') || 'slate');
 
-      // Auth init
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on('init', (user) => initUser(user || getUserFromStorage()));
       } else {
@@ -519,12 +686,11 @@ const clientsJson = JSON.stringify(clients);
       document.addEventListener('click', () => dropdown?.classList.add('hidden'));
       dropdown?.addEventListener('click', (e) => e.stopPropagation());
 
-      // Theme swatches
-      document.querySelectorAll('.theme-swatch').forEach(swatch => {
-        swatch.addEventListener('click', () => applyTheme(swatch.dataset.theme));
+      document.querySelectorAll('.theme-swatch').forEach(s => {
+        s.addEventListener('click', () => applyTheme(s.dataset.theme));
       });
 
-      // ── Edit my details modal ──
+      // ── Account modal ──
       const editModal = document.getElementById('edit-modal');
 
       document.getElementById('dd-edit-btn')?.addEventListener('click', () => {
@@ -532,8 +698,13 @@ const clientsJson = JSON.stringify(clients);
         const saved = localStorage.getItem('portal.displayName')
           || (currentUser ? (CLIENT_DATA[currentUser.email]?.full_name || '') : '');
         document.getElementById('edit-display-name').value = saved;
+        switchModalTab('details');
         editModal?.classList.remove('hidden');
         setTimeout(() => document.getElementById('edit-display-name')?.focus(), 50);
+      });
+
+      document.querySelectorAll('.modal-tab').forEach(tab => {
+        tab.addEventListener('click', () => switchModalTab(tab.dataset.tab));
       });
 
       const closeModal = () => editModal?.classList.add('hidden');
@@ -567,12 +738,19 @@ const clientsJson = JSON.stringify(clients);
         if (!currentUser) return;
         const notesEl = document.getElementById('f-notes');
         if (notesEl) notesEl.value = '';
+        clearExtraPeople();
         prefill(currentUser.email);
         const btn = document.getElementById('refresh-btn');
         btn.classList.add('text-green-600');
         setTimeout(() => btn.classList.remove('text-green-600'), 800);
       });
+
+      // ── Add person ──
+      document.getElementById('add-person-btn')?.addEventListener('click', () => addExtraPerson());
     });
+
+    // Expose to submission script (separate Astro module scope)
+    window._portal = { getExtraPeople, saveOrder };
   </script>
 
   <script>
@@ -627,10 +805,8 @@ const clientsJson = JSON.stringify(clients);
         show(`${prefix}-address-row`, !!vals.address);
       });
 
-      const summaryQty   = document.getElementById('summary-qty');
-      const summaryStyle = document.getElementById('summary-style');
-      if (summaryQty)   summaryQty.textContent   = `${Number(fields.qty?.value || 500).toLocaleString()} cards`;
-      if (summaryStyle) summaryStyle.textContent = currentStyle.charAt(0).toUpperCase() + currentStyle.slice(1);
+      const summaryQty = document.getElementById('summary-qty');
+      if (summaryQty) summaryQty.textContent = `${Number(fields.qty?.value || 500).toLocaleString()} cards`;
     }
 
     function switchStyle(style) {
@@ -706,29 +882,53 @@ const clientsJson = JSON.stringify(clients);
       const user = window.netlifyIdentity?.currentUser?.();
       const orderedBy = user?.email || storedUser.email || 'unknown';
 
-      const data = new FormData();
-      data.append('form-name',    'business-card-order');
-      data.append('name',         document.getElementById('f-name')?.value      || '');
-      data.append('job_title',    document.getElementById('f-title')?.value     || '');
-      data.append('company',      document.getElementById('f-company')?.value   || '');
-      data.append('email',        document.getElementById('f-email')?.value     || '');
-      data.append('phone',        document.getElementById('f-phone')?.value     || '');
-      data.append('extension',    document.getElementById('f-extension')?.value || '');
-      data.append('cell',         document.getElementById('f-cell')?.value      || '');
-      data.append('address',      document.getElementById('f-address')?.value   || '');
-      data.append('card_style',   document.getElementById('f-style')?.value     || 'classic');
-      data.append('accent_color', document.getElementById('f-accent')?.value    || '');
-      data.append('quantity',     document.getElementById('f-qty')?.value       || '500');
-      data.append('notes',        document.getElementById('f-notes')?.value     || '');
-      data.append('ordered_by',   orderedBy);
+      const nameVal      = document.getElementById('f-name')?.value      || '';
+      const titleVal     = document.getElementById('f-title')?.value     || '';
+      const companyVal   = document.getElementById('f-company')?.value   || '';
+      const emailVal     = document.getElementById('f-email')?.value     || '';
+      const phoneVal     = document.getElementById('f-phone')?.value     || '';
+      const extensionVal = document.getElementById('f-extension')?.value || '';
+      const cellVal      = document.getElementById('f-cell')?.value      || '';
+      const addressVal   = document.getElementById('f-address')?.value   || '';
+      const styleVal     = document.getElementById('f-style')?.value     || 'classic';
+      const accentVal    = document.getElementById('f-accent')?.value    || '';
+      const qtyVal       = document.getElementById('f-qty')?.value       || '500';
+      const notesVal     = document.getElementById('f-notes')?.value     || '';
+      const extraPeople  = window._portal?.getExtraPeople?.() ?? [];
+
+      const formData = new FormData();
+      formData.append('form-name',          'business-card-order');
+      formData.append('name',               nameVal);
+      formData.append('job_title',          titleVal);
+      formData.append('company',            companyVal);
+      formData.append('email',              emailVal);
+      formData.append('phone',              phoneVal);
+      formData.append('extension',          extensionVal);
+      formData.append('cell',               cellVal);
+      formData.append('address',            addressVal);
+      formData.append('card_style',         styleVal);
+      formData.append('accent_color',       accentVal);
+      formData.append('quantity',           qtyVal);
+      formData.append('notes',              notesVal);
+      formData.append('ordered_by',         orderedBy);
+      formData.append('additional_people',  JSON.stringify(extraPeople));
 
       submitBtn.disabled = true;
       submitText.classList.add('hidden');
       submitLoading.classList.remove('hidden');
 
       try {
-        const response = await fetch('/', { method: 'POST', body: data });
+        const response = await fetch('/', { method: 'POST', body: formData });
         if (response.ok) {
+          // Save to order history
+          if (window._portal?.saveOrder) {
+            window._portal.saveOrder({
+              name: nameVal, title: titleVal, email: emailVal,
+              phone: phoneVal, extension: extensionVal, cell: cellVal,
+              address: addressVal, quantity: qtyVal, notes: notesVal,
+              extra: extraPeople,
+            });
+          }
           window.location.href = '/success';
         } else {
           throw new Error(`Server returned ${response.status}`);

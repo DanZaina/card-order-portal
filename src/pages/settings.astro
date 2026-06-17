@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import clients from '../data/clients.json';
 const clientsJson = JSON.stringify(clients);
 ---
-<Layout title="Order History — Card Order Portal">
+<Layout title="Settings — Card Order Portal">
   <script id="client-data" type="application/json" set:html={clientsJson}></script>
 
   <style is:global>
@@ -14,7 +14,6 @@ const clientsJson = JSON.stringify(clients);
     .sidebar-nav-active { background-color: rgba(255,255,255,0.12) !important; }
     .sidebar-nav-item:hover { background-color: rgba(255,255,255,0.08); }
     button svg, a svg { display: block; }
-    select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
   </style>
 
   <div class="flex h-screen overflow-hidden bg-gray-50">
@@ -38,9 +37,16 @@ const clientsJson = JSON.stringify(clients);
                 </li>
                 <li>
                   <a href="/history"
-                    class="sidebar-nav-item sidebar-nav-active group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white">
-                    <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white"></i>
+                    class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
+                    <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
                     Order History
+                  </a>
+                </li>
+                <li>
+                  <a href="/settings"
+                    class="sidebar-nav-item sidebar-nav-active group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white">
+                    <i data-lucide="settings" class="w-6 h-6 shrink-0 text-white"></i>
+                    Settings
                   </a>
                 </li>
               </ul>
@@ -54,7 +60,7 @@ const clientsJson = JSON.stringify(clients);
                   My Account
                 </button>
                 <a href="/settings"
-                  class="flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                  class="flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 bg-gray-50 font-medium transition-colors">
                   <i data-lucide="settings" class="w-4 h-4 text-gray-400 shrink-0"></i>
                   Settings
                 </a>
@@ -111,20 +117,20 @@ const clientsJson = JSON.stringify(clients);
               Order Cards
             </a>
             <a href="/history"
-              class="sidebar-nav-item sidebar-nav-active group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white">
-              <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white"></i>
+              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
+              <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
               Order History
+            </a>
+            <a href="/settings"
+              class="sidebar-nav-item sidebar-nav-active group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white">
+              <i data-lucide="settings" class="w-6 h-6 shrink-0 text-white"></i>
+              Settings
             </a>
             <button type="button" id="mobile-nav-account-btn"
               class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
               <i data-lucide="user" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
               My Account
             </button>
-            <a href="/settings"
-              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-              <i data-lucide="settings" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-              Settings
-            </a>
             <button type="button" id="mobile-nav-logout"
               class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
               <i data-lucide="log-out" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
@@ -138,92 +144,86 @@ const clientsJson = JSON.stringify(clients);
     <!-- ── Main content ── -->
     <div class="flex flex-1 flex-col lg:pl-64">
       <main class="flex-1 overflow-y-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-16 lg:pt-10">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-16 lg:pt-10">
 
-          <!-- Header -->
-          <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">Order History</h1>
-              <p class="text-gray-400 mt-1 text-sm">All previously submitted card orders</p>
-            </div>
-            <a href="/order"
-              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
-              style="background-color: var(--ta);">
-              <i data-lucide="plus" class="w-4 h-4"></i>
-              New Order
-            </a>
+          <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
+            <p class="text-gray-400 mt-1 text-sm">Manage your portal preferences</p>
           </div>
 
-          <!-- Loading state -->
-          <div id="history-loading" class="flex items-center justify-center py-20">
-            <div class="text-gray-400 text-sm">Loading…</div>
-          </div>
+          <!-- Notification preferences -->
+          <div class="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100">
 
-          <!-- Empty state -->
-          <div id="history-empty" class="hidden flex flex-col items-center justify-center py-20">
-            <i data-lucide="inbox" class="w-10 h-10 text-gray-300 mb-4"></i>
-            <p class="text-gray-500 font-medium">No orders yet</p>
-            <p class="text-gray-400 text-sm mt-1">Orders you submit will appear here</p>
-            <a href="/order" class="mt-6 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors"
-              style="background-color: var(--ta);">
-              Place your first order
-            </a>
-          </div>
-
-          <!-- Order list -->
-          <div id="history-container" class="hidden space-y-4">
-
-            <!-- Stats row -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-              <div class="bg-white rounded-2xl border border-gray-200 p-5">
-                <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Total Orders</p>
-                <p id="stat-total" class="mt-1 text-2xl font-bold text-gray-900">0</p>
-              </div>
-              <div class="bg-white rounded-2xl border border-gray-200 p-5">
-                <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Latest Order</p>
-                <p id="stat-latest" class="mt-1 text-sm font-semibold text-gray-900 leading-tight">—</p>
-              </div>
-              <div class="bg-white rounded-2xl border border-gray-200 p-5 hidden sm:block">
-                <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Total Cards</p>
-                <p id="stat-cards" class="mt-1 text-2xl font-bold text-gray-900">0</p>
+            <div class="px-6 py-5">
+              <h2 class="text-sm font-semibold text-gray-700 mb-4">Notifications</h2>
+              <div class="space-y-4">
+                <label class="flex items-center justify-between gap-4 cursor-pointer">
+                  <div>
+                    <p class="text-sm font-medium text-gray-800">Order confirmations</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Receive an email when your order is received</p>
+                  </div>
+                  <div class="relative shrink-0">
+                    <input id="notif-confirm" type="checkbox" class="sr-only peer" checked />
+                    <div class="w-10 h-6 rounded-full bg-gray-200 peer-checked:bg-gray-900 transition-colors"></div>
+                    <div class="absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4"></div>
+                  </div>
+                </label>
+                <label class="flex items-center justify-between gap-4 cursor-pointer">
+                  <div>
+                    <p class="text-sm font-medium text-gray-800">Proof ready alerts</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Get notified when your card proof is ready to review</p>
+                  </div>
+                  <div class="relative shrink-0">
+                    <input id="notif-proof" type="checkbox" class="sr-only peer" checked />
+                    <div class="w-10 h-6 rounded-full bg-gray-200 peer-checked:bg-gray-900 transition-colors"></div>
+                    <div class="absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4"></div>
+                  </div>
+                </label>
               </div>
             </div>
 
-            <!-- Table card -->
-            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-              <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-100">
-                  <thead class="bg-gray-50">
-                    <tr>
-                      <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
-                      <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Title</th>
-                      <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Date</th>
-                      <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Qty</th>
-                      <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="history-tbody" class="divide-y divide-gray-100 bg-white">
-                  </tbody>
-                </table>
+            <div class="px-6 py-5">
+              <h2 class="text-sm font-semibold text-gray-700 mb-4">Default Order</h2>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1.5" for="default-qty">Default quantity</label>
+                  <div class="relative max-w-xs">
+                    <select id="default-qty"
+                      class="w-full px-4 py-3 pr-10 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white appearance-none">
+                      <option value="250">250 cards</option>
+                      <option value="500" selected>500 cards</option>
+                      <option value="1000">1,000 cards</option>
+                      <option value="2000">2,000 cards</option>
+                      <option value="5000">5,000 cards</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Pagination -->
-            <div id="pagination" class="hidden flex items-center justify-between px-1 py-2">
-              <p id="page-info" class="text-sm text-gray-500"></p>
-              <div class="flex gap-2">
-                <button id="page-prev" type="button"
-                  class="px-4 py-2 text-sm font-medium rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                  Previous
-                </button>
-                <button id="page-next" type="button"
-                  class="px-4 py-2 text-sm font-medium rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                  Next
-                </button>
-              </div>
+            <div class="px-6 py-5 flex justify-end">
+              <button id="settings-save"
+                class="px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium transition-colors">
+                Save Settings
+              </button>
             </div>
-
           </div>
+
+          <!-- Danger zone -->
+          <div class="mt-8 bg-white rounded-2xl border border-red-100">
+            <div class="px-6 py-5">
+              <h2 class="text-sm font-semibold text-red-600 mb-1">Danger Zone</h2>
+              <p class="text-xs text-gray-400 mb-4">These actions cannot be undone</p>
+              <button id="clear-history-btn"
+                class="px-4 py-2.5 rounded-xl border border-red-200 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                Clear order history
+              </button>
+            </div>
+          </div>
+
         </div>
       </main>
     </div>
@@ -270,21 +270,16 @@ const clientsJson = JSON.stringify(clients);
   </div>
 
   <script>
-    const PAGE_SIZE = 25;
-    let currentPage = 0;
+    const CLIENT_DATA = JSON.parse(document.getElementById('client-data').textContent);
     let currentUser = null;
 
-    const CLIENT_DATA = JSON.parse(document.getElementById('client-data').textContent);
-
-    // ── Theme ──
     function applyClientTheme(theme) {
       if (!theme) return;
-      if (theme.accent)    document.documentElement.style.setProperty('--ta',          theme.accent);
-      if (theme.dark)      document.documentElement.style.setProperty('--ta-h',        theme.dark);
-      if (theme.sidebarBg) document.documentElement.style.setProperty('--sidebar-bg',  theme.sidebarBg);
+      if (theme.accent)    document.documentElement.style.setProperty('--ta',         theme.accent);
+      if (theme.dark)      document.documentElement.style.setProperty('--ta-h',       theme.dark);
+      if (theme.sidebarBg) document.documentElement.style.setProperty('--sidebar-bg', theme.sidebarBg);
     }
 
-    // ── Auth ──
     function getInitials(name, email) {
       if (name && name.trim())
         return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -298,119 +293,24 @@ const clientsJson = JSON.stringify(clients);
       const savedName   = localStorage.getItem('portal.displayName');
       const displayName = savedName || data.full_name || user.user_metadata?.full_name || '';
 
-      const initials = getInitials(displayName, user.email);
-      document.getElementById('user-initials').textContent  = initials;
-      document.getElementById('dd-name').textContent        = displayName || user.email || '';
-      document.getElementById('dd-email').textContent       = user.email;
-      const clientNameEl = document.getElementById('dd-client-name');
-      if (clientNameEl) clientNameEl.textContent = data.company || displayName || user.email || '';
+      document.getElementById('user-initials').textContent = getInitials(displayName, user.email);
+      document.getElementById('dd-email').textContent      = user.email;
+      const clientEl = document.getElementById('dd-client-name');
+      if (clientEl) clientEl.textContent = data.company || displayName || user.email || '';
 
       if (data.theme) applyClientTheme(data.theme);
+
+      // Restore settings
+      const savedQty = localStorage.getItem('portal.defaultQty');
+      if (savedQty) (document.getElementById('default-qty') as HTMLSelectElement).value = savedQty;
+      const notifConfirm = localStorage.getItem('portal.notifConfirm');
+      if (notifConfirm !== null) (document.getElementById('notif-confirm') as HTMLInputElement).checked = notifConfirm === 'true';
+      const notifProof = localStorage.getItem('portal.notifProof');
+      if (notifProof !== null) (document.getElementById('notif-proof') as HTMLInputElement).checked = notifProof === 'true';
     }
 
     function getUserFromStorage() {
       try { return JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch { return null; }
-    }
-
-    // ── Order data ──
-    function getOrders() {
-      try { return JSON.parse(localStorage.getItem('portal.orders') || '[]'); } catch { return []; }
-    }
-
-    function deleteOrder(id) {
-      const orders = getOrders().filter(o => o.id !== id);
-      localStorage.setItem('portal.orders', JSON.stringify(orders));
-    }
-
-    // ── Reorder: save draft, navigate to order page ──
-    function reorder(order) {
-      localStorage.setItem('portal.draftOrder', JSON.stringify(order));
-      window.location.href = '/order';
-    }
-
-    // ── Stats ──
-    function updateStats(orders) {
-      document.getElementById('stat-total').textContent = orders.length;
-      const latest = orders[0];
-      document.getElementById('stat-latest').textContent = latest
-        ? (latest.name || 'Unnamed') + (latest.date ? `\n${latest.date}` : '')
-        : '—';
-      const totalCards = orders.reduce((sum, o) => sum + Number(o.quantity || 0), 0);
-      document.getElementById('stat-cards').textContent = totalCards.toLocaleString();
-    }
-
-    // ── Render page ──
-    function renderPage() {
-      const orders    = getOrders();
-      const total     = orders.length;
-      const totalPages = Math.ceil(total / PAGE_SIZE);
-      const start     = currentPage * PAGE_SIZE;
-      const pageOrders = orders.slice(start, start + PAGE_SIZE);
-
-      const tbody = document.getElementById('history-tbody');
-      tbody.innerHTML = '';
-
-      pageOrders.forEach(order => {
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-gray-50 transition-colors';
-        tr.innerHTML = `
-          <td class="px-6 py-4">
-            <p class="text-sm font-medium text-gray-900 truncate max-w-[160px]">${order.name || 'Unnamed'}</p>
-            ${order.company ? `<p class="text-xs text-gray-400 truncate max-w-[160px]">${order.company}</p>` : ''}
-          </td>
-          <td class="px-6 py-4 hidden sm:table-cell">
-            <p class="text-sm text-gray-600 truncate max-w-[140px]">${order.title || '—'}</p>
-          </td>
-          <td class="px-6 py-4 hidden md:table-cell">
-            <p class="text-sm text-gray-500">${order.date || '—'}</p>
-          </td>
-          <td class="px-6 py-4 hidden lg:table-cell">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-              ${Number(order.quantity || 500).toLocaleString()}
-            </span>
-          </td>
-          <td class="px-6 py-4 text-right">
-            <div class="flex items-center justify-end gap-2">
-              <button data-reorder="${order.id}" type="button"
-                class="text-xs font-medium px-3 py-1.5 rounded-lg text-white transition-colors"
-                style="background-color: var(--ta);">
-                Reorder
-              </button>
-              <button data-delete="${order.id}" type="button"
-                class="text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors">
-                Delete
-              </button>
-            </div>
-          </td>`;
-
-        tr.querySelector(`[data-reorder]`)?.addEventListener('click', () => reorder(order));
-        tr.querySelector(`[data-delete]`)?.addEventListener('click', () => {
-          if (confirm(`Delete order for ${order.name || 'this person'}?`)) {
-            deleteOrder(order.id);
-            renderPage();
-            updateStats(getOrders());
-          }
-        });
-
-        tbody.appendChild(tr);
-      });
-
-      // Pagination
-      const paginationEl = document.getElementById('pagination');
-      const prevBtn      = document.getElementById('page-prev');
-      const nextBtn      = document.getElementById('page-next');
-      const pageInfo     = document.getElementById('page-info');
-
-      if (totalPages > 1) {
-        paginationEl?.classList.remove('hidden');
-        const from = start + 1;
-        const to   = Math.min(start + PAGE_SIZE, total);
-        if (pageInfo) pageInfo.textContent = `Showing ${from}–${to} of ${total} orders`;
-        if (prevBtn) (prevBtn as HTMLButtonElement).disabled = currentPage === 0;
-        if (nextBtn) (nextBtn as HTMLButtonElement).disabled = currentPage >= totalPages - 1;
-      } else {
-        paginationEl?.classList.add('hidden');
-      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -423,20 +323,17 @@ const clientsJson = JSON.stringify(clients);
       }
 
       // Mobile sidebar
-      const mobileOverlay     = document.getElementById('mobile-sidebar-overlay');
+      const mobileOverlay      = document.getElementById('mobile-sidebar-overlay');
       const openMobileSidebar  = () => mobileOverlay?.classList.remove('hidden');
       const closeMobileSidebar = () => mobileOverlay?.classList.add('hidden');
       document.getElementById('mobile-menu-btn')?.addEventListener('click', openMobileSidebar);
       document.getElementById('mobile-sidebar-close')?.addEventListener('click', closeMobileSidebar);
       document.getElementById('sidebar-backdrop')?.addEventListener('click', closeMobileSidebar);
 
-      // ── User flyout menu ──
+      // User flyout
       const userFlyout  = document.getElementById('user-flyout');
       const userMenuBtn = document.getElementById('user-menu-btn');
-      userMenuBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        userFlyout?.classList.toggle('hidden');
-      });
+      userMenuBtn?.addEventListener('click', (e) => { e.stopPropagation(); userFlyout?.classList.toggle('hidden'); });
       document.addEventListener('click', () => userFlyout?.classList.add('hidden'));
       userFlyout?.addEventListener('click', (e) => e.stopPropagation());
 
@@ -463,18 +360,9 @@ const clientsJson = JSON.stringify(clients);
       document.getElementById('edit-modal-save')?.addEventListener('click', () => {
         const name  = (document.getElementById('edit-display-name') as HTMLInputElement).value.trim();
         const phone = (document.getElementById('acct-phone') as HTMLInputElement).value.trim();
-        if (name) {
-          localStorage.setItem('portal.displayName', name);
-          document.getElementById('dd-name').textContent = name;
-          document.getElementById('user-initials').textContent =
-            name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
-        }
+        if (name) localStorage.setItem('portal.displayName', name);
         if (phone) localStorage.setItem('portal.phone', phone);
         closeModal();
-      });
-      document.getElementById('edit-display-name')?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') document.getElementById('edit-modal-save')?.click();
-        if (e.key === 'Escape') closeModal();
       });
 
       // Logout
@@ -487,26 +375,26 @@ const clientsJson = JSON.stringify(clients);
       document.getElementById('nav-logout')?.addEventListener('click', doLogout);
       document.getElementById('mobile-nav-logout')?.addEventListener('click', doLogout);
 
-      // Pagination controls
-      document.getElementById('page-prev')?.addEventListener('click', () => {
-        if (currentPage > 0) { currentPage--; renderPage(); }
-      });
-      document.getElementById('page-next')?.addEventListener('click', () => {
-        const total = getOrders().length;
-        if ((currentPage + 1) * PAGE_SIZE < total) { currentPage++; renderPage(); }
+      // Settings save
+      document.getElementById('settings-save')?.addEventListener('click', () => {
+        const qty = (document.getElementById('default-qty') as HTMLSelectElement).value;
+        const notifConfirm = (document.getElementById('notif-confirm') as HTMLInputElement).checked;
+        const notifProof   = (document.getElementById('notif-proof') as HTMLInputElement).checked;
+        localStorage.setItem('portal.defaultQty',     qty);
+        localStorage.setItem('portal.notifConfirm',   String(notifConfirm));
+        localStorage.setItem('portal.notifProof',     String(notifProof));
+        const btn = document.getElementById('settings-save');
+        if (btn) { btn.textContent = 'Saved!'; setTimeout(() => btn.textContent = 'Save Settings', 1500); }
       });
 
-      // Load orders
-      const orders = getOrders();
-      document.getElementById('history-loading')?.classList.add('hidden');
-
-      if (orders.length === 0) {
-        document.getElementById('history-empty')?.classList.remove('hidden');
-      } else {
-        document.getElementById('history-container')?.classList.remove('hidden');
-        updateStats(orders);
-        renderPage();
-      }
+      // Clear history
+      document.getElementById('clear-history-btn')?.addEventListener('click', () => {
+        if (confirm('Clear all order history? This cannot be undone.')) {
+          localStorage.removeItem('portal.orders');
+          const btn = document.getElementById('clear-history-btn');
+          if (btn) { btn.textContent = 'History cleared'; btn.disabled = true; }
+        }
+      });
     });
   </script>
 </Layout>

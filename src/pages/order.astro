@@ -53,35 +53,46 @@ const clientsJson = JSON.stringify(clients);
                     Order History
                   </a>
                 </li>
-                <li>
-                  <button type="button" id="nav-edit-btn"
-                    class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-                    <i data-lucide="user-pen" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-                    Edit My Details
-                  </button>
-                </li>
               </ul>
             </li>
 
-            <!-- Bottom: profile + sign out -->
-            <li class="-mx-6 mt-auto border-t border-white/10 pt-1">
-              <div class="flex items-center gap-x-3 px-6 py-3">
+            <!-- Bottom: client name + user flyout -->
+            <li class="-mx-6 mt-auto border-t border-white/10 pt-1 relative">
+              <!-- Flyout menu (opens upward) -->
+              <div id="user-flyout" class="hidden absolute bottom-full left-2 right-2 mb-1 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
+                <button id="nav-account-btn" type="button"
+                  class="w-full flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                  <i data-lucide="user" class="w-4 h-4 text-gray-400 shrink-0"></i>
+                  My Account
+                </button>
+                <a href="/settings"
+                  class="flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                  <i data-lucide="settings" class="w-4 h-4 text-gray-400 shrink-0"></i>
+                  Settings
+                </a>
+                <div class="border-t border-gray-100"></div>
+                <button id="nav-logout" type="button"
+                  class="w-full flex items-center gap-x-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition-colors">
+                  <i data-lucide="log-out" class="w-4 h-4 shrink-0"></i>
+                  Sign out
+                </button>
+              </div>
+              <!-- Trigger button -->
+              <button id="user-menu-btn" type="button"
+                class="w-full flex items-center gap-x-3 px-6 py-3 hover:bg-white/5 transition-colors">
                 <div id="user-avatar"
                   class="w-9 h-9 rounded-full text-white flex items-center justify-center text-xs font-bold shrink-0 select-none">
                   <span id="user-initials">?</span>
                 </div>
-                <div class="min-w-0 flex-1">
-                  <p id="dd-name" class="text-sm font-semibold text-white truncate"></p>
+                <div class="min-w-0 flex-1 text-left">
+                  <p id="dd-client-name" class="text-sm font-semibold text-white truncate"></p>
                   <p id="dd-email" class="text-xs text-white/50 truncate"></p>
                 </div>
-              </div>
-              <!-- Hidden span keeps nav-name ID working in JS -->
-              <span id="nav-name" class="hidden"></span>
-              <button id="nav-logout"
-                class="sidebar-nav-item w-full flex items-center gap-x-3 px-6 py-2.5 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-                <i data-lucide="log-out" class="w-5 h-5 shrink-0"></i>
-                Sign out
+                <i data-lucide="chevrons-up-down" class="w-4 h-4 text-white/40 shrink-0"></i>
               </button>
+              <!-- Hidden spans keep IDs working in JS -->
+              <span id="nav-name" class="hidden"></span>
+              <span id="dd-name" class="hidden"></span>
             </li>
 
           </ul>
@@ -119,11 +130,16 @@ const clientsJson = JSON.stringify(clients);
               <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
               Order History
             </a>
-            <button type="button" id="mobile-nav-edit-btn"
+            <button type="button" id="mobile-nav-account-btn"
               class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-              <i data-lucide="user-pen" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-              Edit My Details
+              <i data-lucide="user" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
+              My Account
             </button>
+            <a href="/settings"
+              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
+              <i data-lucide="settings" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
+              Settings
+            </a>
             <button type="button" id="mobile-nav-logout"
               class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
               <i data-lucide="log-out" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
@@ -442,19 +458,34 @@ const clientsJson = JSON.stringify(clients);
   <div id="edit-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-y-auto" style="max-height: 90vh;">
       <!-- Header -->
-      <div class="flex items-center justify-between px-6 pt-5 pb-4">
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
         <h3 class="text-base font-semibold text-gray-900">My Account</h3>
         <button id="edit-modal-close" class="text-gray-400 hover:text-gray-600 transition-colors">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
       <!-- Details section -->
-      <div class="px-6 pb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-1.5" for="edit-display-name">Display name</label>
-        <input id="edit-display-name" type="text" placeholder="Your name"
-          class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
-        <p class="text-xs text-gray-400 mt-1.5">Shown in the portal and on your card</p>
-        <div class="flex gap-3 mt-5">
+      <div class="px-6 py-6 space-y-4">
+        <!-- Email: preset/readonly -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5" for="acct-email">Email</label>
+          <input id="acct-email" type="email" readonly
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-400 text-sm cursor-not-allowed outline-none" />
+          <p class="text-xs text-gray-400 mt-1">Managed by your administrator</p>
+        </div>
+        <!-- Display name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5" for="edit-display-name">Full Name</label>
+          <input id="edit-display-name" type="text" placeholder="Your name"
+            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+        </div>
+        <!-- Phone -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5" for="acct-phone">Phone</label>
+          <input id="acct-phone" type="tel" placeholder="(000) 000-0000"
+            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+        </div>
+        <div class="flex gap-3 pt-2">
           <button id="edit-modal-cancel"
             class="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
             Cancel
@@ -547,6 +578,11 @@ const clientsJson = JSON.stringify(clients);
       }
     }
 
+    function updateClientLabel(clientName, email) {
+      const el = document.getElementById('dd-client-name');
+      if (el) el.textContent = clientName || email || '';
+    }
+
     function initUser(user) {
       if (!user) { window.location.href = '/'; return; }
       currentUser = user;
@@ -555,6 +591,7 @@ const clientsJson = JSON.stringify(clients);
       const displayName = savedName || data.full_name || user.user_metadata?.full_name || '';
       updateDisplayName(displayName, user.email);
       document.getElementById('dd-email').textContent = user.email;
+      updateClientLabel(data.company || displayName, user.email);
 
       // Apply client-specific theme before prefill so colors are live
       if (data.theme) applyClientTheme(data.theme);
@@ -736,19 +773,33 @@ const clientsJson = JSON.stringify(clients);
       document.getElementById('mobile-sidebar-close')?.addEventListener('click', closeMobileSidebar);
       document.getElementById('sidebar-backdrop')?.addEventListener('click', closeMobileSidebar);
 
+      // ── User flyout menu ──
+      const userFlyout  = document.getElementById('user-flyout');
+      const userMenuBtn = document.getElementById('user-menu-btn');
+      userMenuBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userFlyout?.classList.toggle('hidden');
+      });
+      document.addEventListener('click', () => userFlyout?.classList.add('hidden'));
+      userFlyout?.addEventListener('click', (e) => e.stopPropagation());
+
       // ── Account modal ──
       const editModal = document.getElementById('edit-modal');
 
       const openEditModal = () => {
         closeMobileSidebar();
+        userFlyout?.classList.add('hidden');
         const saved = localStorage.getItem('portal.displayName')
           || (currentUser ? (CLIENT_DATA[currentUser.email]?.full_name || '') : '');
-        document.getElementById('edit-display-name').value = saved;
+        (document.getElementById('edit-display-name') as HTMLInputElement).value = saved;
+        (document.getElementById('acct-email') as HTMLInputElement).value = currentUser?.email || '';
+        (document.getElementById('acct-phone') as HTMLInputElement).value =
+          localStorage.getItem('portal.phone') || (currentUser ? (CLIENT_DATA[currentUser.email]?.phone || '') : '');
         editModal?.classList.remove('hidden');
         setTimeout(() => document.getElementById('edit-display-name')?.focus(), 50);
       };
-      document.getElementById('nav-edit-btn')?.addEventListener('click', openEditModal);
-      document.getElementById('mobile-nav-edit-btn')?.addEventListener('click', openEditModal);
+      document.getElementById('nav-account-btn')?.addEventListener('click', openEditModal);
+      document.getElementById('mobile-nav-account-btn')?.addEventListener('click', openEditModal);
 
       const closeModal = () => editModal?.classList.add('hidden');
       document.getElementById('edit-modal-close')?.addEventListener('click', closeModal);
@@ -756,11 +807,13 @@ const clientsJson = JSON.stringify(clients);
       editModal?.addEventListener('click', (e) => { if (e.target === editModal) closeModal(); });
 
       document.getElementById('edit-modal-save')?.addEventListener('click', () => {
-        const name = document.getElementById('edit-display-name').value.trim();
+        const name  = (document.getElementById('edit-display-name') as HTMLInputElement).value.trim();
+        const phone = (document.getElementById('acct-phone') as HTMLInputElement).value.trim();
         if (name) {
           localStorage.setItem('portal.displayName', name);
           updateDisplayName(name, currentUser?.email);
         }
+        if (phone) localStorage.setItem('portal.phone', phone);
         closeModal();
       });
 

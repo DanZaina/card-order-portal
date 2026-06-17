@@ -57,7 +57,7 @@ const clientsJson = JSON.stringify(clients);
             <!-- Honeypot -->
             <input type="text" name="bot-field" class="hidden" aria-hidden="true" />
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div id="row-name" data-field-row class="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1" for="f-name">Full Name <span class="text-red-500">*</span></label>
                 <input id="f-name" name="name" type="text" placeholder="Jane Smith"
@@ -76,15 +76,15 @@ const clientsJson = JSON.stringify(clients);
                 class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
             </div>
 
-            <div>
+            <div id="row-email" data-field-row>
               <label class="block text-sm font-medium text-gray-700 mb-1" for="f-email">Email <span class="text-red-500">*</span></label>
               <input id="f-email" name="email" type="email" placeholder="jane@company.com"
                 class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-5">
+            <div id="row-phone-ext-cell" data-field-row class="grid grid-cols-2 sm:grid-cols-3 gap-5">
               <div class="col-span-2 sm:col-span-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-phone">Phone <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-phone">Phone</label>
                 <input id="f-phone" name="phone" type="tel" placeholder="(705) 526-1344"
                   class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
               </div>
@@ -100,7 +100,7 @@ const clientsJson = JSON.stringify(clients);
               </div>
             </div>
 
-            <div>
+            <div id="row-website-address" data-field-row>
               <label class="block text-sm font-medium text-gray-700 mb-1" for="f-address">Address</label>
               <input id="f-address" name="address" type="text" placeholder="947 Jones Road, Midland, ON"
                 class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
@@ -304,20 +304,48 @@ const clientsJson = JSON.stringify(clients);
       const navEmail = document.getElementById('nav-email');
       const navLogout = document.getElementById('nav-logout');
 
+      // Map field keys to their wrapping row element IDs
+      const FIELD_ROWS = {
+        name:      'row-name',
+        title:     'row-title',
+        email:     'row-email',
+        phone:     'row-phone-ext-cell',
+        extension: 'row-phone-ext-cell',
+        cell:      'row-phone-ext-cell',
+        website:   'row-website-address',
+        address:   'row-website-address',
+      };
+
       function prefill(email) {
         const data = CLIENT_DATA[email] || {};
+        const allowedFields = data.fields || ['name','title','email','phone','extension','cell','website','address'];
+        const lockedFields  = data.locked || [];
+
         const set = (id, val) => {
           const el = document.getElementById(id);
-          if (el && val) { el.value = val; el.dispatchEvent(new Event('input')); }
+          if (el) {
+            if (val) { el.value = val; el.dispatchEvent(new Event('input')); }
+            if (lockedFields.includes(id.replace('f-', ''))) {
+              el.readOnly = true;
+              el.classList.add('bg-gray-50', 'text-gray-500', 'cursor-not-allowed');
+            }
+          }
         };
-        set('f-name',      data.full_name  || '');
-        set('f-title',     data.job_title  || '');
-        set('f-company',   data.company    || '');
-        set('f-email',     data.email      || email || '');
-        set('f-phone',     data.phone      || '');
-        set('f-extension', data.extension  || '');
-        set('f-cell',      data.cell       || '');
-        set('f-address',   data.address    || '');
+
+        set('f-name',      data.full_name || '');
+        set('f-title',     data.job_title || '');
+        set('f-company',   data.company   || '');
+        set('f-email',     data.email     || email || '');
+        set('f-phone',     data.phone     || '');
+        set('f-extension', data.extension || '');
+        set('f-cell',      data.cell      || '');
+        set('f-address',   data.address   || '');
+
+        // Show only the rows for allowed fields
+        const visibleRows = new Set(allowedFields.map(f => FIELD_ROWS[f]).filter(Boolean));
+        document.querySelectorAll('[data-field-row]').forEach(row => {
+          row.style.display = visibleRows.has(row.id) ? '' : 'none';
+        });
       }
 
       function getUserFromStorage() {

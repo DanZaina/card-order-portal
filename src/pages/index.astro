@@ -2,48 +2,96 @@
 import Layout from '../layouts/Layout.astro';
 ---
 <Layout title="Card Order Portal — Login">
-  <div class="min-h-screen flex items-center justify-center" style="background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #e0f2fe 100%);">
-    <div class="w-full max-w-sm px-6">
+  <div class="min-h-screen flex items-center justify-center bg-white">
+    <div class="w-full max-w-sm px-8 py-10">
 
-      <!-- Login card -->
-      <div class="bg-white rounded-3xl shadow-xl px-10 py-12 text-center">
+      <!-- Icon -->
+      <div class="text-center mb-6">
+        <img src="/leaf.svg" alt="" class="w-10 h-10 mx-auto" />
+      </div>
 
-        <!-- Icon -->
-        <div class="flex items-center justify-center w-20 h-20 rounded-full mx-auto mb-6" style="background-color: var(--sky-500);">
-          <img src="/leaf.svg" alt="" class="w-11 h-11 object-contain" style="filter: brightness(0) invert(1);" />
-        </div>
+      <!-- Heading -->
+      <h1 class="text-2xl font-bold text-gray-900 text-center mb-8">Login to Card Portal</h1>
 
-        <!-- Heading -->
-        <h1 class="text-2xl font-bold text-gray-900 mb-1">Client Login</h1>
-        <p class="text-gray-400 text-sm mb-8">Sign in to place your business card order</p>
+      <!-- Auth states -->
+      <div id="login-form-section">
 
-        <!-- Sign in state -->
-        <div id="login-message">
-          <button id="login-btn" class="btn">
-            Sign In
-          </button>
-        </div>
-
-        <!-- Logged in state -->
-        <div id="logged-in-message" class="hidden">
-          <div class="flex items-center justify-center gap-2 mb-3" style="color: var(--sky-600);">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-            <span class="font-medium text-sm">You're signed in</span>
+        <!-- Email field -->
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="f-email">Email</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+            </span>
+            <input
+              id="f-email"
+              type="email"
+              placeholder="Please enter your email"
+              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition"
+            />
           </div>
-          <p id="user-email" class="text-gray-400 text-sm mb-6"></p>
-          <a href="/order" class="btn">
-            Go to Order Form →
-          </a>
-          <button id="logout-btn" class="btn btn-ghost mt-2 text-sm">
-            Sign out
+        </div>
+
+        <!-- Password field -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="f-password">Password</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </span>
+            <input
+              id="f-password"
+              type="password"
+              placeholder="Please enter your password"
+              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition"
+            />
+          </div>
+        </div>
+
+        <!-- Forgot password -->
+        <div class="text-right mb-6">
+          <button id="forgot-btn" class="text-sm text-sky-500 hover:text-sky-700 transition-colors">
+            Forgot Password?
           </button>
         </div>
 
-        <p class="text-gray-400 text-xs mt-8">
-          Don't have an account? <span class="font-medium" style="color: var(--sky-500);">Contact us for access.</span>
+        <!-- Error message -->
+        <div id="login-error" class="hidden mb-4 text-sm text-red-600 bg-red-50 rounded-xl px-4 py-3 text-center"></div>
+
+        <!-- Sign in button -->
+        <button
+          id="login-btn"
+          class="w-full py-3 px-6 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+        >
+          <span id="btn-text">Sign in</span>
+          <span id="btn-loading" class="hidden">Signing in…</span>
+        </button>
+
+        <!-- Contact note -->
+        <p class="text-center text-sm text-gray-500 mt-6">
+          New here? <span class="font-medium text-sky-500">Contact us for access.</span>
         </p>
+      </div>
+
+      <!-- Logged-in state -->
+      <div id="logged-in-section" class="hidden text-center">
+        <div class="flex items-center justify-center gap-2 text-sky-600 mb-3">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          <span class="font-medium text-sm">You're signed in</span>
+        </div>
+        <p id="user-email" class="text-gray-400 text-sm mb-6"></p>
+        <a href="/order" class="block w-full py-3 px-6 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200 mb-3">
+          Go to Order Form →
+        </a>
+        <button id="logout-btn" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">
+          Sign out
+        </button>
       </div>
 
     </div>
@@ -51,34 +99,120 @@ import Layout from '../layouts/Layout.astro';
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const loginBtn = document.getElementById('login-btn');
-      const logoutBtn = document.getElementById('logout-btn');
-      const loginMessage = document.getElementById('login-message');
-      const loggedInMessage = document.getElementById('logged-in-message');
-      const userEmail = document.getElementById('user-email');
+      const loginFormSection  = document.getElementById('login-form-section');
+      const loggedInSection   = document.getElementById('logged-in-section');
+      const userEmailEl       = document.getElementById('user-email');
+      const loginBtn          = document.getElementById('login-btn');
+      const btnText           = document.getElementById('btn-text');
+      const btnLoading        = document.getElementById('btn-loading');
+      const loginError        = document.getElementById('login-error');
+      const forgotBtn         = document.getElementById('forgot-btn');
+      const logoutBtn         = document.getElementById('logout-btn');
 
-      function updateUI(user) {
-        if (user) {
-          loginMessage.classList.add('hidden');
-          loggedInMessage.classList.remove('hidden');
-          userEmail.textContent = user.email;
-        } else {
-          loginMessage.classList.remove('hidden');
-          loggedInMessage.classList.add('hidden');
-        }
+      function showError(msg) {
+        loginError.textContent = msg;
+        loginError.classList.remove('hidden');
       }
 
+      function clearError() {
+        loginError.classList.add('hidden');
+      }
+
+      function showLoggedIn(user) {
+        loginFormSection.classList.add('hidden');
+        loggedInSection.classList.remove('hidden');
+        userEmailEl.textContent = user.email || '';
+      }
+
+      function showLoginForm() {
+        loginFormSection.classList.remove('hidden');
+        loggedInSection.classList.add('hidden');
+      }
+
+      // Check if already logged in via Netlify Identity widget
       if (window.netlifyIdentity) {
-        window.netlifyIdentity.on('init', updateUI);
-        window.netlifyIdentity.on('logout', () => updateUI(null));
+        window.netlifyIdentity.on('init', (user) => {
+          if (user) showLoggedIn(user);
+        });
+        window.netlifyIdentity.on('logout', showLoginForm);
       }
 
-      loginBtn?.addEventListener('click', () => {
-        window.netlifyIdentity?.open('login');
+      // Sign in
+      loginBtn?.addEventListener('click', async () => {
+        clearError();
+        const email    = document.getElementById('f-email')?.value.trim();
+        const password = document.getElementById('f-password')?.value;
+
+        if (!email || !password) {
+          showError('Please enter your email and password.');
+          return;
+        }
+
+        btnText.classList.add('hidden');
+        btnLoading.classList.remove('hidden');
+        loginBtn.disabled = true;
+
+        try {
+          // Call GoTrue token endpoint directly
+          const resp = await fetch('/.netlify/identity/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ grant_type: 'password', username: email, password })
+          });
+
+          if (!resp.ok) {
+            const err = await resp.json().catch(() => ({}));
+            throw new Error(err.error_description || 'Invalid email or password.');
+          }
+
+          const token = await resp.json();
+
+          // Fetch user profile
+          const userResp = await fetch('/.netlify/identity/user', {
+            headers: { Authorization: `Bearer ${token.access_token}` }
+          });
+          const user = await userResp.json();
+
+          // Store session so the Identity widget recognises the user on other pages
+          localStorage.setItem('gotrue.user', JSON.stringify({
+            ...user,
+            token: {
+              access_token:  token.access_token,
+              expires_in:    token.expires_in,
+              refresh_token: token.refresh_token,
+              token_type:    token.token_type,
+              expires_at:    Date.now() + token.expires_in * 1000
+            }
+          }));
+
+          window.location.href = '/order';
+
+        } catch (err) {
+          showError(err.message || 'Login failed. Please try again.');
+          btnText.classList.remove('hidden');
+          btnLoading.classList.add('hidden');
+          loginBtn.disabled = false;
+        }
       });
 
+      // Allow Enter key to submit
+      document.getElementById('f-password')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') loginBtn.click();
+      });
+      document.getElementById('f-email')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('f-password')?.focus();
+      });
+
+      // Forgot password — open Netlify Identity recovery modal
+      forgotBtn?.addEventListener('click', () => {
+        window.netlifyIdentity?.open('recovery');
+      });
+
+      // Sign out
       logoutBtn?.addEventListener('click', () => {
+        localStorage.removeItem('gotrue.user');
         window.netlifyIdentity?.logout();
+        showLoginForm();
       });
     });
   </script>

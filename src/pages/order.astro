@@ -298,24 +298,58 @@ import Layout from '../layouts/Layout.astro';
   </div>
 
   <script>
-    // ── Auth ──
+    // ── Auth + pre-populate from user_metadata ──
     document.addEventListener('DOMContentLoaded', () => {
       const navEmail = document.getElementById('nav-email');
       const navLogout = document.getElementById('nav-logout');
 
+      function prefillFromMetadata(user) {
+        const m = user.user_metadata || {};
+        const set = (id, val) => {
+          const el = document.getElementById(id);
+          if (el && val) { el.value = val; el.dispatchEvent(new Event('input')); }
+        };
+        // Pre-populate form fields from Netlify user_metadata
+        set('f-name',    m.full_name || m.name || '');
+        set('f-title',   m.job_title || m.title || '');
+        set('f-company', m.company || '');
+        set('f-email',   m.card_email || user.email || '');
+        set('f-phone',   m.phone || '');
+        set('f-website', m.website || '');
+        set('f-address', m.address || '');
+      }
+
+      // Read user from localStorage (set by our custom login form)
+      function getUserFromStorage() {
+        try {
+          const raw = localStorage.getItem('gotrue.user');
+          return raw ? JSON.parse(raw) : null;
+        } catch { return null; }
+      }
+
+      function initUser(user) {
+        if (!user) {
+          window.location.href = '/';
+          return;
+        }
+        if (navEmail) navEmail.textContent = user.email;
+        prefillFromMetadata(user);
+      }
+
+      // Try widget first, fall back to localStorage
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on('init', (user) => {
-          if (!user) {
-            window.location.href = '/';
-            return;
-          }
-          if (navEmail) navEmail.textContent = user.email;
+          initUser(user || getUserFromStorage());
         });
-        navLogout?.addEventListener('click', () => {
-          window.netlifyIdentity?.logout();
-          window.location.href = '/';
-        });
+      } else {
+        initUser(getUserFromStorage());
       }
+
+      navLogout?.addEventListener('click', () => {
+        localStorage.removeItem('gotrue.user');
+        window.netlifyIdentity?.logout();
+        window.location.href = '/';
+      });
     });
 
     // ── Live Preview ──

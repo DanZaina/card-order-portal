@@ -251,6 +251,11 @@ const clientsJson = JSON.stringify(clients);
                 class="relative w-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-300"
                 style="aspect-ratio: 3.5 / 2;">
 
+                <!-- SVG template preview (shown when client has card_template) -->
+                <div id="svg-preview" class="hidden absolute inset-0 bg-white">
+                  <!-- SVG injected here by JS -->
+                </div>
+
                 <!-- Classic style -->
                 <div id="style-classic" class="card-style absolute inset-0 bg-white flex">
                   <div id="c-accent-bar" class="w-2 bg-slate-900 shrink-0"></div>
@@ -370,29 +375,18 @@ const clientsJson = JSON.stringify(clients);
     </div>
   </div>
 
-  <!-- ── Account modal (Details + Order History) ── -->
+  <!-- ── Account modal ── -->
   <div id="edit-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden flex flex-col" style="max-height: 90vh;">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-y-auto" style="max-height: 90vh;">
       <!-- Header -->
-      <div class="flex items-center justify-between px-6 pt-5 pb-4 shrink-0">
+      <div class="flex items-center justify-between px-6 pt-5 pb-4">
         <h3 class="text-base font-semibold text-gray-900">My Account</h3>
         <button id="edit-modal-close" class="text-gray-400 hover:text-gray-600 transition-colors">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
-      <!-- Tabs -->
-      <div class="flex border-b border-gray-100 px-6 shrink-0">
-        <button data-tab="details"
-          class="modal-tab pb-3 mr-5 text-sm font-medium border-b-2 border-gray-900 text-gray-900 transition-colors">
-          My Details
-        </button>
-        <button data-tab="history"
-          class="modal-tab pb-3 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-colors">
-          Order History
-        </button>
-      </div>
-      <!-- Tab: Details -->
-      <div id="tab-details" class="p-6">
+      <!-- Details section -->
+      <div class="px-6 pb-6">
         <label class="block text-sm font-medium text-gray-700 mb-1.5" for="edit-display-name">Display name</label>
         <input id="edit-display-name" type="text" placeholder="Your name"
           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
@@ -408,11 +402,14 @@ const clientsJson = JSON.stringify(clients);
           </button>
         </div>
       </div>
-      <!-- Tab: History -->
-      <div id="tab-history" class="hidden flex-col overflow-hidden" style="display:none">
-        <div id="order-history-list" class="divide-y divide-gray-100 overflow-y-auto" style="max-height: 360px;"></div>
-        <div id="order-history-empty" class="px-6 py-12 text-center hidden">
-          <i data-lucide="inbox" class="w-8 h-8 text-gray-300 mx-auto mb-3"></i>
+      <!-- Order history section -->
+      <div class="border-t border-gray-100">
+        <div class="px-6 py-4">
+          <p class="text-sm font-semibold text-gray-700">Order History</p>
+        </div>
+        <div id="order-history-list" class="divide-y divide-gray-100"></div>
+        <div id="order-history-empty" class="px-6 py-10 text-center">
+          <i data-lucide="inbox" class="w-7 h-7 text-gray-300 mx-auto mb-2.5"></i>
           <p class="text-sm text-gray-400">No orders yet</p>
         </div>
       </div>
@@ -528,6 +525,18 @@ const clientsJson = JSON.stringify(clients);
           nameField.dispatchEvent(new Event('input'));
         }
       }
+      // Load client-specific SVG card template if available
+      // Retry briefly in case the preview script hasn't registered yet
+      if (data.card_template) {
+        const tryLoad = (attempts = 0) => {
+          if (window._portal?.loadSvgTemplate) {
+            window._portal.loadSvgTemplate(data.card_template);
+          } else if (attempts < 10) {
+            setTimeout(() => tryLoad(attempts + 1), 50);
+          }
+        };
+        tryLoad();
+      }
     }
 
     function getUserFromStorage() {
@@ -601,11 +610,8 @@ const clientsJson = JSON.stringify(clients);
       if (!list) return;
       const orders = getOrders();
       list.innerHTML = '';
-      if (!orders.length) {
-        empty?.classList.remove('hidden');
-        return;
-      }
-      empty?.classList.add('hidden');
+      if (empty) empty.style.display = orders.length ? 'none' : '';
+      if (!orders.length) return;
       orders.forEach(order => {
         const item = document.createElement('div');
         item.className = 'px-6 py-4 flex items-start justify-between gap-3 hover:bg-gray-50 transition-colors';
@@ -648,22 +654,6 @@ const clientsJson = JSON.stringify(clients);
       document.getElementById('edit-modal')?.classList.add('hidden');
     }
 
-    // ── Modal tab switching ──
-    function switchModalTab(tab) {
-      document.querySelectorAll('.modal-tab').forEach(t => {
-        const isActive = t.dataset.tab === tab;
-        t.classList.toggle('border-gray-900', isActive);
-        t.classList.toggle('text-gray-900', isActive);
-        t.classList.toggle('border-transparent', !isActive);
-        t.classList.toggle('text-gray-400', !isActive);
-      });
-      const detailsEl = document.getElementById('tab-details');
-      const historyEl = document.getElementById('tab-history');
-      if (detailsEl) detailsEl.style.display = tab === 'details' ? '' : 'none';
-      if (historyEl) historyEl.style.display  = tab === 'history' ? 'flex' : 'none';
-      if (tab === 'history') renderHistory();
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) window.lucide.createIcons();
 
@@ -698,13 +688,9 @@ const clientsJson = JSON.stringify(clients);
         const saved = localStorage.getItem('portal.displayName')
           || (currentUser ? (CLIENT_DATA[currentUser.email]?.full_name || '') : '');
         document.getElementById('edit-display-name').value = saved;
-        switchModalTab('details');
+        renderHistory();
         editModal?.classList.remove('hidden');
         setTimeout(() => document.getElementById('edit-display-name')?.focus(), 50);
-      });
-
-      document.querySelectorAll('.modal-tab').forEach(tab => {
-        tab.addEventListener('click', () => switchModalTab(tab.dataset.tab));
       });
 
       const closeModal = () => editModal?.classList.add('hidden');
@@ -756,15 +742,16 @@ const clientsJson = JSON.stringify(clients);
   <script>
     // ── Live Preview ──
     const fields = {
-      name:    document.getElementById('f-name'),
-      title:   document.getElementById('f-title'),
-      company: document.getElementById('f-company'),
-      email:   document.getElementById('f-email'),
-      phone:   document.getElementById('f-phone'),
-      website: document.getElementById('f-website'),
-      address: document.getElementById('f-address'),
-      accent:  document.getElementById('f-accent'),
-      qty:     document.getElementById('f-qty'),
+      name:      document.getElementById('f-name'),
+      title:     document.getElementById('f-title'),
+      company:   document.getElementById('f-company'),
+      email:     document.getElementById('f-email'),
+      phone:     document.getElementById('f-phone'),
+      extension: document.getElementById('f-extension'),
+      cell:      document.getElementById('f-cell'),
+      website:   document.getElementById('f-website'),
+      address:   document.getElementById('f-address'),
+      qty:       document.getElementById('f-qty'),
     };
 
     const placeholders = {
@@ -778,7 +765,71 @@ const clientsJson = JSON.stringify(clients);
     };
 
     let currentStyle = 'classic';
+    let svgTemplateHTML = null; // cached raw SVG markup
 
+    // ── SVG template preview ──
+    async function loadSvgTemplate(url) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return;
+        svgTemplateHTML = await res.text();
+        const container = document.getElementById('svg-preview');
+        if (container) {
+          container.innerHTML = svgTemplateHTML;
+          // Make the SVG fill its container
+          const svg = container.querySelector('svg');
+          if (svg) {
+            svg.style.width  = '100%';
+            svg.style.height = '100%';
+          }
+          container.classList.remove('hidden');
+          // Hide the generic HTML card styles
+          document.querySelectorAll('.card-style').forEach(el => el.style.display = 'none');
+        }
+        updateSvgPreview();
+      } catch (e) {
+        console.warn('SVG template load failed, using generic preview', e);
+      }
+    }
+
+    function svgSet(id, text, fallback = '') {
+      const el = document.getElementById('svg-preview')?.querySelector(`#${id}`);
+      if (!el) return;
+      el.textContent = text || fallback;
+      el.setAttribute('visibility', (text || fallback) ? 'visible' : 'hidden');
+    }
+
+    function updateSvgPreview() {
+      if (!svgTemplateHTML) return;
+      const v = (id) => fields[id]?.value?.trim() || '';
+
+      svgSet('svg-name',  v('name'),      'Name Here');
+      svgSet('svg-title', v('title'),     'Title Here');
+      svgSet('svg-email', v('email'),     '');
+      svgSet('svg-phone', v('phone'),     '');
+      svgSet('svg-cell',  v('cell'),      '');
+
+      // Extension: append to phone line if present
+      const ext = v('extension');
+      const phone = v('phone');
+      const phoneEl = document.getElementById('svg-preview')?.querySelector('#svg-phone');
+      if (phoneEl) phoneEl.textContent = phone + (ext ? `  Ext. ${ext}` : '');
+
+      // Address: split on comma if long
+      const addr = v('address');
+      if (addr) {
+        const commaIdx = addr.indexOf(',');
+        if (commaIdx > 0 && addr.length > 20) {
+          svgSet('svg-addr1', addr.slice(0, commaIdx).trim());
+          svgSet('svg-addr2', addr.slice(commaIdx + 1).trim());
+        } else {
+          svgSet('svg-addr1', addr);
+          svgSet('svg-addr2', '');
+        }
+      }
+    }
+
+    // ── Generic HTML preview ──
     function updatePreview() {
       const vals = {
         name:    fields.name?.value    || placeholders.name,
@@ -793,7 +844,6 @@ const clientsJson = JSON.stringify(clients);
       ['c','d','b'].forEach(prefix => {
         const set  = (id, val)     => { const el = document.getElementById(id); if (el) el.textContent = val; };
         const show = (id, visible) => { const el = document.getElementById(id); if (el) el.style.display = visible ? '' : 'none'; };
-
         set(`${prefix}-name`,    vals.name);
         set(`${prefix}-title`,   vals.title);
         set(`${prefix}-company`, vals.company);
@@ -805,58 +855,22 @@ const clientsJson = JSON.stringify(clients);
         show(`${prefix}-address-row`, !!vals.address);
       });
 
+      if (svgTemplateHTML) updateSvgPreview();
+
       const summaryQty = document.getElementById('summary-qty');
       if (summaryQty) summaryQty.textContent = `${Number(fields.qty?.value || 500).toLocaleString()} cards`;
     }
 
-    function switchStyle(style) {
-      currentStyle = style;
-      const styleInput = document.getElementById('f-style');
-      if (styleInput) styleInput.value = style;
-
-      document.querySelectorAll('.style-btn').forEach(btn => {
-        const isActive = btn.dataset.style === style;
-        btn.classList.toggle('border-sky-500', isActive);
-        btn.classList.toggle('bg-sky-50', isActive);
-        btn.classList.toggle('border-gray-200', !isActive);
-      });
-
-      ['classic','dark','branded'].forEach(s => {
-        const el = document.getElementById(`style-${s}`);
-        if (el) el.classList.toggle('hidden', s !== style);
-      });
-
-      const accentRow = document.getElementById('accent-color-row');
-      if (accentRow) accentRow.classList.toggle('hidden', style !== 'branded');
-
-      updatePreview();
-    }
-
-    function updateBrandedColor(hex) {
-      const branded = document.getElementById('style-branded');
-      if (branded) branded.style.background = `linear-gradient(135deg, ${hex} 0%, ${shadeColor(hex, -40)} 100%)`;
-    }
-
-    function shadeColor(hex, percent) {
-      const num = parseInt(hex.replace('#',''), 16);
-      const r = Math.min(255, Math.max(0, (num >> 16) + percent));
-      const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
-      const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
-      return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
-    }
-
+    // Wire up all form inputs
     Object.values(fields).forEach(el => {
       if (el) el.addEventListener('input', updatePreview);
     });
 
-    document.getElementById('style-picker')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-style]');
-      if (btn) switchStyle(btn.dataset.style);
-    });
-
-    fields.accent?.addEventListener('input', (e) => updateBrandedColor(e.target.value));
-
     updatePreview();
+
+    // Expose so auth script can trigger SVG load after user is resolved
+    window._portal = window._portal || {};
+    window._portal.loadSvgTemplate = loadSvgTemplate;
   </script>
 
   <script>

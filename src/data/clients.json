@@ -9,6 +9,7 @@
     "cell": "",
     "address": "947 Jones Road, Midland, ON L4R 0G1",
     "fields": ["name", "title", "email", "extension", "cell"],
-    "locked": ["phone", "address"]
+    "locked": ["phone", "address"],
+    "card_template": "/cards/midland-honda.svg"
   }
 }

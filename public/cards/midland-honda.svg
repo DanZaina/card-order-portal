@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Midland Honda — live-preview card template
+  viewBox: 252 × 144 (3.5" × 2" @ 72 dpi)
+  Text elements use IDs; JS swaps content on form input.
+  Font stack renders Helvetica on macOS, Arial on Windows.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 252 144">
+  <defs>
+    <style>
+      .ct { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; fill: #262626; }
+      .ct-name  { font-size: 8px;   font-weight: bold; letter-spacing: -0.01em; }
+      .ct-title { font-size: 5.2px; letter-spacing: 0.02em; }
+      .ct-info  { font-size: 4.2px; }
+      .ct-label { font-size: 3.6px; fill: #888; }
+    </style>
+    <!-- Honda logo gradients (all black — original file used linear gradients that resolve to #000) -->
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#000"/>
+      <stop offset="1" stop-color="#000"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="252" height="144" fill="#fff"/>
+
+  <!-- ── Honda logo (original Illustrator paths, preserved exactly) ── -->
+  <g id="honda-logo">
+    <!-- Honda H badge -->
+    <path fill="#ed1c24" d="M31.99,15.97l-18.49,24.53h8.37l14.94-19.85,9.3-.05-13.96,19.91h7.44l14.37-19.91h7.07s3.59-.05,1.93,2.52c-1.92,2.98-12.49,17.39-12.49,17.39h8.07l13.89-19s4.38-5.54-4.49-5.54H31.99Z"/>
+    <polygon fill="#000" points="76.8 22.47 70.65 30.82 74.55 30.82 80.76 22.47 76.8 22.47"/>
+    <polygon fill="#000" points="103.02 18.99 94.29 30.82 98.31 30.82 106.76 18.99 103.02 18.99"/>
+    <path fill="#000" d="M124.27,22.47l-6.18,8.35h4.05s4.94-6.69,4.94-6.69h6.38s1.73-.24.8.92c-.92,1.16-4.15,5.77-4.15,5.77h4.17s4.47-6.33,4.47-6.33c0,0,1.42-1.73-3.21-2.02h-11.28Z"/>
+    <path fill="#000" d="M91.19,35.66l-3.57,4.82h2.34s2.85-3.86,2.85-3.86h3.68s1-.14.46.53c-.53.67-2.4,3.33-2.4,3.33h2.41s2.58-3.65,2.58-3.65c0,0,.82-1-1.85-1.17h-6.51Z"/>
+    <rect fill="#000" x="70.64" y="32.1" width="81.01" height=".7"/>
+    <path fill="#000" d="M117.38,22.47c5.44,0,3.17,2.22,3.17,2.22,0,0-1.77,2.35-3.03,4.33-1.26,1.99-5,1.79-5,1.79h-8.17c-4.57,0-2.73-1.99-2.73-1.99l1.45-1.95c1.04-1.28,2.43-1.1,2.43-1.1l10.33-.1s.18-.22.7-.96c.52-.74-.98-.6-.98-.6h-10.5l1.1-1.64h11.22ZM106.76,27.53l-.78.88s-.82.7.78.75c1.84.06,5.49,0,5.49,0,0,0,.86.09,1.34-.48.56-.67.91-1.15.91-1.15h-7.73Z"/>
+    <path fill="#000" d="M117.81,35.65c3.13,0,1.82,1.28,1.82,1.28,0,0-1.01,1.35-1.74,2.49-.73,1.14-2.87,1.03-2.87,1.03h-4.69c-2.63,0-1.57-1.15-1.57-1.15l.83-1.12c.6-.74,1.4-.63,1.4-.63l5.94-.06s.1-.13.4-.55c.3-.43-.57-.35-.57-.35h-6.03l.63-.94h6.45ZM111.7,38.56l-.45.51s-.47.4.45.43c1.06.04,3.15,0,3.15,0,0,0,.5.05.77-.28.32-.38.52-.66.52-.66h-4.44Z"/>
+    <path fill="#000" d="M101.03,18.99l-7.59,10.19c-1.32,1.71-3.8,1.63-3.8,1.63h-8.67c-5.11,0-3-2.51-3-2.51l2.78-3.8c1.63-2.27,5.3-2.03,5.3-2.03h8.39l2.79-3.48h3.79ZM86.62,24.16s-1.07-.19-1.61.43c-.53.62-2.81,3.72-2.81,3.72,0,0-.88.88.4.88h5.62s.86.13,1.39-.51c.54-.64,2.76-3.59,2.76-3.59,0,0,1.12-.96-.56-.96s-5.19.03-5.19.03"/>
+    <path fill="#000" d="M160.65,18.99l-7.59,10.19c-1.32,1.71-3.8,1.63-3.8,1.63h-8.67c-5.11,0-2.99-2.51-2.99-2.51l2.78-3.8c1.63-2.27,5.3-2.03,5.3-2.03h8.39l2.79-3.48h3.79ZM146.24,24.16s-1.07-.19-1.61.43c-.53.62-2.81,3.72-2.81,3.72,0,0-.88.88.4.88h5.62s.86.13,1.39-.51c.54-.64,2.76-3.59,2.76-3.59,0,0,1.12-.96-.56-.96s-5.19.03-5.19.03"/>
+    <path fill="#000" d="M111.85,33.64l-4.38,5.88c-.76.99-2.19.94-2.19.94h-5c-2.94,0-1.73-1.45-1.73-1.45l1.6-2.19c.94-1.31,3.05-1.17,3.05-1.17h4.84l1.61-2h2.19ZM103.54,36.61s-.73-.01-.93.25c-.28.38-1.62,2.15-1.62,2.15,0,0-.51.51.23.51h3.24s.49.08.8-.29c.31-.37,1.59-2.07,1.59-2.07,0,0,.58-.56-.32-.56-.97,0-2.99.02-2.99.02"/>
+    <path fill="#000" d="M89.24,37.05l-1.73,2.47c-.76.99-2.19.94-2.19.94h-5c-2.94,0-1.73-1.45-1.73-1.45l1.6-2.19c.94-1.31,3.05-1.17,3.05-1.17h4.84c2.02,0,1.14,1.4,1.14,1.4M83.58,36.61s-.67-.03-.93.25c-.32.34-1.62,2.15-1.62,2.15,0,0-.51.51.23.51h3.24s.49.08.8-.29c.31-.37,1.59-2.07,1.59-2.07,0,0,.55-.56-.32-.56-.97,0-2.99.02-2.99.02"/>
+    <polygon fill="#000" points="70.45 33.39 65.19 40.5 67.85 40.5 70.11 37.37 75.89 37.39 73.74 40.5 76.35 40.5 81.41 33.39 78.8 33.39 76.71 36.17 70.89 36.17 72.96 33.39 70.45 33.39"/>
+  </g>
+
+  <!-- ── Horizontal rule ── -->
+  <line x1="13.5" y1="94.18" x2="238.08" y2="94.18" stroke="#231f20" stroke-miterlimit="10" stroke-width=".5"/>
+
+  <!-- ── Live text layer ── -->
+  <g id="card-text">
+    <!-- Name & Title (above rule) -->
+    <text id="svg-name"  class="ct ct-name"  x="14" y="79">Name Here</text>
+    <text id="svg-title" class="ct ct-title" x="14" y="89">Title Here</text>
+
+    <!-- Contact info (below rule) — left column -->
+    <text id="svg-phone" class="ct ct-info" x="14" y="104">(705) 526-1344</text>
+    <text id="svg-ext"   class="ct ct-info" x="14" y="111" visibility="hidden"></text>
+    <text id="svg-email" class="ct ct-info" x="14" y="118">email@midlandhonda.com</text>
+    <text id="svg-cell"  class="ct ct-info" x="14" y="125" visibility="hidden"></text>
+
+    <!-- Contact info — right column -->
+    <text id="svg-addr1" class="ct ct-info" x="133" y="104">947 Jones Road</text>
+    <text id="svg-addr2" class="ct ct-info" x="133" y="111">Midland, ON  L4R 0G1</text>
+  </g>
+</svg>

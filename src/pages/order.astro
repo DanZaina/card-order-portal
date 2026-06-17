@@ -50,6 +50,11 @@ const clientsJson = JSON.stringify(clients);
           </div>
           <!-- Actions -->
           <div class="py-1">
+            <button id="dd-history-btn"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+              <i data-lucide="clock" class="w-4 h-4 text-gray-400 shrink-0"></i>
+              Order History
+            </button>
             <button id="dd-edit-btn"
               class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
               <i data-lucide="user-pen" class="w-4 h-4 text-gray-400 shrink-0"></i>
@@ -132,14 +137,14 @@ const clientsJson = JSON.stringify(clients);
                 <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-name">
                   Full Name <span class="text-red-500">*</span>
                 </label>
-                <input id="f-name" name="name" type="text" placeholder="Jane Smith"
+                <input id="f-name" name="name" type="text" placeholder="First Last Name"
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-title">
                   Job Title <span class="text-red-500">*</span>
                 </label>
-                <input id="f-title" name="job_title" type="text" placeholder="Marketing Director"
+                <input id="f-title" name="job_title" type="text" placeholder="Enter Title"
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
               </div>
             </div>
@@ -162,12 +167,12 @@ const clientsJson = JSON.stringify(clients);
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-extension">Ext.</label>
-                <input id="f-extension" name="extension" type="text" placeholder="000"
+                <input id="f-extension" name="extension" type="text" placeholder="000" inputmode="numeric"
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-cell">Cell</label>
-                <input id="f-cell" name="cell" type="tel" placeholder="(705) 000-0000"
+                <input id="f-cell" name="cell" type="tel" placeholder="(000) 000-0000" inputmode="numeric"
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
               </div>
             </div>
@@ -359,13 +364,17 @@ const clientsJson = JSON.stringify(clients);
           <div class="bg-white rounded-2xl border border-gray-200 p-6">
             <h3 class="text-sm font-semibold text-gray-700 mb-4">Order Summary</h3>
             <dl class="space-y-3 text-sm">
+              <div class="flex justify-between gap-3">
+                <dt class="text-gray-400 shrink-0">Name</dt>
+                <dd id="summary-name" class="font-medium text-gray-900 text-right truncate">—</dd>
+              </div>
+              <div class="flex justify-between gap-3">
+                <dt class="text-gray-400 shrink-0">Title</dt>
+                <dd id="summary-title" class="font-medium text-gray-900 text-right truncate">—</dd>
+              </div>
               <div class="flex justify-between">
                 <dt class="text-gray-400">Quantity</dt>
                 <dd id="summary-qty" class="font-medium text-gray-900">500 cards</dd>
-              </div>
-              <div class="flex justify-between">
-                <dt class="text-gray-400">People</dt>
-                <dd id="summary-people" class="font-medium text-gray-900">1</dd>
               </div>
             </dl>
           </div>
@@ -402,14 +411,25 @@ const clientsJson = JSON.stringify(clients);
           </button>
         </div>
       </div>
-      <!-- Order history section -->
-      <div class="border-t border-gray-100">
-        <div class="px-6 py-4">
-          <p class="text-sm font-semibold text-gray-700">Order History</p>
-        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Order History modal ── -->
+  <div id="order-history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 flex flex-col" style="max-height: 90vh;">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 shrink-0">
+        <h3 class="text-base font-semibold text-gray-900">Order History</h3>
+        <button id="order-history-modal-close" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <!-- List -->
+      <div class="overflow-y-auto flex-1">
         <div id="order-history-list" class="divide-y divide-gray-100"></div>
-        <div id="order-history-empty" class="px-6 py-10 text-center">
-          <i data-lucide="inbox" class="w-7 h-7 text-gray-300 mx-auto mb-2.5"></i>
+        <div id="order-history-empty" class="px-6 py-12 text-center">
+          <i data-lucide="inbox" class="w-8 h-8 text-gray-300 mx-auto mb-3"></i>
           <p class="text-sm text-gray-400">No orders yet</p>
         </div>
       </div>
@@ -543,47 +563,63 @@ const clientsJson = JSON.stringify(clients);
       try { return JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch { return null; }
     }
 
-    // ── Extra people ──
-    let extraPeopleCount = 0;
-
-    function updatePeopleCount() {
-      const count = 1 + document.querySelectorAll('#extra-people-list [data-person]').length;
-      const el = document.getElementById('summary-people');
-      if (el) el.textContent = count;
+    // ── Title case ──
+    function toTitleCase(str: string): string {
+      return str.replace(/\S+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
     }
 
-    function addExtraPerson(defaults = {}) {
+    // ── Cell phone formatting: digits → (XXX) XXX-XXXX ──
+    function formatCellPhone(raw: string): string {
+      const d = raw.replace(/\D/g, '').slice(0, 10);
+      if (d.length < 4)  return d.length ? `(${d}` : '';
+      if (d.length < 7)  return `(${d.slice(0,3)}) ${d.slice(3)}`;
+      return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+    }
+
+    // ── Extra people (max 1) ──
+    let extraPeopleCount = 0;
+
+    function updateAddBtn() {
+      const addBtn = document.getElementById('add-person-btn');
+      if (!addBtn) return;
+      const hasOne = document.querySelectorAll('#extra-people-list [data-person]').length >= 1;
+      addBtn.style.display = hasOne ? 'none' : '';
+    }
+
+    function addExtraPerson(defaults: { name?: string; title?: string } = {}) {
+      const list = document.getElementById('extra-people-list');
+      if (!list) return;
+      if (list.querySelectorAll('[data-person]').length >= 1) return; // max 1
       extraPeopleCount++;
       const id = `person-${Date.now()}`;
-      const list = document.getElementById('extra-people-list');
       const row = document.createElement('div');
       row.dataset.person = id;
       row.className = 'flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2.5';
       row.innerHTML = `
         <div class="flex-1 grid grid-cols-2 gap-2">
-          <input type="text" placeholder="Full Name" value="${defaults.name || ''}"
+          <input type="text" placeholder="First Last Name" value="${defaults.name || ''}"
             class="person-name w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-200 outline-none text-sm bg-white" />
-          <input type="text" placeholder="Job Title" value="${defaults.title || ''}"
+          <input type="text" placeholder="Enter Title" value="${defaults.title || ''}"
             class="person-title w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-200 outline-none text-sm bg-white" />
         </div>
         <button type="button" data-remove="${id}"
           class="shrink-0 text-gray-300 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-50">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>`;
-      row.querySelector(`[data-remove]`).addEventListener('click', () => {
+      row.querySelector('[data-remove]')?.addEventListener('click', () => {
         row.remove();
-        updatePeopleCount();
+        updateAddBtn();
       });
       list.appendChild(row);
-      updatePeopleCount();
-      row.querySelector('.person-name')?.focus();
+      updateAddBtn();
+      (row.querySelector('.person-name') as HTMLInputElement | null)?.focus();
     }
 
     function clearExtraPeople() {
       const list = document.getElementById('extra-people-list');
       if (list) list.innerHTML = '';
       extraPeopleCount = 0;
-      updatePeopleCount();
+      updateAddBtn();
     }
 
     function getExtraPeople() {
@@ -616,16 +652,30 @@ const clientsJson = JSON.stringify(clients);
         const item = document.createElement('div');
         item.className = 'px-6 py-4 flex items-start justify-between gap-3 hover:bg-gray-50 transition-colors';
         item.innerHTML = `
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1">
             <p class="text-sm font-medium text-gray-900 truncate">${order.name || 'Unnamed'}</p>
+            ${order.title ? `<p class="text-xs text-gray-500 mt-0.5 truncate">${order.title}</p>` : ''}
             <p class="text-xs text-gray-400 mt-0.5">${order.date} · ${Number(order.quantity || 500).toLocaleString()} cards${order.extra?.length ? ` · ${1 + order.extra.length} people` : ''}</p>
-            ${order.title ? `<p class="text-xs text-gray-500 mt-0.5">${order.title}</p>` : ''}
           </div>
-          <button data-load-id="${order.id}" type="button"
-            class="shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 transition-colors">
-            Load
-          </button>`;
-        item.querySelector('[data-load-id]')?.addEventListener('click', () => loadOrder(order));
+          <div class="flex items-center gap-2 shrink-0">
+            <button data-edit-id="${order.id}" type="button"
+              class="text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 transition-colors">
+              Edit
+            </button>
+            <button data-reorder-id="${order.id}" type="button"
+              class="text-xs font-medium px-3 py-1.5 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition-colors">
+              Reorder
+            </button>
+          </div>`;
+        item.querySelector('[data-edit-id]')?.addEventListener('click', () => {
+          loadOrder(order);
+          document.getElementById('order-history-modal')?.classList.add('hidden');
+        });
+        item.querySelector('[data-reorder-id]')?.addEventListener('click', () => {
+          loadOrder(order);
+          document.getElementById('order-history-modal')?.classList.add('hidden');
+          document.getElementById('submit-btn')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
         list.appendChild(item);
       });
     }
@@ -680,6 +730,19 @@ const clientsJson = JSON.stringify(clients);
         s.addEventListener('click', () => applyTheme(s.dataset.theme));
       });
 
+      // ── Order History modal ──
+      const historyModal = document.getElementById('order-history-modal');
+
+      document.getElementById('dd-history-btn')?.addEventListener('click', () => {
+        dropdown?.classList.add('hidden');
+        renderHistory();
+        historyModal?.classList.remove('hidden');
+      });
+
+      const closeHistoryModal = () => historyModal?.classList.add('hidden');
+      document.getElementById('order-history-modal-close')?.addEventListener('click', closeHistoryModal);
+      historyModal?.addEventListener('click', (e) => { if (e.target === historyModal) closeHistoryModal(); });
+
       // ── Account modal ──
       const editModal = document.getElementById('edit-modal');
 
@@ -688,7 +751,6 @@ const clientsJson = JSON.stringify(clients);
         const saved = localStorage.getItem('portal.displayName')
           || (currentUser ? (CLIENT_DATA[currentUser.email]?.full_name || '') : '');
         document.getElementById('edit-display-name').value = saved;
-        renderHistory();
         editModal?.classList.remove('hidden');
         setTimeout(() => document.getElementById('edit-display-name')?.focus(), 50);
       });
@@ -731,12 +793,39 @@ const clientsJson = JSON.stringify(clients);
         setTimeout(() => btn.classList.remove('text-green-600'), 800);
       });
 
-      // ── Add person ──
+      // ── Title case on name blur ──
+      document.getElementById('f-name')?.addEventListener('blur', (e) => {
+        const input = e.target as HTMLInputElement;
+        const titled = toTitleCase(input.value);
+        if (titled !== input.value) {
+          input.value = titled;
+          input.dispatchEvent(new Event('input'));
+        }
+      });
+
+      // ── Extension: digits only ──
+      document.getElementById('f-extension')?.addEventListener('input', (e) => {
+        const input = e.target as HTMLInputElement;
+        const clean = input.value.replace(/\D/g, '');
+        if (clean !== input.value) input.value = clean;
+      });
+
+      // ── Cell: digits only, auto-format as (XXX) XXX-XXXX ──
+      document.getElementById('f-cell')?.addEventListener('input', (e) => {
+        const input = e.target as HTMLInputElement;
+        const formatted = formatCellPhone(input.value);
+        if (formatted !== input.value) {
+          input.value = formatted;
+          input.dispatchEvent(new Event('input'));
+        }
+      });
+
+      // ── Add person (max 1) ──
       document.getElementById('add-person-btn')?.addEventListener('click', () => addExtraPerson());
     });
 
     // Expose to submission script (separate Astro module scope)
-    window._portal = { getExtraPeople, saveOrder };
+    window._portal = { getExtraPeople, saveOrder, clearExtraPeople };
   </script>
 
   <script>
@@ -765,10 +854,10 @@ const clientsJson = JSON.stringify(clients);
     };
 
     let currentStyle = 'classic';
-    let svgTemplateHTML = null; // cached raw SVG markup
+    let svgTemplateHTML: string | null = null; // cached raw SVG markup
 
     // ── SVG template preview ──
-    async function loadSvgTemplate(url) {
+    async function loadSvgTemplate(url: string) {
       try {
         const res = await fetch(url);
         if (!res.ok) return;
@@ -792,7 +881,7 @@ const clientsJson = JSON.stringify(clients);
       }
     }
 
-    function svgSet(id, text, fallback = '') {
+    function svgSet(id: string, text: string, fallback = '') {
       const el = document.getElementById('svg-preview')?.querySelector(`#${id}`);
       if (!el) return;
       el.textContent = text || fallback;
@@ -801,32 +890,23 @@ const clientsJson = JSON.stringify(clients);
 
     function updateSvgPreview() {
       if (!svgTemplateHTML) return;
-      const v = (id) => fields[id]?.value?.trim() || '';
+      const v = (id: string) => (fields[id as keyof typeof fields] as HTMLInputElement | null)?.value?.trim() || '';
 
-      svgSet('svg-name',  v('name'),      'Name Here');
-      svgSet('svg-title', v('title'),     'Title Here');
-      svgSet('svg-email', v('email'),     '');
-      svgSet('svg-phone', v('phone'),     '');
-      svgSet('svg-cell',  v('cell'),      '');
+      svgSet('svg-name',  v('name'),  'First Last Name');
+      svgSet('svg-title', v('title'), 'Enter Title');
 
-      // Extension: append to phone line if present
-      const ext = v('extension');
+      // e : email
+      const email = v('email');
+      svgSet('svg-email', email ? `e : ${email}` : '', '');
+
+      // t : phone  x  ext
       const phone = v('phone');
-      const phoneEl = document.getElementById('svg-preview')?.querySelector('#svg-phone');
-      if (phoneEl) phoneEl.textContent = phone + (ext ? `  Ext. ${ext}` : '');
+      const ext   = v('extension');
+      svgSet('svg-phone', phone ? `t : ${phone}${ext ? `  x ${ext}` : ''}` : '', '');
 
-      // Address: split on comma if long
-      const addr = v('address');
-      if (addr) {
-        const commaIdx = addr.indexOf(',');
-        if (commaIdx > 0 && addr.length > 20) {
-          svgSet('svg-addr1', addr.slice(0, commaIdx).trim());
-          svgSet('svg-addr2', addr.slice(commaIdx + 1).trim());
-        } else {
-          svgSet('svg-addr1', addr);
-          svgSet('svg-addr2', '');
-        }
-      }
+      // c : cell (hidden if empty)
+      const cell = v('cell');
+      svgSet('svg-cell', cell ? `c : ${cell}` : '', '');
     }
 
     // ── Generic HTML preview ──
@@ -842,8 +922,8 @@ const clientsJson = JSON.stringify(clients);
       };
 
       ['c','d','b'].forEach(prefix => {
-        const set  = (id, val)     => { const el = document.getElementById(id); if (el) el.textContent = val; };
-        const show = (id, visible) => { const el = document.getElementById(id); if (el) el.style.display = visible ? '' : 'none'; };
+        const set  = (id: string, val: string)       => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        const show = (id: string, visible: boolean)  => { const el = document.getElementById(id); if (el) el.style.display = visible ? '' : 'none'; };
         set(`${prefix}-name`,    vals.name);
         set(`${prefix}-title`,   vals.title);
         set(`${prefix}-company`, vals.company);
@@ -857,8 +937,12 @@ const clientsJson = JSON.stringify(clients);
 
       if (svgTemplateHTML) updateSvgPreview();
 
-      const summaryQty = document.getElementById('summary-qty');
-      if (summaryQty) summaryQty.textContent = `${Number(fields.qty?.value || 500).toLocaleString()} cards`;
+      const summaryQty   = document.getElementById('summary-qty');
+      const summaryName  = document.getElementById('summary-name');
+      const summaryTitle = document.getElementById('summary-title');
+      if (summaryQty)   summaryQty.textContent   = `${Number(fields.qty?.value || 500).toLocaleString()} cards`;
+      if (summaryName)  summaryName.textContent   = fields.name?.value?.trim()  || '—';
+      if (summaryTitle) summaryTitle.textContent  = fields.title?.value?.trim() || '—';
     }
 
     // Wire up all form inputs
@@ -878,22 +962,21 @@ const clientsJson = JSON.stringify(clients);
     document.getElementById('order-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const submitBtn     = document.getElementById('submit-btn');
-      const submitText    = document.getElementById('submit-text');
-      const submitLoading = document.getElementById('submit-loading');
-      const errorDiv      = document.getElementById('form-error');
+      const submitBtn     = document.getElementById('submit-btn')     as HTMLButtonElement | null;
+      const submitText    = document.getElementById('submit-text')    as HTMLElement | null;
+      const submitLoading = document.getElementById('submit-loading') as HTMLElement | null;
+      const errorDiv      = document.getElementById('form-error')     as HTMLElement | null;
 
       const required = ['f-name','f-title','f-email'];
       const missing  = required.filter(id => !document.getElementById(id)?.value.trim());
       if (missing.length) {
-        errorDiv.textContent = 'Please fill in all required fields.';
-        errorDiv.classList.remove('hidden');
+        if (errorDiv) { errorDiv.textContent = 'Please fill in all required fields.'; errorDiv.classList.remove('hidden'); }
         return;
       }
-      errorDiv.classList.add('hidden');
+      errorDiv?.classList.add('hidden');
 
       const storedUser = (() => { try { return JSON.parse(localStorage.getItem('gotrue.user') || '{}'); } catch { return {}; } })();
-      const user = window.netlifyIdentity?.currentUser?.();
+      const user = window.netlifyIdentity?.currentUser?.() as { email?: string } | null | undefined;
       const orderedBy = user?.email || storedUser.email || 'unknown';
 
       const nameVal      = document.getElementById('f-name')?.value      || '';
@@ -927,9 +1010,9 @@ const clientsJson = JSON.stringify(clients);
       formData.append('ordered_by',         orderedBy);
       formData.append('additional_people',  JSON.stringify(extraPeople));
 
-      submitBtn.disabled = true;
-      submitText.classList.add('hidden');
-      submitLoading.classList.remove('hidden');
+      if (submitBtn)     submitBtn.disabled = true;
+      submitText?.classList.add('hidden');
+      submitLoading?.classList.remove('hidden');
 
       try {
         const response = await fetch('/', { method: 'POST', body: formData });
@@ -943,16 +1026,19 @@ const clientsJson = JSON.stringify(clients);
               extra: extraPeople,
             });
           }
+          // Reset form state before redirect
+          const notesEl = document.getElementById('f-notes') as HTMLInputElement | null;
+          if (notesEl) notesEl.value = '';
+          window._portal?.clearExtraPeople?.();
           window.location.href = '/success';
         } else {
           throw new Error(`Server returned ${response.status}`);
         }
       } catch (err) {
-        errorDiv.textContent = 'Something went wrong. Please try again or contact us directly.';
-        errorDiv.classList.remove('hidden');
-        submitBtn.disabled = false;
-        submitText.classList.remove('hidden');
-        submitLoading.classList.add('hidden');
+        if (errorDiv) { errorDiv.textContent = 'Something went wrong. Please try again or contact us directly.'; errorDiv.classList.remove('hidden'); }
+        if (submitBtn)  submitBtn.disabled = false;
+        submitText?.classList.remove('hidden');
+        submitLoading?.classList.add('hidden');
       }
     });
   </script>

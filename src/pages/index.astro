@@ -128,11 +128,20 @@ import Layout from '../layouts/Layout.astro';
   <script>
     const IDENTITY = '/.netlify/identity';
 
-    function getSession() {
-      try { return JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch { return null; }
+    type GoTrueToken = {
+      access_token: string;
+      refresh_token: string;
+      expires_in: number;
+      token_type: string;
+    };
+
+    type GoTrueUser = Record<string, unknown> & { email?: string };
+
+    function getSession(): GoTrueUser | null {
+      try { return JSON.parse(localStorage.getItem('gotrue.user') || 'null') as GoTrueUser | null; } catch { return null; }
     }
 
-    function saveSession(user, token) {
+    function saveSession(user: GoTrueUser, token: GoTrueToken): void {
       localStorage.setItem('gotrue.user', JSON.stringify({
         ...user,
         token: {
@@ -145,35 +154,52 @@ import Layout from '../layouts/Layout.astro';
       }));
     }
 
-    function showView(id) {
+    function showView(id: string): void {
       ['view-login','view-loggedin','view-setpassword','view-forgot'].forEach(v => {
         document.getElementById(v)?.classList.toggle('hidden', v !== id);
       });
     }
 
-    function getHashToken(key) {
+    function getHashToken(key: string): string | null {
       const hash = window.location.hash.slice(1);
       const params = new URLSearchParams(hash);
       return params.get(key);
     }
 
+    function el(id: string): HTMLElement {
+      return document.getElementById(id) as HTMLElement;
+    }
+
+    function inp(id: string): HTMLInputElement {
+      return document.getElementById(id) as HTMLInputElement;
+    }
+
+    function btn(id: string): HTMLButtonElement {
+      return document.getElementById(id) as HTMLButtonElement;
+    }
+
+    function errMsg(e: unknown): string {
+      return e instanceof Error ? e.message : 'An unexpected error occurred.';
+    }
+
     // ── Always init password toggles — must run before any early return ──
-    function initPasswordToggles() {
-      document.querySelectorAll('.pw-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const input = document.getElementById(btn.dataset.toggle);
+    function initPasswordToggles(): void {
+      document.querySelectorAll<HTMLElement>('.pw-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const input = document.getElementById(toggle.dataset.toggle ?? '') as HTMLInputElement | null;
           if (!input) return;
           const isPassword = input.type === 'password';
           input.type = isPassword ? 'text' : 'password';
-          btn.querySelector('.eye-show')?.classList.toggle('hidden', isPassword);
-          btn.querySelector('.eye-hide')?.classList.toggle('hidden', !isPassword);
+          toggle.querySelector('.eye-show')?.classList.toggle('hidden', isPassword);
+          toggle.querySelector('.eye-hide')?.classList.toggle('hidden', !isPassword);
         });
       });
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       // Render Lucide icons and wire up toggles first — before any early return
-      if (window.lucide) window.lucide.createIcons();
+      const w = window as Window & { lucide?: { createIcons(): void } };
+      w.lucide?.createIcons();
       initPasswordToggles();
 
       const inviteToken   = getHashToken('invite_token');
@@ -182,22 +208,22 @@ import Layout from '../layouts/Layout.astro';
       // ── Invite flow ──
       if (inviteToken) {
         history.replaceState(null, '', window.location.pathname);
-        document.getElementById('setpw-heading').textContent = 'Set your password';
-        document.getElementById('setpw-sub').textContent = 'Welcome! Choose a password to activate your account.';
+        el('setpw-heading').textContent = 'Set your password';
+        el('setpw-sub').textContent = 'Welcome! Choose a password to activate your account.';
         showView('view-setpassword');
 
-        document.getElementById('setpw-btn')?.addEventListener('click', async () => {
-          const pw  = document.getElementById('f-newpassword').value;
-          const pw2 = document.getElementById('f-confirmpassword').value;
-          const err = document.getElementById('setpw-error');
+        btn('setpw-btn')?.addEventListener('click', async () => {
+          const pw  = inp('f-newpassword').value;
+          const pw2 = inp('f-confirmpassword').value;
+          const err = el('setpw-error');
           err.classList.add('hidden');
 
-          if (pw.length < 8)    { err.textContent = 'Password must be at least 8 characters.'; err.classList.remove('hidden'); return; }
-          if (pw !== pw2)       { err.textContent = 'Passwords do not match.'; err.classList.remove('hidden'); return; }
+          if (pw.length < 8) { err.textContent = 'Password must be at least 8 characters.'; err.classList.remove('hidden'); return; }
+          if (pw !== pw2)    { err.textContent = 'Passwords do not match.'; err.classList.remove('hidden'); return; }
 
-          document.getElementById('setpw-text').classList.add('hidden');
-          document.getElementById('setpw-loading').classList.remove('hidden');
-          document.getElementById('setpw-btn').disabled = true;
+          el('setpw-text').classList.add('hidden');
+          el('setpw-loading').classList.remove('hidden');
+          btn('setpw-btn').disabled = true;
 
           try {
             const resp = await fetch(`${IDENTITY}/verify`, {
@@ -206,18 +232,18 @@ import Layout from '../layouts/Layout.astro';
               body: JSON.stringify({ type: 'signup', token: inviteToken, password: pw })
             });
             if (!resp.ok) {
-              const errBody = await resp.json().catch(() => ({}));
+              const errBody = await resp.json().catch(() => ({})) as Record<string, string>;
               throw new Error(errBody.msg || errBody.error_description || 'Invite link expired or already used. Please contact us for a new invite.');
             }
-            const data = await resp.json();
-            saveSession(data, data.token || data);
+            const data = await resp.json() as GoTrueUser & { token?: GoTrueToken };
+            saveSession(data, (data.token ?? data) as GoTrueToken);
             window.location.href = '/order';
           } catch (e) {
-            err.textContent = e.message;
+            err.textContent = errMsg(e);
             err.classList.remove('hidden');
-            document.getElementById('setpw-text').classList.remove('hidden');
-            document.getElementById('setpw-loading').classList.add('hidden');
-            document.getElementById('setpw-btn').disabled = false;
+            el('setpw-text').classList.remove('hidden');
+            el('setpw-loading').classList.add('hidden');
+            btn('setpw-btn').disabled = false;
           }
         });
         return;
@@ -226,22 +252,22 @@ import Layout from '../layouts/Layout.astro';
       // ── Recovery flow ──
       if (recoveryToken) {
         history.replaceState(null, '', window.location.pathname);
-        document.getElementById('setpw-heading').textContent = 'Choose a new password';
-        document.getElementById('setpw-sub').textContent = 'Enter a new password for your account.';
+        el('setpw-heading').textContent = 'Choose a new password';
+        el('setpw-sub').textContent = 'Enter a new password for your account.';
         showView('view-setpassword');
 
-        document.getElementById('setpw-btn')?.addEventListener('click', async () => {
-          const pw  = document.getElementById('f-newpassword').value;
-          const pw2 = document.getElementById('f-confirmpassword').value;
-          const err = document.getElementById('setpw-error');
+        btn('setpw-btn')?.addEventListener('click', async () => {
+          const pw  = inp('f-newpassword').value;
+          const pw2 = inp('f-confirmpassword').value;
+          const err = el('setpw-error');
           err.classList.add('hidden');
 
           if (pw.length < 8) { err.textContent = 'Password must be at least 8 characters.'; err.classList.remove('hidden'); return; }
           if (pw !== pw2)    { err.textContent = 'Passwords do not match.'; err.classList.remove('hidden'); return; }
 
-          document.getElementById('setpw-text').classList.add('hidden');
-          document.getElementById('setpw-loading').classList.remove('hidden');
-          document.getElementById('setpw-btn').disabled = true;
+          el('setpw-text').classList.add('hidden');
+          el('setpw-loading').classList.remove('hidden');
+          btn('setpw-btn').disabled = true;
 
           try {
             const resp = await fetch(`${IDENTITY}/verify`, {
@@ -250,18 +276,18 @@ import Layout from '../layouts/Layout.astro';
               body: JSON.stringify({ type: 'recovery', token: recoveryToken, password: pw })
             });
             if (!resp.ok) {
-              const errBody = await resp.json().catch(() => ({}));
+              const errBody = await resp.json().catch(() => ({})) as Record<string, string>;
               throw new Error(errBody.msg || errBody.error_description || 'Reset link expired or already used. Please request a new one.');
             }
-            const data = await resp.json();
-            saveSession(data, data.token || data);
+            const data = await resp.json() as GoTrueUser & { token?: GoTrueToken };
+            saveSession(data, (data.token ?? data) as GoTrueToken);
             window.location.href = '/order';
           } catch (e) {
-            err.textContent = e.message;
+            err.textContent = errMsg(e);
             err.classList.remove('hidden');
-            document.getElementById('setpw-text').classList.remove('hidden');
-            document.getElementById('setpw-loading').classList.add('hidden');
-            document.getElementById('setpw-btn').disabled = false;
+            el('setpw-text').classList.remove('hidden');
+            el('setpw-loading').classList.add('hidden');
+            btn('setpw-btn').disabled = false;
           }
         });
         return;
@@ -270,7 +296,7 @@ import Layout from '../layouts/Layout.astro';
       // ── Already logged in ──
       const session = getSession();
       if (session?.email) {
-        document.getElementById('user-email').textContent = session.email;
+        el('user-email').textContent = session.email;
         showView('view-loggedin');
         document.getElementById('logout-btn')?.addEventListener('click', () => {
           localStorage.removeItem('gotrue.user');
@@ -283,16 +309,16 @@ import Layout from '../layouts/Layout.astro';
       showView('view-login');
 
       document.getElementById('login-btn')?.addEventListener('click', async () => {
-        const email    = document.getElementById('f-email').value.trim();
-        const password = document.getElementById('f-password').value;
-        const err      = document.getElementById('login-error');
+        const email    = inp('f-email').value.trim();
+        const password = inp('f-password').value;
+        const err      = el('login-error');
         err.classList.add('hidden');
 
         if (!email || !password) { err.textContent = 'Please enter your email and password.'; err.classList.remove('hidden'); return; }
 
-        document.getElementById('btn-text').classList.add('hidden');
-        document.getElementById('btn-loading').classList.remove('hidden');
-        document.getElementById('login-btn').disabled = true;
+        el('btn-text').classList.add('hidden');
+        el('btn-loading').classList.remove('hidden');
+        btn('login-btn').disabled = true;
 
         try {
           const resp = await fetch(`${IDENTITY}/token`, {
@@ -300,26 +326,26 @@ import Layout from '../layouts/Layout.astro';
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({ grant_type: 'password', username: email, password })
           });
-          if (!resp.ok) throw new Error((await resp.json()).error_description || 'Invalid email or password.');
-          const token = await resp.json();
+          if (!resp.ok) throw new Error(((await resp.json() as Record<string, string>).error_description) || 'Invalid email or password.');
+          const token = await resp.json() as GoTrueToken;
 
           const userResp = await fetch(`${IDENTITY}/user`, {
             headers: { Authorization: `Bearer ${token.access_token}` }
           });
-          const user = await userResp.json();
+          const user = await userResp.json() as GoTrueUser;
           saveSession(user, token);
           window.location.href = '/order';
         } catch (e) {
-          err.textContent = e.message;
+          err.textContent = errMsg(e);
           err.classList.remove('hidden');
-          document.getElementById('btn-text').classList.remove('hidden');
-          document.getElementById('btn-loading').classList.add('hidden');
-          document.getElementById('login-btn').disabled = false;
+          el('btn-text').classList.remove('hidden');
+          el('btn-loading').classList.add('hidden');
+          btn('login-btn').disabled = false;
         }
       });
 
       // Enter key support
-      document.getElementById('f-password')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+      document.getElementById('f-password')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn')?.click(); });
       document.getElementById('f-email')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('f-password')?.focus(); });
 
       // ── Forgot password ──
@@ -327,9 +353,9 @@ import Layout from '../layouts/Layout.astro';
       document.getElementById('back-to-login')?.addEventListener('click', () => showView('view-login'));
 
       document.getElementById('recover-btn')?.addEventListener('click', async () => {
-        const email   = document.getElementById('f-recover-email').value.trim();
-        const err     = document.getElementById('forgot-error');
-        const success = document.getElementById('forgot-success');
+        const email   = inp('f-recover-email').value.trim();
+        const err     = el('forgot-error');
+        const success = el('forgot-success');
         err.classList.add('hidden');
         success.classList.add('hidden');
 

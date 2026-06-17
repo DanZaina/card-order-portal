@@ -3,30 +3,23 @@
   Midland Honda — live-preview card template
   viewBox: 252 × 144 (3.5" × 2" @ 72 dpi)
   Text elements use IDs; JS swaps content on form input.
-  Font stack renders Helvetica on macOS, Arial on Windows.
+  Contact order: e / t / c  |  Address right-aligned.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 252 144">
   <defs>
     <style>
-      .ct { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; fill: #262626; }
-      .ct-name  { font-size: 8px;   font-weight: bold; letter-spacing: -0.01em; }
+      .ct       { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; fill: #262626; }
+      .ct-name  { font-size: 9px;   font-weight: bold; letter-spacing: -0.01em; }
       .ct-title { font-size: 5.2px; letter-spacing: 0.02em; }
-      .ct-info  { font-size: 4.2px; }
-      .ct-label { font-size: 3.6px; fill: #888; }
+      .ct-info  { font-size: 4.5px; }
     </style>
-    <!-- Honda logo gradients (all black — original file used linear gradients that resolve to #000) -->
-    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#000"/>
-      <stop offset="1" stop-color="#000"/>
-    </linearGradient>
   </defs>
 
   <!-- Background -->
   <rect width="252" height="144" fill="#fff"/>
 
-  <!-- ── Honda logo (original Illustrator paths, preserved exactly) ── -->
+  <!-- ── Honda logo ── -->
   <g id="honda-logo">
-    <!-- Honda H badge -->
     <path fill="#ed1c24" d="M31.99,15.97l-18.49,24.53h8.37l14.94-19.85,9.3-.05-13.96,19.91h7.44l14.37-19.91h7.07s3.59-.05,1.93,2.52c-1.92,2.98-12.49,17.39-12.49,17.39h8.07l13.89-19s4.38-5.54-4.49-5.54H31.99Z"/>
     <polygon fill="#000" points="76.8 22.47 70.65 30.82 74.55 30.82 80.76 22.47 76.8 22.47"/>
     <polygon fill="#000" points="103.02 18.99 94.29 30.82 98.31 30.82 106.76 18.99 103.02 18.99"/>
@@ -48,17 +41,17 @@
   <!-- ── Live text layer ── -->
   <g id="card-text">
     <!-- Name & Title (above rule) -->
-    <text id="svg-name"  class="ct ct-name"  x="14" y="79">Name Here</text>
-    <text id="svg-title" class="ct ct-title" x="14" y="89">Title Here</text>
+    <text id="svg-name"  class="ct ct-name"  x="14" y="79">First Last Name</text>
+    <text id="svg-title" class="ct ct-title" x="14" y="89">Enter Title</text>
 
-    <!-- Contact info (below rule) — left column -->
-    <text id="svg-phone" class="ct ct-info" x="14" y="104">(705) 526-1344</text>
-    <text id="svg-ext"   class="ct ct-info" x="14" y="111" visibility="hidden"></text>
-    <text id="svg-email" class="ct ct-info" x="14" y="118">email@midlandhonda.com</text>
-    <text id="svg-cell"  class="ct ct-info" x="14" y="125" visibility="hidden"></text>
+    <!-- Left column: e / t / c (all aligned at same top, ordered: email → tel → cell) -->
+    <text id="svg-email" class="ct ct-info" x="14" y="107">e : email@midlandhonda.com</text>
+    <text id="svg-phone" class="ct ct-info" x="14" y="115">t : (705) 526-1344</text>
+    <text id="svg-cell"  class="ct ct-info" x="14" y="123" visibility="hidden"></text>
 
-    <!-- Contact info — right column -->
-    <text id="svg-addr1" class="ct ct-info" x="133" y="104">947 Jones Road</text>
-    <text id="svg-addr2" class="ct ct-info" x="133" y="111">Midland, ON  L4R 0G1</text>
+    <!-- Right column: static address, right-aligned (matches left col top) -->
+    <text class="ct ct-info" x="238" y="107" text-anchor="end">947 Jones Road</text>
+    <text class="ct ct-info" x="238" y="115" text-anchor="end">Midland, ON</text>
+    <text class="ct ct-info" x="238" y="123" text-anchor="end">L4R 0G1</text>
   </g>
 </svg>

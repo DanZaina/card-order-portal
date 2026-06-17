@@ -65,6 +65,21 @@
       .st14 {
         fill: #262626;
       }
+
+      /* Editable text overlay classes */
+      .ct-name {
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: -0.01em;
+        font-family: Arial, Helvetica, sans-serif;
+        fill: #262626;
+      }
+
+      .ct-info {
+        font-size: 6.5px;
+        font-family: Arial, Helvetica, sans-serif;
+        fill: #262626;
+      }
     </style>
     <linearGradient id="linear-gradient" x1="57.15" y1="103.39" x2="67.26" y2="103.39" gradientTransform="translate(0 114.06) scale(1 -1)" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#000"/>
@@ -228,6 +243,18 @@
         <path d="M221.84,102.85v-.47c.44-.04.75-.12.93-.22s.31-.34.39-.72h.49v4.87h-.66v-3.47h-1.15Z"/>
       </g>
       <line class="st13" y1="78.21" x2="224.58" y2="78.21"/>
+
+      <!-- Editable text overlay — populated by JS via svgSet() -->
+      <!-- White masks over the placeholder vector-path text -->
+      <rect x="0" y="48" width="165" height="30" fill="white" opacity="0.95"/>
+      <rect x="0" y="78.5" width="155" height="30" fill="white" opacity="0.95"/>
+      <!-- Name & title (above separator line) -->
+      <text id="svg-name"  class="ct-name" x="3" y="59">First Last Name</text>
+      <text id="svg-title" class="ct-info" x="3" y="68.5">Enter Title</text>
+      <!-- Contact info (below separator line) -->
+      <text id="svg-phone" class="ct-info" x="3" y="84.5"></text>
+      <text id="svg-email" class="ct-info" x="3" y="90.5"></text>
+      <text id="svg-cell"  class="ct-info" x="3" y="96.5"></text>
     </g>
     <g>
       <path class="st12" d="M18.49,0L0,24.53h8.37L23.31,4.68l9.3-.05-13.96,19.91h7.44l14.37-19.91h7.07s3.59-.05,1.93,2.52c-1.92,2.98-12.49,17.39-12.49,17.39h8.07l13.89-19S63.31,0,54.44,0C54.44,0,18.49,0,18.49,0Z"/>

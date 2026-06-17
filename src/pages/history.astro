@@ -1,0 +1,466 @@
+---
+import Layout from '../layouts/Layout.astro';
+import clients from '../data/clients.json';
+const clientsJson = JSON.stringify(clients);
+---
+<Layout title="Order History — Card Order Portal">
+  <script id="client-data" type="application/json" set:html={clientsJson}></script>
+
+  <style is:global>
+    :root { --ta: #1e293b; --ta-h: #0f172a; --sidebar-bg: #1e293b; }
+    #user-avatar  { background-color: var(--ta) !important; }
+    #sidebar, #mobile-sidebar-panel { background-color: var(--sidebar-bg); }
+    #mobile-topbar { background-color: var(--sidebar-bg); }
+    .sidebar-nav-active { background-color: rgba(255,255,255,0.12) !important; }
+    .sidebar-nav-item:hover { background-color: rgba(255,255,255,0.08); }
+    button svg, a svg { display: block; }
+    select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+  </style>
+
+  <div class="flex h-screen overflow-hidden bg-gray-50">
+
+    <!-- ── Sidebar (desktop) ── -->
+    <div class="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 z-30">
+      <div id="sidebar" class="flex grow flex-col overflow-y-auto pb-4">
+        <div class="flex h-16 shrink-0 items-center px-6">
+          <img src="/logo-landscape-white.png" alt="ION Professional Printing" class="h-7 object-contain" />
+        </div>
+        <nav class="flex flex-1 flex-col px-6">
+          <ul role="list" class="flex flex-1 flex-col gap-y-7">
+            <li>
+              <ul role="list" class="-mx-2 space-y-1">
+                <li>
+                  <a href="/order"
+                    class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
+                    <i data-lucide="credit-card" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
+                    Order Cards
+                  </a>
+                </li>
+                <li>
+                  <a href="/history"
+                    class="sidebar-nav-item sidebar-nav-active group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white">
+                    <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white"></i>
+                    Order History
+                  </a>
+                </li>
+                <li>
+                  <button type="button" id="nav-edit-btn"
+                    class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
+                    <i data-lucide="user-pen" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
+                    Edit My Details
+                  </button>
+                </li>
+              </ul>
+            </li>
+            <li class="-mx-6 mt-auto border-t border-white/10 pt-1">
+              <div class="flex items-center gap-x-3 px-6 py-3">
+                <div id="user-avatar"
+                  class="w-9 h-9 rounded-full text-white flex items-center justify-center text-xs font-bold shrink-0 select-none">
+                  <span id="user-initials">?</span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p id="dd-name" class="text-sm font-semibold text-white truncate"></p>
+                  <p id="dd-email" class="text-xs text-white/50 truncate"></p>
+                </div>
+              </div>
+              <button id="nav-logout"
+                class="sidebar-nav-item w-full flex items-center gap-x-3 px-6 py-2.5 text-sm font-semibold text-white/70 hover:text-white transition-colors">
+                <i data-lucide="log-out" class="w-5 h-5 shrink-0"></i>
+                Sign out
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ── Mobile top bar ── -->
+    <div id="mobile-topbar" class="lg:hidden fixed top-0 left-0 right-0 z-20 flex items-center gap-x-4 px-4 py-3 shadow-sm">
+      <button id="mobile-menu-btn" type="button" class="text-white">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+      <img src="/logo-landscape-white.png" alt="ION" class="h-7 object-contain" />
+    </div>
+
+    <!-- ── Mobile sidebar overlay ── -->
+    <div id="mobile-sidebar-overlay" class="hidden fixed inset-0 z-40 lg:hidden">
+      <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900/80"></div>
+      <div id="mobile-sidebar-panel" class="fixed inset-y-0 left-0 flex w-64 flex-col">
+        <div class="flex grow flex-col overflow-y-auto pb-4">
+          <div class="flex h-16 shrink-0 items-center justify-between px-6">
+            <img src="/logo-landscape-white.png" class="h-7 object-contain" />
+            <button id="mobile-sidebar-close" type="button" class="text-white/70 hover:text-white">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+          <nav class="flex flex-col px-6 gap-y-1">
+            <a href="/order"
+              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
+              <i data-lucide="credit-card" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
+              Order Cards
+            </a>
+            <a href="/history"
+              class="sidebar-nav-item sidebar-nav-active group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white">
+              <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white"></i>
+              Order History
+            </a>
+            <button type="button" id="mobile-nav-edit-btn"
+              class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
+              <i data-lucide="user-pen" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
+              Edit My Details
+            </button>
+            <button type="button" id="mobile-nav-logout"
+              class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
+              <i data-lucide="log-out" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
+              Sign out
+            </button>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Main content ── -->
+    <div class="flex flex-1 flex-col lg:pl-64">
+      <main class="flex-1 overflow-y-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-16 lg:pt-10">
+
+          <!-- Header -->
+          <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">Order History</h1>
+              <p class="text-gray-400 mt-1 text-sm">All previously submitted card orders</p>
+            </div>
+            <a href="/order"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
+              style="background-color: var(--ta);">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              New Order
+            </a>
+          </div>
+
+          <!-- Loading state -->
+          <div id="history-loading" class="flex items-center justify-center py-20">
+            <div class="text-gray-400 text-sm">Loading…</div>
+          </div>
+
+          <!-- Empty state -->
+          <div id="history-empty" class="hidden flex flex-col items-center justify-center py-20">
+            <i data-lucide="inbox" class="w-10 h-10 text-gray-300 mb-4"></i>
+            <p class="text-gray-500 font-medium">No orders yet</p>
+            <p class="text-gray-400 text-sm mt-1">Orders you submit will appear here</p>
+            <a href="/order" class="mt-6 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors"
+              style="background-color: var(--ta);">
+              Place your first order
+            </a>
+          </div>
+
+          <!-- Order list -->
+          <div id="history-container" class="hidden space-y-4">
+
+            <!-- Stats row -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+              <div class="bg-white rounded-2xl border border-gray-200 p-5">
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Total Orders</p>
+                <p id="stat-total" class="mt-1 text-2xl font-bold text-gray-900">0</p>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-200 p-5">
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Latest Order</p>
+                <p id="stat-latest" class="mt-1 text-sm font-semibold text-gray-900 leading-tight">—</p>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-200 p-5 hidden sm:block">
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Total Cards</p>
+                <p id="stat-cards" class="mt-1 text-2xl font-bold text-gray-900">0</p>
+              </div>
+            </div>
+
+            <!-- Table card -->
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-100">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+                      <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Title</th>
+                      <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Date</th>
+                      <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Qty</th>
+                      <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-tbody" class="divide-y divide-gray-100 bg-white">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Pagination -->
+            <div id="pagination" class="hidden flex items-center justify-between px-1 py-2">
+              <p id="page-info" class="text-sm text-gray-500"></p>
+              <div class="flex gap-2">
+                <button id="page-prev" type="button"
+                  class="px-4 py-2 text-sm font-medium rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                  Previous
+                </button>
+                <button id="page-next" type="button"
+                  class="px-4 py-2 text-sm font-medium rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                  Next
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ── Account modal ── -->
+  <div id="edit-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-y-auto" style="max-height: 90vh;">
+      <div class="flex items-center justify-between px-6 pt-5 pb-4">
+        <h3 class="text-base font-semibold text-gray-900">My Account</h3>
+        <button id="edit-modal-close" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="px-6 pb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5" for="edit-display-name">Display name</label>
+        <input id="edit-display-name" type="text" placeholder="Your name"
+          class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+        <p class="text-xs text-gray-400 mt-1.5">Shown in the portal and on your card</p>
+        <div class="flex gap-3 mt-5">
+          <button id="edit-modal-cancel"
+            class="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+          <button id="edit-modal-save"
+            class="flex-1 py-2.5 px-4 rounded-xl bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium transition-colors">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_SIZE = 25;
+    let currentPage = 0;
+    let currentUser = null;
+
+    const CLIENT_DATA = JSON.parse(document.getElementById('client-data').textContent);
+
+    // ── Theme ──
+    function applyClientTheme(theme) {
+      if (!theme) return;
+      if (theme.accent)    document.documentElement.style.setProperty('--ta',          theme.accent);
+      if (theme.dark)      document.documentElement.style.setProperty('--ta-h',        theme.dark);
+      if (theme.sidebarBg) document.documentElement.style.setProperty('--sidebar-bg',  theme.sidebarBg);
+    }
+
+    // ── Auth ──
+    function getInitials(name, email) {
+      if (name && name.trim())
+        return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+      return (email || '?')[0].toUpperCase();
+    }
+
+    function initUser(user) {
+      if (!user) { window.location.href = '/'; return; }
+      currentUser = user;
+      const data = CLIENT_DATA[user.email] || {};
+      const savedName   = localStorage.getItem('portal.displayName');
+      const displayName = savedName || data.full_name || user.user_metadata?.full_name || '';
+
+      const initials = getInitials(displayName, user.email);
+      document.getElementById('user-initials').textContent  = initials;
+      document.getElementById('dd-name').textContent        = displayName || user.email || '';
+      document.getElementById('dd-email').textContent       = user.email;
+
+      if (data.theme) applyClientTheme(data.theme);
+    }
+
+    function getUserFromStorage() {
+      try { return JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch { return null; }
+    }
+
+    // ── Order data ──
+    function getOrders() {
+      try { return JSON.parse(localStorage.getItem('portal.orders') || '[]'); } catch { return []; }
+    }
+
+    function deleteOrder(id) {
+      const orders = getOrders().filter(o => o.id !== id);
+      localStorage.setItem('portal.orders', JSON.stringify(orders));
+    }
+
+    // ── Reorder: save draft, navigate to order page ──
+    function reorder(order) {
+      localStorage.setItem('portal.draftOrder', JSON.stringify(order));
+      window.location.href = '/order';
+    }
+
+    // ── Stats ──
+    function updateStats(orders) {
+      document.getElementById('stat-total').textContent = orders.length;
+      const latest = orders[0];
+      document.getElementById('stat-latest').textContent = latest
+        ? (latest.name || 'Unnamed') + (latest.date ? `\n${latest.date}` : '')
+        : '—';
+      const totalCards = orders.reduce((sum, o) => sum + Number(o.quantity || 0), 0);
+      document.getElementById('stat-cards').textContent = totalCards.toLocaleString();
+    }
+
+    // ── Render page ──
+    function renderPage() {
+      const orders    = getOrders();
+      const total     = orders.length;
+      const totalPages = Math.ceil(total / PAGE_SIZE);
+      const start     = currentPage * PAGE_SIZE;
+      const pageOrders = orders.slice(start, start + PAGE_SIZE);
+
+      const tbody = document.getElementById('history-tbody');
+      tbody.innerHTML = '';
+
+      pageOrders.forEach(order => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50 transition-colors';
+        tr.innerHTML = `
+          <td class="px-6 py-4">
+            <p class="text-sm font-medium text-gray-900 truncate max-w-[160px]">${order.name || 'Unnamed'}</p>
+            ${order.company ? `<p class="text-xs text-gray-400 truncate max-w-[160px]">${order.company}</p>` : ''}
+          </td>
+          <td class="px-6 py-4 hidden sm:table-cell">
+            <p class="text-sm text-gray-600 truncate max-w-[140px]">${order.title || '—'}</p>
+          </td>
+          <td class="px-6 py-4 hidden md:table-cell">
+            <p class="text-sm text-gray-500">${order.date || '—'}</p>
+          </td>
+          <td class="px-6 py-4 hidden lg:table-cell">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+              ${Number(order.quantity || 500).toLocaleString()}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button data-reorder="${order.id}" type="button"
+                class="text-xs font-medium px-3 py-1.5 rounded-lg text-white transition-colors"
+                style="background-color: var(--ta);">
+                Reorder
+              </button>
+              <button data-delete="${order.id}" type="button"
+                class="text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors">
+                Delete
+              </button>
+            </div>
+          </td>`;
+
+        tr.querySelector(`[data-reorder]`)?.addEventListener('click', () => reorder(order));
+        tr.querySelector(`[data-delete]`)?.addEventListener('click', () => {
+          if (confirm(`Delete order for ${order.name || 'this person'}?`)) {
+            deleteOrder(order.id);
+            renderPage();
+            updateStats(getOrders());
+          }
+        });
+
+        tbody.appendChild(tr);
+      });
+
+      // Pagination
+      const paginationEl = document.getElementById('pagination');
+      const prevBtn      = document.getElementById('page-prev');
+      const nextBtn      = document.getElementById('page-next');
+      const pageInfo     = document.getElementById('page-info');
+
+      if (totalPages > 1) {
+        paginationEl?.classList.remove('hidden');
+        const from = start + 1;
+        const to   = Math.min(start + PAGE_SIZE, total);
+        if (pageInfo) pageInfo.textContent = `Showing ${from}–${to} of ${total} orders`;
+        if (prevBtn) (prevBtn as HTMLButtonElement).disabled = currentPage === 0;
+        if (nextBtn) (nextBtn as HTMLButtonElement).disabled = currentPage >= totalPages - 1;
+      } else {
+        paginationEl?.classList.add('hidden');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) window.lucide.createIcons();
+
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', (user) => initUser(user || getUserFromStorage()));
+      } else {
+        initUser(getUserFromStorage());
+      }
+
+      // Mobile sidebar
+      const mobileOverlay     = document.getElementById('mobile-sidebar-overlay');
+      const openMobileSidebar  = () => mobileOverlay?.classList.remove('hidden');
+      const closeMobileSidebar = () => mobileOverlay?.classList.add('hidden');
+      document.getElementById('mobile-menu-btn')?.addEventListener('click', openMobileSidebar);
+      document.getElementById('mobile-sidebar-close')?.addEventListener('click', closeMobileSidebar);
+      document.getElementById('sidebar-backdrop')?.addEventListener('click', closeMobileSidebar);
+
+      // Account modal
+      const editModal = document.getElementById('edit-modal');
+      const openEditModal = () => {
+        closeMobileSidebar();
+        const saved = localStorage.getItem('portal.displayName')
+          || (currentUser ? (CLIENT_DATA[currentUser.email]?.full_name || '') : '');
+        (document.getElementById('edit-display-name') as HTMLInputElement).value = saved;
+        editModal?.classList.remove('hidden');
+        setTimeout(() => document.getElementById('edit-display-name')?.focus(), 50);
+      };
+      const closeModal = () => editModal?.classList.add('hidden');
+      document.getElementById('nav-edit-btn')?.addEventListener('click', openEditModal);
+      document.getElementById('mobile-nav-edit-btn')?.addEventListener('click', openEditModal);
+      document.getElementById('edit-modal-close')?.addEventListener('click', closeModal);
+      document.getElementById('edit-modal-cancel')?.addEventListener('click', closeModal);
+      editModal?.addEventListener('click', (e) => { if (e.target === editModal) closeModal(); });
+      document.getElementById('edit-modal-save')?.addEventListener('click', () => {
+        const name = (document.getElementById('edit-display-name') as HTMLInputElement).value.trim();
+        if (name) {
+          localStorage.setItem('portal.displayName', name);
+          document.getElementById('dd-name').textContent = name;
+          document.getElementById('user-initials').textContent =
+            name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+        }
+        closeModal();
+      });
+      document.getElementById('edit-display-name')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('edit-modal-save')?.click();
+        if (e.key === 'Escape') closeModal();
+      });
+
+      // Logout
+      const doLogout = () => {
+        localStorage.removeItem('gotrue.user');
+        localStorage.removeItem('portal.displayName');
+        window.netlifyIdentity?.logout();
+        window.location.href = '/';
+      };
+      document.getElementById('nav-logout')?.addEventListener('click', doLogout);
+      document.getElementById('mobile-nav-logout')?.addEventListener('click', doLogout);
+
+      // Pagination controls
+      document.getElementById('page-prev')?.addEventListener('click', () => {
+        if (currentPage > 0) { currentPage--; renderPage(); }
+      });
+      document.getElementById('page-next')?.addEventListener('click', () => {
+        const total = getOrders().length;
+        if ((currentPage + 1) * PAGE_SIZE < total) { currentPage++; renderPage(); }
+      });
+
+      // Load orders
+      const orders = getOrders();
+      document.getElementById('history-loading')?.classList.add('hidden');
+
+      if (orders.length === 0) {
+        document.getElementById('history-empty')?.classList.remove('hidden');
+      } else {
+        document.getElementById('history-container')?.classList.remove('hidden');
+        updateStats(orders);
+        renderPage();
+      }
+    });
+  </script>
+</Layout>

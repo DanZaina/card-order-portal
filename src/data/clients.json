@@ -1,6 +1,6 @@
 {
   "danzaina89@gmail.com": {
-    "full_name": "Midland Honda",
+    "full_name": "Full Name",
     "job_title": "Title Here",
     "company": "Midland Honda",
     "email": "employee@midlandhonda.com",
@@ -10,6 +10,11 @@
     "address": "947 Jones Road, Midland, ON L4R 0G1",
     "fields": ["name", "title", "email", "extension", "cell"],
     "locked": ["phone", "address"],
-    "card_template": "/cards/midland-honda.svg"
+    "card_template": "/cards/midland-honda.svg",
+    "theme": {
+      "sidebarBg": "#111827",
+      "accent": "#dc2626",
+      "dark": "#b91c1c"
+    }
   }
 }

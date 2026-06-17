@@ -10,13 +10,10 @@ import Layout from '../layouts/Layout.astro';
         <img src="/leaf.svg" alt="" class="w-10 h-10 mx-auto" />
       </div>
 
-      <!-- Heading -->
-      <h1 class="text-2xl font-bold text-gray-900 text-center mb-8">Login to Card Portal</h1>
+      <!-- ── Standard login ── -->
+      <div id="view-login">
+        <h1 class="text-2xl font-bold text-gray-900 text-center mb-8">Login to Card Portal</h1>
 
-      <!-- Auth states -->
-      <div id="login-form-section">
-
-        <!-- Email field -->
         <div class="mb-5">
           <label class="block text-sm font-medium text-gray-700 mb-1" for="f-email">Email</label>
           <div class="relative">
@@ -25,16 +22,11 @@ import Layout from '../layouts/Layout.astro';
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
               </svg>
             </span>
-            <input
-              id="f-email"
-              type="email"
-              placeholder="Please enter your email"
-              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition"
-            />
+            <input id="f-email" type="email" placeholder="Please enter your email"
+              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition" />
           </div>
         </div>
 
-        <!-- Password field -->
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700 mb-1" for="f-password">Password</label>
           <div class="relative">
@@ -43,176 +35,283 @@ import Layout from '../layouts/Layout.astro';
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
               </svg>
             </span>
-            <input
-              id="f-password"
-              type="password"
-              placeholder="Please enter your password"
-              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition"
-            />
+            <input id="f-password" type="password" placeholder="Please enter your password"
+              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition" />
           </div>
         </div>
 
-        <!-- Forgot password -->
         <div class="text-right mb-6">
-          <button id="forgot-btn" class="text-sm text-sky-500 hover:text-sky-700 transition-colors">
-            Forgot Password?
-          </button>
+          <button id="forgot-btn" class="text-sm text-sky-500 hover:text-sky-700 transition-colors">Forgot Password?</button>
         </div>
 
-        <!-- Error message -->
         <div id="login-error" class="hidden mb-4 text-sm text-red-600 bg-red-50 rounded-xl px-4 py-3 text-center"></div>
 
-        <!-- Sign in button -->
-        <button
-          id="login-btn"
-          class="w-full py-3 px-6 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-        >
+        <button id="login-btn" class="w-full py-3 px-6 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl transition-colors duration-200">
           <span id="btn-text">Sign in</span>
           <span id="btn-loading" class="hidden">Signing in…</span>
         </button>
 
-        <!-- Contact note -->
         <p class="text-center text-sm text-gray-500 mt-6">
           New here? <span class="font-medium text-sky-500">Contact us for access.</span>
         </p>
       </div>
 
-      <!-- Logged-in state -->
-      <div id="logged-in-section" class="hidden text-center">
-        <div class="flex items-center justify-center gap-2 text-sky-600 mb-3">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-          </svg>
-          <span class="font-medium text-sm">You're signed in</span>
-        </div>
-        <p id="user-email" class="text-gray-400 text-sm mb-6"></p>
+      <!-- ── Already logged in ── -->
+      <div id="view-loggedin" class="hidden text-center">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Welcome back</h1>
+        <p id="user-email" class="text-gray-400 text-sm mb-8"></p>
         <a href="/order" class="block w-full py-3 px-6 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl text-center transition-colors duration-200 mb-3">
           Go to Order Form →
         </a>
-        <button id="logout-btn" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">
-          Sign out
+        <button id="logout-btn" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">Sign out</button>
+      </div>
+
+      <!-- ── Set password (invite or recovery) ── -->
+      <div id="view-setpassword" class="hidden">
+        <h1 id="setpw-heading" class="text-2xl font-bold text-gray-900 text-center mb-2">Set your password</h1>
+        <p id="setpw-sub" class="text-gray-400 text-sm text-center mb-8">Choose a password to complete your account setup.</p>
+
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="f-newpassword">New Password</label>
+          <input id="f-newpassword" type="password" placeholder="At least 8 characters"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition" />
+        </div>
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="f-confirmpassword">Confirm Password</label>
+          <input id="f-confirmpassword" type="password" placeholder="Repeat your password"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition" />
+        </div>
+
+        <div id="setpw-error" class="hidden mb-4 text-sm text-red-600 bg-red-50 rounded-xl px-4 py-3 text-center"></div>
+
+        <button id="setpw-btn" class="w-full py-3 px-6 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl transition-colors duration-200">
+          <span id="setpw-text">Set Password & Sign In</span>
+          <span id="setpw-loading" class="hidden">Please wait…</span>
         </button>
+      </div>
+
+      <!-- ── Forgot password (request email) ── -->
+      <div id="view-forgot" class="hidden">
+        <h1 class="text-2xl font-bold text-gray-900 text-center mb-2">Reset Password</h1>
+        <p class="text-gray-400 text-sm text-center mb-8">Enter your email and we'll send a reset link.</p>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="f-recover-email">Email</label>
+          <input id="f-recover-email" type="email" placeholder="your@email.com"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition" />
+        </div>
+
+        <div id="forgot-error" class="hidden mb-4 text-sm text-red-600 bg-red-50 rounded-xl px-4 py-3 text-center"></div>
+        <div id="forgot-success" class="hidden mb-4 text-sm text-green-700 bg-green-50 rounded-xl px-4 py-3 text-center"></div>
+
+        <button id="recover-btn" class="w-full py-3 px-6 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl transition-colors duration-200 mb-3">
+          Send Reset Link
+        </button>
+        <button id="back-to-login" class="w-full text-sm text-gray-400 hover:text-gray-600 transition-colors">← Back to login</button>
       </div>
 
     </div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const loginFormSection  = document.getElementById('login-form-section');
-      const loggedInSection   = document.getElementById('logged-in-section');
-      const userEmailEl       = document.getElementById('user-email');
-      const loginBtn          = document.getElementById('login-btn');
-      const btnText           = document.getElementById('btn-text');
-      const btnLoading        = document.getElementById('btn-loading');
-      const loginError        = document.getElementById('login-error');
-      const forgotBtn         = document.getElementById('forgot-btn');
-      const logoutBtn         = document.getElementById('logout-btn');
+    const IDENTITY = '/.netlify/identity';
 
-      function showError(msg) {
-        loginError.textContent = msg;
-        loginError.classList.remove('hidden');
-      }
+    function getSession() {
+      try { return JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch { return null; }
+    }
 
-      function clearError() {
-        loginError.classList.add('hidden');
-      }
-
-      function showLoggedIn(user) {
-        loginFormSection.classList.add('hidden');
-        loggedInSection.classList.remove('hidden');
-        userEmailEl.textContent = user.email || '';
-      }
-
-      function showLoginForm() {
-        loginFormSection.classList.remove('hidden');
-        loggedInSection.classList.add('hidden');
-      }
-
-      // Check if already logged in via Netlify Identity widget
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on('init', (user) => {
-          if (user) showLoggedIn(user);
-        });
-        window.netlifyIdentity.on('logout', showLoginForm);
-      }
-
-      // Sign in
-      loginBtn?.addEventListener('click', async () => {
-        clearError();
-        const email    = document.getElementById('f-email')?.value.trim();
-        const password = document.getElementById('f-password')?.value;
-
-        if (!email || !password) {
-          showError('Please enter your email and password.');
-          return;
+    function saveSession(user, token) {
+      localStorage.setItem('gotrue.user', JSON.stringify({
+        ...user,
+        token: {
+          access_token:  token.access_token,
+          refresh_token: token.refresh_token,
+          expires_in:    token.expires_in,
+          token_type:    token.token_type,
+          expires_at:    Date.now() + token.expires_in * 1000
         }
+      }));
+    }
 
-        btnText.classList.add('hidden');
-        btnLoading.classList.remove('hidden');
-        loginBtn.disabled = true;
+    function showView(id) {
+      ['view-login','view-loggedin','view-setpassword','view-forgot'].forEach(v => {
+        document.getElementById(v)?.classList.toggle('hidden', v !== id);
+      });
+    }
+
+    // Parse token from URL hash
+    function getHashToken(key) {
+      const hash = window.location.hash.slice(1);
+      const params = new URLSearchParams(hash);
+      return params.get(key);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const inviteToken   = getHashToken('invite_token');
+      const recoveryToken = getHashToken('recovery_token');
+
+      // ── Invite flow ──
+      if (inviteToken) {
+        history.replaceState(null, '', window.location.pathname);
+        document.getElementById('setpw-heading').textContent = 'Set your password';
+        document.getElementById('setpw-sub').textContent = 'Welcome! Choose a password to activate your account.';
+        showView('view-setpassword');
+
+        document.getElementById('setpw-btn')?.addEventListener('click', async () => {
+          const pw  = document.getElementById('f-newpassword').value;
+          const pw2 = document.getElementById('f-confirmpassword').value;
+          const err = document.getElementById('setpw-error');
+          err.classList.add('hidden');
+
+          if (pw.length < 8)    { err.textContent = 'Password must be at least 8 characters.'; err.classList.remove('hidden'); return; }
+          if (pw !== pw2)       { err.textContent = 'Passwords do not match.'; err.classList.remove('hidden'); return; }
+
+          document.getElementById('setpw-text').classList.add('hidden');
+          document.getElementById('setpw-loading').classList.remove('hidden');
+          document.getElementById('setpw-btn').disabled = true;
+
+          try {
+            const resp = await fetch(`${IDENTITY}/verify`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'signup', token: inviteToken, password: pw })
+            });
+            if (!resp.ok) throw new Error((await resp.json()).msg || 'Invite verification failed.');
+            const data = await resp.json();
+            saveSession(data, data.token || data);
+            window.location.href = '/order';
+          } catch (e) {
+            err.textContent = e.message;
+            err.classList.remove('hidden');
+            document.getElementById('setpw-text').classList.remove('hidden');
+            document.getElementById('setpw-loading').classList.add('hidden');
+            document.getElementById('setpw-btn').disabled = false;
+          }
+        });
+        return;
+      }
+
+      // ── Recovery flow ──
+      if (recoveryToken) {
+        history.replaceState(null, '', window.location.pathname);
+        document.getElementById('setpw-heading').textContent = 'Choose a new password';
+        document.getElementById('setpw-sub').textContent = 'Enter a new password for your account.';
+        showView('view-setpassword');
+
+        document.getElementById('setpw-btn')?.addEventListener('click', async () => {
+          const pw  = document.getElementById('f-newpassword').value;
+          const pw2 = document.getElementById('f-confirmpassword').value;
+          const err = document.getElementById('setpw-error');
+          err.classList.add('hidden');
+
+          if (pw.length < 8) { err.textContent = 'Password must be at least 8 characters.'; err.classList.remove('hidden'); return; }
+          if (pw !== pw2)    { err.textContent = 'Passwords do not match.'; err.classList.remove('hidden'); return; }
+
+          document.getElementById('setpw-text').classList.add('hidden');
+          document.getElementById('setpw-loading').classList.remove('hidden');
+          document.getElementById('setpw-btn').disabled = true;
+
+          try {
+            const resp = await fetch(`${IDENTITY}/verify`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'recovery', token: recoveryToken, password: pw })
+            });
+            if (!resp.ok) throw new Error((await resp.json()).msg || 'Reset failed.');
+            const data = await resp.json();
+            saveSession(data, data.token || data);
+            window.location.href = '/order';
+          } catch (e) {
+            err.textContent = e.message;
+            err.classList.remove('hidden');
+            document.getElementById('setpw-text').classList.remove('hidden');
+            document.getElementById('setpw-loading').classList.add('hidden');
+            document.getElementById('setpw-btn').disabled = false;
+          }
+        });
+        return;
+      }
+
+      // ── Already logged in ──
+      const session = getSession();
+      if (session?.email) {
+        document.getElementById('user-email').textContent = session.email;
+        showView('view-loggedin');
+        document.getElementById('logout-btn')?.addEventListener('click', () => {
+          localStorage.removeItem('gotrue.user');
+          showView('view-login');
+        });
+        return;
+      }
+
+      // ── Standard login ──
+      showView('view-login');
+
+      document.getElementById('login-btn')?.addEventListener('click', async () => {
+        const email    = document.getElementById('f-email').value.trim();
+        const password = document.getElementById('f-password').value;
+        const err      = document.getElementById('login-error');
+        err.classList.add('hidden');
+
+        if (!email || !password) { err.textContent = 'Please enter your email and password.'; err.classList.remove('hidden'); return; }
+
+        document.getElementById('btn-text').classList.add('hidden');
+        document.getElementById('btn-loading').classList.remove('hidden');
+        document.getElementById('login-btn').disabled = true;
 
         try {
-          // Call GoTrue token endpoint directly
-          const resp = await fetch('/.netlify/identity/token', {
+          const resp = await fetch(`${IDENTITY}/token`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({ grant_type: 'password', username: email, password })
           });
-
-          if (!resp.ok) {
-            const err = await resp.json().catch(() => ({}));
-            throw new Error(err.error_description || 'Invalid email or password.');
-          }
-
+          if (!resp.ok) throw new Error((await resp.json()).error_description || 'Invalid email or password.');
           const token = await resp.json();
 
-          // Fetch user profile
-          const userResp = await fetch('/.netlify/identity/user', {
+          const userResp = await fetch(`${IDENTITY}/user`, {
             headers: { Authorization: `Bearer ${token.access_token}` }
           });
           const user = await userResp.json();
-
-          // Store session so the Identity widget recognises the user on other pages
-          localStorage.setItem('gotrue.user', JSON.stringify({
-            ...user,
-            token: {
-              access_token:  token.access_token,
-              expires_in:    token.expires_in,
-              refresh_token: token.refresh_token,
-              token_type:    token.token_type,
-              expires_at:    Date.now() + token.expires_in * 1000
-            }
-          }));
-
+          saveSession(user, token);
           window.location.href = '/order';
-
-        } catch (err) {
-          showError(err.message || 'Login failed. Please try again.');
-          btnText.classList.remove('hidden');
-          btnLoading.classList.add('hidden');
-          loginBtn.disabled = false;
+        } catch (e) {
+          err.textContent = e.message;
+          err.classList.remove('hidden');
+          document.getElementById('btn-text').classList.remove('hidden');
+          document.getElementById('btn-loading').classList.add('hidden');
+          document.getElementById('login-btn').disabled = false;
         }
       });
 
-      // Allow Enter key to submit
-      document.getElementById('f-password')?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') loginBtn.click();
-      });
-      document.getElementById('f-email')?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') document.getElementById('f-password')?.focus();
-      });
+      // Enter key support
+      document.getElementById('f-password')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+      document.getElementById('f-email')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('f-password')?.focus(); });
 
-      // Forgot password — open Netlify Identity recovery modal
-      forgotBtn?.addEventListener('click', () => {
-        window.netlifyIdentity?.open('recovery');
-      });
+      // ── Forgot password ──
+      document.getElementById('forgot-btn')?.addEventListener('click', () => showView('view-forgot'));
+      document.getElementById('back-to-login')?.addEventListener('click', () => showView('view-login'));
 
-      // Sign out
-      logoutBtn?.addEventListener('click', () => {
-        localStorage.removeItem('gotrue.user');
-        window.netlifyIdentity?.logout();
-        showLoginForm();
+      document.getElementById('recover-btn')?.addEventListener('click', async () => {
+        const email   = document.getElementById('f-recover-email').value.trim();
+        const err     = document.getElementById('forgot-error');
+        const success = document.getElementById('forgot-success');
+        err.classList.add('hidden');
+        success.classList.add('hidden');
+
+        if (!email) { err.textContent = 'Please enter your email.'; err.classList.remove('hidden'); return; }
+
+        try {
+          await fetch(`${IDENTITY}/recover`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          success.textContent = 'Reset link sent — check your email.';
+          success.classList.remove('hidden');
+        } catch {
+          err.textContent = 'Something went wrong. Please try again.';
+          err.classList.remove('hidden');
+        }
       });
     });
   </script>

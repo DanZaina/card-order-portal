@@ -14,30 +14,8 @@ const { title, description = 'Business Card Order Portal' } = Astro.props;
     <meta name="description" content={description} />
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- Netlify Identity -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body class="min-h-screen">
     <slot />
-    <script>
-      // Netlify Identity — global init + token handling
-      window.addEventListener('load', () => {
-        if (!window.netlifyIdentity) return;
-
-        window.netlifyIdentity.on('init', (user) => {
-          // Auto-open widget if there's a token in the URL hash (invite or recovery)
-          const hash = window.location.hash;
-          if (!user && (hash.includes('invite_token') || hash.includes('recovery_token'))) {
-            window.netlifyIdentity.open();
-          }
-        });
-
-        window.netlifyIdentity.on('login', () => {
-          // After any login (including post-invite/reset), go to order page
-          // Small delay to let the widget close cleanly
-          setTimeout(() => { document.location.href = '/order'; }, 100);
-        });
-      });
-    </script>
   </body>
 </html>

@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Card Order Portal — Login">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+    <div class="w-full max-w-md px-6">
+      <!-- Logo / Brand -->
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 mb-4">
+          <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+          </svg>
+        </div>
+        <h1 class="text-3xl font-bold text-white tracking-tight">Card Order Portal</h1>
+        <p class="mt-2 text-slate-400 text-sm">Sign in to place your business card order</p>
+      </div>
+
+      <!-- Login card -->
+      <div class="bg-white rounded-2xl shadow-2xl p-8">
+        <div id="login-message" class="text-center">
+          <p class="text-gray-500 text-sm mb-6">Click below to sign in with your account</p>
+          <button
+            id="login-btn"
+            class="w-full py-3 px-6 bg-slate-900 hover:bg-slate-700 text-white font-medium rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+          >
+            Sign In
+          </button>
+        </div>
+
+        <div id="logged-in-message" class="hidden text-center">
+          <div class="flex items-center justify-center gap-2 text-green-600 mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="font-medium">You're signed in</span>
+          </div>
+          <p id="user-email" class="text-gray-500 text-sm mb-6"></p>
+          <a
+            href="/order"
+            class="block w-full py-3 px-6 bg-slate-900 hover:bg-slate-700 text-white font-medium rounded-xl text-center transition-colors duration-200"
+          >
+            Go to Order Form →
+          </a>
+          <button
+            id="logout-btn"
+            class="mt-3 w-full py-2 px-6 text-gray-500 hover:text-gray-700 text-sm transition-colors duration-200"
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
+
+      <p class="text-center text-slate-500 text-xs mt-6">
+        Don't have an account? Contact us to get access.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginBtn = document.getElementById('login-btn');
+      const logoutBtn = document.getElementById('logout-btn');
+      const loginMessage = document.getElementById('login-message');
+      const loggedInMessage = document.getElementById('logged-in-message');
+      const userEmail = document.getElementById('user-email');
+
+      function updateUI(user) {
+        if (user) {
+          loginMessage.classList.add('hidden');
+          loggedInMessage.classList.remove('hidden');
+          userEmail.textContent = user.email;
+        } else {
+          loginMessage.classList.remove('hidden');
+          loggedInMessage.classList.add('hidden');
+        }
+      }
+
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', updateUI);
+        window.netlifyIdentity.on('login', (user) => {
+          updateUI(user);
+          window.netlifyIdentity.close();
+          setTimeout(() => { window.location.href = '/order'; }, 300);
+        });
+        window.netlifyIdentity.on('logout', () => updateUI(null));
+      }
+
+      loginBtn?.addEventListener('click', () => {
+        window.netlifyIdentity?.open('login');
+      });
+
+      logoutBtn?.addEventListener('click', () => {
+        window.netlifyIdentity?.logout();
+      });
+    });
+  </script>
+</Layout>

@@ -1,0 +1,511 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Place Your Order — Card Order Portal">
+  <!-- Auth guard: redirect to / if not logged in -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', (user) => {
+          if (!user) window.location.href = '/';
+        });
+      }
+    });
+  </script>
+
+  <div class="min-h-screen bg-gray-50">
+    <!-- Top nav -->
+    <nav class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+          </svg>
+        </div>
+        <span class="font-semibold text-gray-900">Card Order Portal</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="nav-email" class="text-sm text-gray-500 hidden sm:block"></span>
+        <button id="nav-logout" class="text-sm text-gray-500 hover:text-gray-800 transition-colors">Sign out</button>
+      </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">Order Business Cards</h1>
+        <p class="text-gray-500 mt-1">Fill in your details and see a live preview of your card</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+
+        <!-- ── LEFT: Form ── -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-8">
+          <h2 class="text-lg font-semibold text-gray-900 mb-6">Card Details</h2>
+
+          <!-- Hidden Netlify form for detection -->
+          <form name="business-card-order" netlify netlify-honeypot="bot-field" hidden>
+            <input type="text" name="name" />
+            <input type="text" name="job_title" />
+            <input type="text" name="company" />
+            <input type="email" name="email" />
+            <input type="tel" name="phone" />
+            <input type="url" name="website" />
+            <input type="text" name="address" />
+            <input type="text" name="card_style" />
+            <input type="text" name="accent_color" />
+            <input type="number" name="quantity" />
+            <textarea name="notes"></textarea>
+            <input type="text" name="ordered_by" />
+          </form>
+
+          <!-- Visible form -->
+          <form id="order-form" class="space-y-5" novalidate>
+            <!-- Honeypot -->
+            <input type="text" name="bot-field" class="hidden" aria-hidden="true" />
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-name">Full Name <span class="text-red-500">*</span></label>
+                <input id="f-name" name="name" type="text" placeholder="Jane Smith"
+                  class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-title">Job Title <span class="text-red-500">*</span></label>
+                <input id="f-title" name="job_title" type="text" placeholder="Marketing Director"
+                  class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1" for="f-company">Company Name <span class="text-red-500">*</span></label>
+              <input id="f-company" name="company" type="text" placeholder="Acme Corporation"
+                class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-email">Email <span class="text-red-500">*</span></label>
+                <input id="f-email" name="email" type="email" placeholder="jane@acme.com"
+                  class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-phone">Phone <span class="text-red-500">*</span></label>
+                <input id="f-phone" name="phone" type="tel" placeholder="+1 (555) 000-0000"
+                  class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-website">Website</label>
+                <input id="f-website" name="website" type="url" placeholder="www.acme.com"
+                  class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-address">Address</label>
+                <input id="f-address" name="address" type="text" placeholder="123 Main St, City"
+                  class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+              </div>
+            </div>
+
+            <!-- Card Style Picker -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Card Style <span class="text-red-500">*</span></label>
+              <div class="grid grid-cols-3 gap-3" id="style-picker">
+                <button type="button" data-style="classic"
+                  class="style-btn selected flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 border-slate-900 bg-slate-50 transition-all">
+                  <div class="w-full h-8 rounded bg-white border border-gray-300"></div>
+                  <span class="text-xs font-medium text-gray-700">Classic</span>
+                </button>
+                <button type="button" data-style="dark"
+                  class="style-btn flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 border-gray-200 hover:border-gray-400 transition-all">
+                  <div class="w-full h-8 rounded bg-gray-900"></div>
+                  <span class="text-xs font-medium text-gray-700">Dark</span>
+                </button>
+                <button type="button" data-style="branded"
+                  class="style-btn flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 border-gray-200 hover:border-gray-400 transition-all">
+                  <div class="w-full h-8 rounded" id="style-branded-swatch" style="background: linear-gradient(135deg, #2563eb, #7c3aed)"></div>
+                  <span class="text-xs font-medium text-gray-700">Branded</span>
+                </button>
+              </div>
+              <input type="hidden" id="f-style" name="card_style" value="classic" />
+            </div>
+
+            <!-- Accent color (shown only for Branded) -->
+            <div id="accent-color-row" class="hidden">
+              <label class="block text-sm font-medium text-gray-700 mb-1" for="f-accent">Brand Color</label>
+              <div class="flex items-center gap-3">
+                <input id="f-accent" name="accent_color" type="color" value="#2563eb"
+                  class="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5" />
+                <span class="text-sm text-gray-500">Pick your primary brand color</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="f-qty">Quantity</label>
+                <select id="f-qty" name="quantity"
+                  class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white">
+                  <option value="250">250 cards</option>
+                  <option value="500" selected>500 cards</option>
+                  <option value="1000">1,000 cards</option>
+                  <option value="2000">2,000 cards</option>
+                  <option value="5000">5,000 cards</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1" for="f-notes">Notes / Special Instructions</label>
+              <textarea id="f-notes" name="notes" rows="3" placeholder="Any special requests, logo notes, paper finish preferences..."
+                class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm resize-none"></textarea>
+            </div>
+
+            <!-- Error message -->
+            <div id="form-error" class="hidden text-red-600 text-sm bg-red-50 rounded-xl px-4 py-3"></div>
+
+            <button type="submit" id="submit-btn"
+              class="w-full py-3 px-6 bg-slate-900 hover:bg-slate-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+              <span id="submit-text">Submit Order</span>
+              <span id="submit-loading" class="hidden">Submitting…</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- ── RIGHT: Live Preview ── -->
+        <div class="lg:sticky lg:top-8">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Live Preview</h2>
+
+          <!-- Card preview wrapper — 3.5" × 2" aspect ratio -->
+          <div class="w-full" style="perspective: 1000px;">
+            <div id="card-preview"
+              class="relative w-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-300"
+              style="aspect-ratio: 3.5 / 2;">
+
+              <!-- Classic style -->
+              <div id="style-classic" class="card-style absolute inset-0 bg-white flex">
+                <div id="c-accent-bar" class="w-2 bg-slate-900"></div>
+                <div class="flex-1 flex flex-col justify-between p-6">
+                  <div>
+                    <div id="c-name" class="text-xl font-bold text-gray-900 leading-tight">Your Name</div>
+                    <div id="c-title" class="text-sm text-gray-500 mt-0.5">Job Title</div>
+                  </div>
+                  <div>
+                    <div id="c-company" class="text-base font-semibold text-gray-800 mb-3">Company Name</div>
+                    <div class="space-y-1 text-xs text-gray-500">
+                      <div id="c-email-row" class="flex items-center gap-1.5">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span id="c-email">email@company.com</span>
+                      </div>
+                      <div id="c-phone-row" class="flex items-center gap-1.5">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        <span id="c-phone">+1 (555) 000-0000</span>
+                      </div>
+                      <div id="c-website-row" class="flex items-center gap-1.5">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+                        <span id="c-website">www.company.com</span>
+                      </div>
+                      <div id="c-address-row" class="flex items-center gap-1.5">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span id="c-address"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dark style -->
+              <div id="style-dark" class="card-style absolute inset-0 bg-gray-950 hidden flex">
+                <div id="d-accent-bar" class="w-2 bg-white"></div>
+                <div class="flex-1 flex flex-col justify-between p-6">
+                  <div>
+                    <div id="d-name" class="text-xl font-bold text-white leading-tight">Your Name</div>
+                    <div id="d-title" class="text-sm text-gray-400 mt-0.5">Job Title</div>
+                  </div>
+                  <div>
+                    <div id="d-company" class="text-base font-semibold text-gray-200 mb-3">Company Name</div>
+                    <div class="space-y-1 text-xs text-gray-400">
+                      <div id="d-email-row" class="flex items-center gap-1.5">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span id="d-email">email@company.com</span>
+                      </div>
+                      <div id="d-phone-row" class="flex items-center gap-1.5">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        <span id="d-phone">+1 (555) 000-0000</span>
+                      </div>
+                      <div id="d-website-row" class="flex items-center gap-1.5">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+                        <span id="d-website">www.company.com</span>
+                      </div>
+                      <div id="d-address-row" class="flex items-center gap-1.5">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span id="d-address"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Branded style -->
+              <div id="style-branded" class="card-style absolute inset-0 hidden flex flex-col justify-between p-6"
+                style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);">
+                <div>
+                  <div id="b-name" class="text-xl font-bold text-white leading-tight">Your Name</div>
+                  <div id="b-title" class="text-sm text-white/70 mt-0.5">Job Title</div>
+                </div>
+                <div>
+                  <div id="b-company" class="text-base font-semibold text-white mb-3">Company Name</div>
+                  <div class="space-y-1 text-xs text-white/80">
+                    <div id="b-email-row" class="flex items-center gap-1.5">
+                      <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                      <span id="b-email">email@company.com</span>
+                    </div>
+                    <div id="b-phone-row" class="flex items-center gap-1.5">
+                      <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                      <span id="b-phone">+1 (555) 000-0000</span>
+                    </div>
+                    <div id="b-website-row" class="flex items-center gap-1.5">
+                      <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+                      <span id="b-website">www.company.com</span>
+                    </div>
+                    <div id="b-address-row" class="flex items-center gap-1.5">
+                      <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                      <span id="b-address"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-xs text-gray-400 mt-3 text-center">Preview is approximate — final design may vary slightly</p>
+
+          <!-- Order summary -->
+          <div class="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
+            <h3 class="text-sm font-semibold text-gray-700 mb-3">Order Summary</h3>
+            <dl class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <dt class="text-gray-500">Quantity</dt>
+                <dd id="summary-qty" class="font-medium text-gray-900">500 cards</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-gray-500">Style</dt>
+                <dd id="summary-style" class="font-medium text-gray-900 capitalize">Classic</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Auth ──
+    document.addEventListener('DOMContentLoaded', () => {
+      const navEmail = document.getElementById('nav-email');
+      const navLogout = document.getElementById('nav-logout');
+
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', (user) => {
+          if (!user) {
+            window.location.href = '/';
+            return;
+          }
+          if (navEmail) navEmail.textContent = user.email;
+        });
+        navLogout?.addEventListener('click', () => {
+          window.netlifyIdentity?.logout();
+          window.location.href = '/';
+        });
+      }
+    });
+
+    // ── Live Preview ──
+    const fields = {
+      name:    document.getElementById('f-name'),
+      title:   document.getElementById('f-title'),
+      company: document.getElementById('f-company'),
+      email:   document.getElementById('f-email'),
+      phone:   document.getElementById('f-phone'),
+      website: document.getElementById('f-website'),
+      address: document.getElementById('f-address'),
+      accent:  document.getElementById('f-accent'),
+      qty:     document.getElementById('f-qty'),
+    };
+
+    const placeholders = {
+      name:    'Your Name',
+      title:   'Job Title',
+      company: 'Company Name',
+      email:   'email@company.com',
+      phone:   '+1 (555) 000-0000',
+      website: 'www.company.com',
+      address: '',
+    };
+
+    let currentStyle = 'classic';
+
+    function updatePreview() {
+      const vals = {
+        name:    fields.name?.value    || placeholders.name,
+        title:   fields.title?.value   || placeholders.title,
+        company: fields.company?.value || placeholders.company,
+        email:   fields.email?.value   || placeholders.email,
+        phone:   fields.phone?.value   || placeholders.phone,
+        website: fields.website?.value || placeholders.website,
+        address: fields.address?.value || '',
+      };
+
+      ['c','d','b'].forEach(prefix => {
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        const show = (id, show) => { const el = document.getElementById(id); if (el) el.style.display = show ? '' : 'none'; };
+
+        set(`${prefix}-name`,    vals.name);
+        set(`${prefix}-title`,   vals.title);
+        set(`${prefix}-company`, vals.company);
+        set(`${prefix}-email`,   vals.email);
+        set(`${prefix}-phone`,   vals.phone);
+        set(`${prefix}-website`, vals.website);
+        set(`${prefix}-address`, vals.address);
+        show(`${prefix}-address-row`, !!vals.address);
+      });
+
+      // Summary
+      const summaryQty   = document.getElementById('summary-qty');
+      const summaryStyle = document.getElementById('summary-style');
+      if (summaryQty)   summaryQty.textContent   = `${Number(fields.qty?.value).toLocaleString()} cards`;
+      if (summaryStyle) summaryStyle.textContent = currentStyle.charAt(0).toUpperCase() + currentStyle.slice(1);
+    }
+
+    function switchStyle(style) {
+      currentStyle = style;
+
+      // Update hidden input
+      const styleInput = document.getElementById('f-style');
+      if (styleInput) styleInput.value = style;
+
+      // Update style buttons
+      document.querySelectorAll('.style-btn').forEach(btn => {
+        const isActive = btn.dataset.style === style;
+        btn.classList.toggle('border-slate-900', isActive);
+        btn.classList.toggle('bg-slate-50', isActive);
+        btn.classList.toggle('border-gray-200', !isActive);
+      });
+
+      // Show/hide card faces
+      ['classic','dark','branded'].forEach(s => {
+        const el = document.getElementById(`style-${s}`);
+        if (el) el.classList.toggle('hidden', s !== style);
+      });
+
+      // Show/hide accent color picker
+      const accentRow = document.getElementById('accent-color-row');
+      if (accentRow) accentRow.classList.toggle('hidden', style !== 'branded');
+
+      updatePreview();
+    }
+
+    function updateBrandedColor(hex) {
+      const branded = document.getElementById('style-branded');
+      if (branded) {
+        // darken hex by mixing with black for gradient end
+        branded.style.background = `linear-gradient(135deg, ${hex} 0%, ${shadeColor(hex, -40)} 100%)`;
+      }
+      const swatch = document.getElementById('style-branded-swatch');
+      if (swatch) swatch.style.background = `linear-gradient(135deg, ${hex}, ${shadeColor(hex, -40)})`;
+    }
+
+    function shadeColor(hex, percent) {
+      const num = parseInt(hex.replace('#',''), 16);
+      const r = Math.min(255, Math.max(0, (num >> 16) + percent));
+      const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
+      const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
+      return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
+    }
+
+    // Event listeners
+    Object.values(fields).forEach(el => {
+      if (el) el.addEventListener('input', updatePreview);
+    });
+
+    document.getElementById('style-picker')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-style]');
+      if (btn) switchStyle(btn.dataset.style);
+    });
+
+    fields.accent?.addEventListener('input', (e) => {
+      updateBrandedColor(e.target.value);
+    });
+
+    // Initial render
+    updatePreview();
+  </script>
+
+  <script>
+    // ── Form Submission to Netlify Forms ──
+    document.getElementById('order-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const form = e.target;
+      const submitBtn = document.getElementById('submit-btn');
+      const submitText = document.getElementById('submit-text');
+      const submitLoading = document.getElementById('submit-loading');
+      const errorDiv = document.getElementById('form-error');
+
+      // Validate required fields
+      const required = ['f-name','f-title','f-company','f-email','f-phone'];
+      const missing = required.filter(id => !document.getElementById(id)?.value.trim());
+      if (missing.length) {
+        errorDiv.textContent = 'Please fill in all required fields.';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+      errorDiv.classList.add('hidden');
+
+      // Get current user email from Netlify Identity
+      const user = window.netlifyIdentity?.currentUser?.();
+      const orderedBy = user ? user.email : 'unknown';
+
+      // Build form data
+      const data = new FormData();
+      data.append('form-name', 'business-card-order');
+      data.append('name',         document.getElementById('f-name')?.value || '');
+      data.append('job_title',    document.getElementById('f-title')?.value || '');
+      data.append('company',      document.getElementById('f-company')?.value || '');
+      data.append('email',        document.getElementById('f-email')?.value || '');
+      data.append('phone',        document.getElementById('f-phone')?.value || '');
+      data.append('website',      document.getElementById('f-website')?.value || '');
+      data.append('address',      document.getElementById('f-address')?.value || '');
+      data.append('card_style',   document.getElementById('f-style')?.value || 'classic');
+      data.append('accent_color', document.getElementById('f-accent')?.value || '');
+      data.append('quantity',     document.getElementById('f-qty')?.value || '500');
+      data.append('notes',        document.getElementById('f-notes')?.value || '');
+      data.append('ordered_by',   orderedBy);
+
+      // Show loading state
+      submitBtn.disabled = true;
+      submitText.classList.add('hidden');
+      submitLoading.classList.remove('hidden');
+
+      try {
+        const response = await fetch('/', {
+          method: 'POST',
+          body: data,
+        });
+
+        if (response.ok) {
+          window.location.href = '/success';
+        } else {
+          throw new Error(`Server returned ${response.status}`);
+        }
+      } catch (err) {
+        errorDiv.textContent = 'Something went wrong. Please try again or contact us directly.';
+        errorDiv.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitText.classList.remove('hidden');
+        submitLoading.classList.add('hidden');
+      }
+    });
+  </script>
+</Layout>

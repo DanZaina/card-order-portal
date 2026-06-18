@@ -237,7 +237,7 @@ import Layout from '../layouts/Layout.astro';
             }
             const data = await resp.json() as GoTrueUser & { token?: GoTrueToken };
             saveSession(data, (data.token ?? data) as GoTrueToken);
-            window.location.href = '/order';
+            window.location.href = '/dashboard';
           } catch (e) {
             err.textContent = errMsg(e);
             err.classList.remove('hidden');
@@ -281,7 +281,7 @@ import Layout from '../layouts/Layout.astro';
             }
             const data = await resp.json() as GoTrueUser & { token?: GoTrueToken };
             saveSession(data, (data.token ?? data) as GoTrueToken);
-            window.location.href = '/order';
+            window.location.href = '/dashboard';
           } catch (e) {
             err.textContent = errMsg(e);
             err.classList.remove('hidden');

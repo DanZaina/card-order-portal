@@ -1,314 +1,410 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import clients from '../data/clients.json';
-const clientsJson = JSON.stringify(clients);
+import Sidebar from '../components/Sidebar.astro';
 ---
-<Layout title="My Account — Card Order Portal">
-  <script id="client-data" type="application/json" set:html={clientsJson}></script>
+<Layout title="Account — ION Portal">
+<body class="dash">
 
-  <style is:global>
-    :root { --ta: #1e293b; --ta-h: #0f172a; --sidebar-bg: #1e293b; }
-    #user-avatar  { background-color: var(--ta) !important; }
-    #sidebar, #mobile-sidebar-panel { background-color: var(--sidebar-bg); }
-    #mobile-topbar { background-color: var(--sidebar-bg); }
-    .sidebar-nav-active { background-color: rgba(255,255,255,0.12) !important; }
-    .sidebar-nav-item:hover { background-color: rgba(255,255,255,0.08); }
-    button svg, a svg { display: block; }
-  </style>
+  <Sidebar activePage="account" />
 
-  <div class="flex h-screen overflow-hidden bg-gray-50">
+  <div class="md:ml-64 pt-14 md:pt-0 min-h-screen">
+    <main class="p-6 max-w-2xl mx-auto">
 
-    <!-- ── Sidebar (desktop) ── -->
-    <div class="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 z-30">
-      <div id="sidebar" class="flex grow flex-col overflow-y-auto pb-4">
-        <div class="flex h-16 shrink-0 items-center px-6">
-          <img src="/logo-landscape-white.png" alt="ION Professional Printing" class="h-7 object-contain" />
-        </div>
-        <nav class="flex flex-1 flex-col px-6">
-          <ul role="list" class="flex flex-1 flex-col gap-y-7">
-            <li>
-              <ul role="list" class="-mx-2 space-y-1">
-                <li>
-                  <a href="/order"
-                    class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-                    <i data-lucide="credit-card" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-                    Order Cards
-                  </a>
-                </li>
-                <li>
-                  <a href="/history"
-                    class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-                    <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-                    Order History
-                  </a>
-                </li>
-                <li>
-                  <a href="/settings"
-                    class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-                    <i data-lucide="settings" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-                    Settings
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="-mx-6 mt-auto border-t border-white/10 pt-1 relative">
-              <!-- Flyout menu (opens upward) -->
-              <div id="user-flyout" class="hidden absolute bottom-full left-2 right-2 mb-1 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
-                <a href="/account"
-                  class="flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 bg-gray-50 font-medium transition-colors">
-                  <i data-lucide="user" class="w-4 h-4 text-gray-400 shrink-0"></i>
-                  My Account
-                </a>
-                <a href="/settings"
-                  class="flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <i data-lucide="settings" class="w-4 h-4 text-gray-400 shrink-0"></i>
-                  Settings
-                </a>
-                <div class="border-t border-gray-100"></div>
-                <button id="nav-logout" type="button"
-                  class="w-full flex items-center gap-x-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition-colors">
-                  <i data-lucide="log-out" class="w-4 h-4 shrink-0"></i>
-                  Sign out
-                </button>
-              </div>
-              <!-- Trigger button -->
-              <button id="user-menu-btn" type="button"
-                class="w-full flex items-center gap-x-3 px-6 py-3 hover:bg-white/5 transition-colors">
-                <div id="user-avatar"
-                  class="w-9 h-9 rounded-full text-white flex items-center justify-center text-xs font-bold shrink-0 select-none">
-                  <span id="user-initials">?</span>
-                </div>
-                <div class="min-w-0 flex-1 text-left">
-                  <p id="dd-client-name" class="text-sm font-semibold text-white truncate"></p>
-                  <p id="dd-email" class="text-xs text-white/50 truncate"></p>
-                </div>
-                <i data-lucide="chevrons-up-down" class="w-4 h-4 text-white/40 shrink-0"></i>
-              </button>
-            </li>
-          </ul>
-        </nav>
+      <!-- Header -->
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-white">Account Settings</h1>
+        <p class="text-sm mt-1" style="color:#94a3b8;">Manage your profile, notifications, and preferences.</p>
       </div>
-    </div>
 
-    <!-- ── Mobile top bar ── -->
-    <div id="mobile-topbar" class="lg:hidden fixed top-0 left-0 right-0 z-20 flex items-center gap-x-4 px-4 py-3 shadow-sm">
-      <button id="mobile-menu-btn" type="button" class="text-white">
-        <i data-lucide="menu" class="w-6 h-6"></i>
-      </button>
-      <img src="/logo-landscape-white.png" alt="ION" class="h-7 object-contain" />
-    </div>
-
-    <!-- ── Mobile sidebar overlay ── -->
-    <div id="mobile-sidebar-overlay" class="hidden fixed inset-0 z-40 lg:hidden">
-      <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900/80"></div>
-      <div id="mobile-sidebar-panel" class="fixed inset-y-0 left-0 flex w-64 flex-col">
-        <div class="flex grow flex-col overflow-y-auto pb-4">
-          <div class="flex h-16 shrink-0 items-center justify-between px-6">
-            <img src="/logo-landscape-white.png" class="h-7 object-contain" />
-            <button id="mobile-sidebar-close" type="button" class="text-white/70 hover:text-white">
-              <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-          </div>
-          <nav class="flex flex-col px-6 gap-y-1">
-            <a href="/order"
-              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-              <i data-lucide="credit-card" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-              Order Cards
-            </a>
-            <a href="/history"
-              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-              <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-              Order History
-            </a>
-            <a href="/settings"
-              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-              <i data-lucide="settings" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-              Settings
-            </a>
-            <a href="/account"
-              class="sidebar-nav-item sidebar-nav-active group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white">
-              <i data-lucide="user" class="w-6 h-6 shrink-0 text-white"></i>
-              My Account
-            </a>
-            <button type="button" id="mobile-nav-logout"
-              class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-              <i data-lucide="log-out" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-              Sign out
-            </button>
-          </nav>
-        </div>
+      <!-- Tabs -->
+      <div class="flex gap-1 mb-6 p-1 rounded-xl" style="background:#1e293b;border:1px solid #334155;">
+        <button class="tab-btn tab-active" data-tab="profile">
+          <i data-lucide="user" style="width:14px;height:14px;"></i> Profile
+        </button>
+        <button class="tab-btn" data-tab="notifications">
+          <i data-lucide="bell" style="width:14px;height:14px;"></i> Notifications
+        </button>
+        <button class="tab-btn" data-tab="security">
+          <i data-lucide="lock" style="width:14px;height:14px;"></i> Security
+        </button>
+        <button class="tab-btn" data-tab="preferences">
+          <i data-lucide="sliders-horizontal" style="width:14px;height:14px;"></i> Preferences
+        </button>
       </div>
-    </div>
 
-    <!-- ── Main content ── -->
-    <div class="flex flex-1 flex-col lg:pl-64">
-      <main class="flex-1 overflow-y-auto">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-16 lg:pt-10">
+      <!-- ── TAB: Profile ── -->
+      <div id="tab-profile" class="tab-panel dash-card">
 
-          <div class="mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">My Account</h1>
-            <p class="text-gray-400 mt-1 text-sm">Update your personal information</p>
+        <!-- Avatar row -->
+        <div class="flex items-center gap-4 mb-6 pb-5" style="border-bottom:1px solid #334155;">
+          <div id="profile-avatar" class="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold shrink-0" style="background:var(--ta,#0ea5e9);color:#fff;">?</div>
+          <div>
+            <div id="profile-name-display" class="font-semibold text-white text-sm">—</div>
+            <div id="profile-company-display" class="text-xs mt-0.5" style="color:#64748b;">—</div>
           </div>
+        </div>
 
-          <!-- Account info -->
-          <div class="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100">
+        <form id="profile-form" class="space-y-4" novalidate>
 
-            <div class="px-6 py-5">
-              <h2 class="text-sm font-semibold text-gray-700 mb-4">Contact Information</h2>
-              <div class="space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5" for="acct-first-name">First Name</label>
-                    <input id="acct-first-name" type="text" placeholder="First name"
-                      class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5" for="acct-last-name">Last Name</label>
-                    <input id="acct-last-name" type="text" placeholder="Last name"
-                      class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5" for="acct-phone">Phone</label>
-                  <input id="acct-phone" type="tel" placeholder="(000) 000-0000"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5" for="acct-email">Email</label>
-                  <input id="acct-email" type="email" readonly
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-400 text-sm cursor-not-allowed outline-none" />
-                  <p class="text-xs text-gray-400 mt-1">Managed by your administrator</p>
-                </div>
-              </div>
+          <!-- First / Last -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="field-group">
+              <label class="field-label" for="acc-first">First Name</label>
+              <input id="acc-first" type="text" class="field-input" placeholder="Jane" autocomplete="given-name">
             </div>
-
-            <div class="px-6 py-5 flex justify-end">
-              <button id="account-save"
-                class="px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium transition-colors">
-                Save Changes
-              </button>
+            <div class="field-group">
+              <label class="field-label" for="acc-last">Last Name</label>
+              <input id="acc-last" type="text" class="field-input" placeholder="Smith" autocomplete="family-name">
             </div>
           </div>
 
+          <!-- Phone -->
+          <div class="field-group">
+            <label class="field-label" for="acc-phone">Phone</label>
+            <input id="acc-phone" type="tel" class="field-input" placeholder="(705) 555-0100" autocomplete="tel">
+          </div>
+
+          <!-- Company (readonly) -->
+          <div class="field-group">
+            <label class="field-label">Company</label>
+            <input id="acc-company" type="text" class="field-input field-readonly" readonly>
+          </div>
+
+          <!-- Email (readonly) -->
+          <div class="field-group">
+            <label class="field-label">Email</label>
+            <input id="acc-email" type="email" class="field-input field-readonly" readonly>
+            <p class="text-xs mt-1.5" style="color:#475569;">Managed by your administrator</p>
+          </div>
+
+          <div class="flex items-center gap-3 pt-2">
+            <button type="submit" id="profile-save-btn" class="save-btn">Save Profile</button>
+            <span id="profile-saved-msg" class="text-xs hidden" style="color:#22c55e;">
+              <i data-lucide="check" style="width:12px;height:12px;display:inline;"></i> Saved
+            </span>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- ── TAB: Notifications ── -->
+      <div id="tab-notifications" class="tab-panel dash-card hidden">
+        <h3 class="text-sm font-semibold text-white mb-4">Email Notifications</h3>
+        <div class="space-y-4">
+
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Order Confirmation</div>
+              <div class="toggle-desc">Receive a confirmation email when an order is submitted.</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="notif-confirm">
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <div style="height:1px;background:#334155;"></div>
+
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Proof Ready</div>
+              <div class="toggle-desc">Get notified when your card proof is ready for review.</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="notif-proof">
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
         </div>
-      </main>
-    </div>
+
+        <div class="mt-5 pt-4 flex items-center gap-3" style="border-top:1px solid #334155;">
+          <button id="notif-save-btn" class="save-btn">Save Preferences</button>
+          <span id="notif-saved-msg" class="text-xs hidden" style="color:#22c55e;">
+            <i data-lucide="check" style="width:12px;height:12px;display:inline;"></i> Saved
+          </span>
+        </div>
+      </div>
+
+      <!-- ── TAB: Security ── -->
+      <div id="tab-security" class="tab-panel dash-card hidden">
+        <h3 class="text-sm font-semibold text-white mb-1">Change Password</h3>
+        <p class="text-sm mb-5" style="color:#64748b;">We'll send a password reset link to your email address.</p>
+
+        <div class="field-group mb-4">
+          <label class="field-label">Email</label>
+          <input id="sec-email" type="email" class="field-input field-readonly" readonly>
+        </div>
+
+        <button id="reset-pw-btn" class="save-btn">Send Reset Link</button>
+        <div id="reset-pw-msg" class="text-sm mt-3 hidden" style="color:#22c55e;"></div>
+        <div id="reset-pw-err" class="text-sm mt-3 hidden" style="color:#f87171;"></div>
+      </div>
+
+      <!-- ── TAB: Preferences ── -->
+      <div id="tab-preferences" class="tab-panel dash-card hidden">
+        <h3 class="text-sm font-semibold text-white mb-4">Order Defaults</h3>
+
+        <div class="field-group mb-6">
+          <label class="field-label" for="pref-qty">Default Quantity</label>
+          <select id="pref-qty" class="field-input">
+            <option value="100">100</option>
+            <option value="250">250</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+          </select>
+        </div>
+
+        <div style="height:1px;background:#334155;" class="mb-5"></div>
+
+        <h3 class="text-sm font-semibold text-white mb-3">Appearance</h3>
+        <div class="toggle-row" style="opacity:.45;pointer-events:none;">
+          <div>
+            <div class="toggle-label">Light Mode</div>
+            <div class="toggle-desc">Switch between dark and light interface.</div>
+          </div>
+          <div>
+            <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:rgba(14,165,233,0.15);color:#38bdf8;">Soon</span>
+          </div>
+        </div>
+
+        <div class="mt-5 pt-4 flex items-center gap-3" style="border-top:1px solid #334155;">
+          <button id="pref-save-btn" class="save-btn">Save Preferences</button>
+          <span id="pref-saved-msg" class="text-xs hidden" style="color:#22c55e;">
+            <i data-lucide="check" style="width:12px;height:12px;display:inline;"></i> Saved
+          </span>
+        </div>
+      </div>
+
+    </main>
   </div>
 
-  <script>
-    const CLIENT_DATA = JSON.parse(document.getElementById('client-data').textContent);
-    let currentUser = null;
-
-    function applyClientTheme(theme) {
-      if (!theme) return;
-      if (theme.accent)    document.documentElement.style.setProperty('--ta',         theme.accent);
-      if (theme.dark)      document.documentElement.style.setProperty('--ta-h',       theme.dark);
-      if (theme.sidebarBg) document.documentElement.style.setProperty('--sidebar-bg', theme.sidebarBg);
-    }
-
-    function getInitials(name, email) {
-      if (name && name.trim())
-        return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
-      return (email || '?')[0].toUpperCase();
-    }
-
-    function initUser(user) {
-      if (!user) { window.location.href = '/'; return; }
-      currentUser = user;
-      const data = CLIENT_DATA[user.email] || {};
-
-      const savedFirst = localStorage.getItem('portal.firstName') || '';
-      const savedLast  = localStorage.getItem('portal.lastName') || '';
-      const savedPhone = localStorage.getItem('portal.phone') || data.phone || '';
-
-      // Fall back: split stored full name into first/last if new keys not yet set
-      if (!savedFirst && !savedLast) {
-        const savedName = localStorage.getItem('portal.displayName')
-          || data.full_name || user.user_metadata?.full_name || '';
-        const parts = savedName.trim().split(/\s+/);
-        (document.getElementById('acct-first-name') as HTMLInputElement).value = parts[0] || '';
-        (document.getElementById('acct-last-name') as HTMLInputElement).value  = parts.slice(1).join(' ') || '';
-      } else {
-        (document.getElementById('acct-first-name') as HTMLInputElement).value = savedFirst;
-        (document.getElementById('acct-last-name') as HTMLInputElement).value  = savedLast;
-      }
-
-      (document.getElementById('acct-phone') as HTMLInputElement).value = savedPhone;
-      (document.getElementById('acct-email') as HTMLInputElement).value = user.email || '';
-
-      const displayName = [savedFirst, savedLast].filter(Boolean).join(' ')
-        || localStorage.getItem('portal.displayName')
-        || data.full_name || '';
-
-      document.getElementById('user-initials').textContent = getInitials(displayName, user.email);
-      document.getElementById('dd-email').textContent      = user.email;
-      const clientEl = document.getElementById('dd-client-name');
-      if (clientEl) clientEl.textContent = data.company || displayName || user.email || '';
-
-      if (data.theme) applyClientTheme(data.theme);
-    }
-
-    function getUserFromStorage() {
-      try { return JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch { return null; }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      if (window.lucide) window.lucide.createIcons();
-
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on('init', (user) => initUser(user || getUserFromStorage()));
-      } else {
-        initUser(getUserFromStorage());
-      }
-
-      // Mobile sidebar
-      const mobileOverlay      = document.getElementById('mobile-sidebar-overlay');
-      const openMobileSidebar  = () => mobileOverlay?.classList.remove('hidden');
-      const closeMobileSidebar = () => mobileOverlay?.classList.add('hidden');
-      document.getElementById('mobile-menu-btn')?.addEventListener('click', openMobileSidebar);
-      document.getElementById('mobile-sidebar-close')?.addEventListener('click', closeMobileSidebar);
-      document.getElementById('sidebar-backdrop')?.addEventListener('click', closeMobileSidebar);
-
-      // User flyout
-      const userFlyout  = document.getElementById('user-flyout');
-      const userMenuBtn = document.getElementById('user-menu-btn');
-      userMenuBtn?.addEventListener('click', (e) => { e.stopPropagation(); userFlyout?.classList.toggle('hidden'); });
-      document.addEventListener('click', () => userFlyout?.classList.add('hidden'));
-      userFlyout?.addEventListener('click', (e) => e.stopPropagation());
-
-      // Logout
-      const doLogout = () => {
-        localStorage.removeItem('gotrue.user');
-        localStorage.removeItem('portal.displayName');
-        window.netlifyIdentity?.logout();
-        window.location.href = '/';
-      };
-      document.getElementById('nav-logout')?.addEventListener('click', doLogout);
-      document.getElementById('mobile-nav-logout')?.addEventListener('click', doLogout);
-
-      // Save
-      document.getElementById('account-save')?.addEventListener('click', () => {
-        const firstName = (document.getElementById('acct-first-name') as HTMLInputElement).value.trim();
-        const lastName  = (document.getElementById('acct-last-name') as HTMLInputElement).value.trim();
-        const phone     = (document.getElementById('acct-phone') as HTMLInputElement).value.trim();
-
-        localStorage.setItem('portal.firstName', firstName);
-        localStorage.setItem('portal.lastName',  lastName);
-        if (phone) localStorage.setItem('portal.phone', phone);
-
-        const displayName = [firstName, lastName].filter(Boolean).join(' ');
-        if (displayName) {
-          localStorage.setItem('portal.displayName', displayName);
-          document.getElementById('user-initials').textContent = getInitials(displayName, currentUser?.email);
-          const clientEl = document.getElementById('dd-client-name');
-          if (clientEl && clientEl.textContent !== (CLIENT_DATA[currentUser?.email]?.company || '')) {
-            clientEl.textContent = displayName;
-          }
-        }
-
-        const btn = document.getElementById('account-save');
-        if (btn) { btn.textContent = 'Saved!'; setTimeout(() => btn.textContent = 'Save Changes', 1500); }
-      });
-    });
-  </script>
+</body>
 </Layout>
+
+<style>
+  .dash-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  /* Tabs */
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 4px;
+    border-radius: 9px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #64748b;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 150ms;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: #e2e8f0; }
+  .tab-active {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+
+  /* Fields */
+  .field-group { display: flex; flex-direction: column; gap: 5px; }
+  .field-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #94a3b8;
+    letter-spacing: .02em;
+  }
+  .field-input {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 14px;
+    color: #f1f5f9;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 150ms;
+    width: 100%;
+  }
+  .field-input:focus { border-color: var(--ta, #0ea5e9); }
+  .field-input::placeholder { color: #334155; }
+  .field-readonly { color: #475569 !important; cursor: not-allowed; }
+  select.field-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  /* Save button */
+  .save-btn {
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    background: var(--ta, #0ea5e9);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: filter 150ms;
+    font-family: inherit;
+  }
+  .save-btn:hover { filter: brightness(1.1); }
+
+  /* Toggle */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .toggle-label { font-size: 13.5px; font-weight: 500; color: #e2e8f0; }
+  .toggle-desc  { font-size: 12px; color: #64748b; margin-top: 2px; }
+  .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: #334155; border-radius: 99px; cursor: pointer; transition: background 150ms;
+  }
+  .toggle-track::before {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    left: 3px; top: 3px;
+    background: #fff; border-radius: 50%;
+    transition: transform 150ms;
+  }
+  .toggle-switch input:checked + .toggle-track { background: var(--ta, #0ea5e9); }
+  .toggle-switch input:checked + .toggle-track::before { transform: translateX(18px); }
+</style>
+
+<script>
+(function() {
+  // ── Auth guard ──
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch(e) {}
+  if (!user) { window.location.href = '/'; return; }
+
+  const meta = user.user_metadata || {};
+
+  // ── Apply client theme ──
+  const clientSlug = meta.client_id || meta.clientId || '';
+  if (clientSlug) {
+    fetch('/clients.json')
+      .then(r => r.json())
+      .then(clients => {
+        const c = clients[clientSlug];
+        if (c?.theme) {
+          if (c.theme.accent)    document.documentElement.style.setProperty('--ta', c.theme.accent);
+          if (c.theme.dark)      document.documentElement.style.setProperty('--ta-h', c.theme.dark);
+          if (c.theme.sidebarBg) document.documentElement.style.setProperty('--sidebar-bg', c.theme.sidebarBg);
+        }
+        const companyEl = document.getElementById('acc-company');
+        if (companyEl && c) companyEl.value = c.company || c.full_name || clientSlug;
+        const compDisp = document.getElementById('profile-company-display');
+        if (compDisp && c) compDisp.textContent = c.company || c.full_name || clientSlug;
+      })
+      .catch(() => {});
+  }
+
+  // ── Populate Profile ──
+  const email     = user.email || '';
+  const firstName = localStorage.getItem('portal.firstName') || meta.first_name || '';
+  const lastName  = localStorage.getItem('portal.lastName')  || meta.last_name  || '';
+  const phone     = localStorage.getItem('portal.phone')     || meta.phone      || '';
+  const fullName  = (firstName + ' ' + lastName).trim() || meta.full_name || email.split('@')[0];
+  const initials  = firstName && lastName
+    ? (firstName[0] + lastName[0]).toUpperCase()
+    : fullName.slice(0,2).toUpperCase();
+
+  document.getElementById('acc-first').value   = firstName;
+  document.getElementById('acc-last').value    = lastName;
+  document.getElementById('acc-phone').value   = phone;
+  document.getElementById('acc-email').value   = email;
+  document.getElementById('sec-email').value   = email;
+  document.getElementById('profile-avatar').textContent       = initials;
+  document.getElementById('profile-name-display').textContent = fullName;
+
+  // ── Profile save ──
+  document.getElementById('profile-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fn = document.getElementById('acc-first').value.trim();
+    const ln = document.getElementById('acc-last').value.trim();
+    const ph = document.getElementById('acc-phone').value.trim();
+    localStorage.setItem('portal.firstName', fn);
+    localStorage.setItem('portal.lastName',  ln);
+    localStorage.setItem('portal.phone',     ph);
+    localStorage.setItem('portal.displayName', (fn + ' ' + ln).trim() || fn || ln);
+
+    const newName = (fn + ' ' + ln).trim() || email.split('@')[0];
+    const newInit = fn && ln ? (fn[0]+ln[0]).toUpperCase() : newName.slice(0,2).toUpperCase();
+    document.getElementById('profile-avatar').textContent       = newInit;
+    document.getElementById('profile-name-display').textContent = newName;
+    showSaved('profile-saved-msg');
+  });
+
+  // ── Notifications ──
+  document.getElementById('notif-confirm').checked = localStorage.getItem('portal.notifConfirm') !== 'false';
+  document.getElementById('notif-proof').checked   = localStorage.getItem('portal.notifProof')   !== 'false';
+
+  document.getElementById('notif-save-btn')?.addEventListener('click', () => {
+    localStorage.setItem('portal.notifConfirm', document.getElementById('notif-confirm').checked);
+    localStorage.setItem('portal.notifProof',   document.getElementById('notif-proof').checked);
+    showSaved('notif-saved-msg');
+  });
+
+  // ── Security ──
+  document.getElementById('reset-pw-btn')?.addEventListener('click', () => {
+    const msgEl = document.getElementById('reset-pw-msg');
+    const errEl = document.getElementById('reset-pw-err');
+    msgEl.classList.add('hidden');
+    errEl.classList.add('hidden');
+    if (window.netlifyIdentity && window.netlifyIdentity.requestPasswordRecovery) {
+      window.netlifyIdentity.requestPasswordRecovery(email);
+      msgEl.textContent = `Reset link sent to ${email}.`;
+      msgEl.classList.remove('hidden');
+    } else {
+      errEl.textContent = 'Password reset is not available in this environment.';
+      errEl.classList.remove('hidden');
+    }
+  });
+
+  // ── Preferences ──
+  const savedQty = localStorage.getItem('portal.defaultQty') || '100';
+  const qtyEl = document.getElementById('pref-qty');
+  if (qtyEl) Array.from(qtyEl.options).forEach(o => { if (o.value === savedQty) o.selected = true; });
+
+  document.getElementById('pref-save-btn')?.addEventListener('click', () => {
+    localStorage.setItem('portal.defaultQty', document.getElementById('pref-qty').value);
+    showSaved('pref-saved-msg');
+  });
+
+  // ── Tabs ──
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      btn.classList.add('tab-active');
+      document.getElementById('tab-' + target)?.classList.remove('hidden');
+    });
+  });
+
+  // ── Helper ──
+  function showSaved(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 2500);
+  }
+
+  // ── Icons ──
+  if (window.lucide) window.lucide.createIcons();
+  else document.addEventListener('DOMContentLoaded', () => window.lucide?.createIcons());
+})();
+</script>

@@ -1,174 +1,45 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Sidebar from '../components/Sidebar.astro';
 import clients from '../data/clients.json';
 const clientsJson = JSON.stringify(clients);
 ---
-<Layout title="Place Your Order — Card Order Portal">
+<Layout title="Business Cards — ION Portal">
   <!-- Client data (server-injected, read by auth script) -->
   <script id="client-data" type="application/json" set:html={clientsJson}></script>
 
-  <!-- Theme custom properties — overridden by JS on load -->
+  <!-- Theme CSS vars overridden by JS on load -->
   <style is:global>
-    :root { --ta: #1e293b; --ta-h: #0f172a; --sidebar-bg: #1e293b; }
-    #user-avatar  { background-color: var(--ta) !important; }
-    #submit-btn   { background-color: var(--ta) !important; }
-    #submit-btn:hover { background-color: var(--ta-h) !important; }
-    #c-accent-bar { background-color: var(--ta) !important; }
-    #sidebar, #mobile-sidebar-panel { background-color: var(--sidebar-bg); }
-    #mobile-topbar { background-color: var(--sidebar-bg); }
-    .sidebar-nav-active { background-color: rgba(255,255,255,0.12) !important; }
-    .sidebar-nav-item:hover { background-color: rgba(255,255,255,0.08); }
+    #submit-btn   { background-color: var(--ta, #0ea5e9) !important; }
+    #submit-btn:hover { background-color: var(--ta-h, #0284c7) !important; }
+    #c-accent-bar { background-color: var(--ta, #0ea5e9) !important; }
     button svg, a svg { display: block; }
     select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
   </style>
 
-  <div class="flex h-screen overflow-hidden bg-gray-50">
+<body class="dash">
 
-    <!-- ── Sidebar (desktop) ── -->
-    <div class="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 z-30">
-      <div id="sidebar" class="flex grow flex-col overflow-y-auto pb-4">
+  <Sidebar activePage="order" />
 
-        <!-- Logo -->
-        <div class="flex h-16 shrink-0 items-center px-6">
-          <img src="/logo-landscape-white.png" alt="ION Professional Printing" class="h-7 object-contain" />
-        </div>
+  <!-- ── Main content ── -->
+  <div class="md:ml-64 pt-14 md:pt-0 min-h-screen">
+    <main class="p-6 max-w-6xl mx-auto">
 
-        <nav class="flex flex-1 flex-col px-6">
-          <ul role="list" class="flex flex-1 flex-col gap-y-7">
-
-            <!-- Main nav -->
-            <li>
-              <ul role="list" class="-mx-2 space-y-1">
-                <li>
-                  <a href="/order"
-                    class="sidebar-nav-item sidebar-nav-active group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white">
-                    <i data-lucide="credit-card" class="w-6 h-6 shrink-0 text-white"></i>
-                    Order Cards
-                  </a>
-                </li>
-                <li>
-                  <a href="/history"
-                    class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-                    <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-                    Order History
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Bottom: client name + user flyout -->
-            <li class="-mx-6 mt-auto border-t border-white/10 pt-1 relative">
-              <!-- Flyout menu (opens upward) -->
-              <div id="user-flyout" class="hidden absolute bottom-full left-2 right-2 mb-1 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
-                <a href="/account"
-                  class="flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <i data-lucide="user" class="w-4 h-4 text-gray-400 shrink-0"></i>
-                  My Account
-                </a>
-                <a href="/settings"
-                  class="flex items-center gap-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <i data-lucide="settings" class="w-4 h-4 text-gray-400 shrink-0"></i>
-                  Settings
-                </a>
-                <div class="border-t border-gray-100"></div>
-                <button id="nav-logout" type="button"
-                  class="w-full flex items-center gap-x-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition-colors">
-                  <i data-lucide="log-out" class="w-4 h-4 shrink-0"></i>
-                  Sign out
-                </button>
-              </div>
-              <!-- Trigger button -->
-              <button id="user-menu-btn" type="button"
-                class="w-full flex items-center gap-x-3 px-6 py-3 hover:bg-white/5 transition-colors">
-                <div id="user-avatar"
-                  class="w-9 h-9 rounded-full text-white flex items-center justify-center text-xs font-bold shrink-0 select-none">
-                  <span id="user-initials">?</span>
-                </div>
-                <div class="min-w-0 flex-1 text-left">
-                  <p id="dd-client-name" class="text-sm font-semibold text-white truncate"></p>
-                  <p id="dd-email" class="text-xs text-white/50 truncate"></p>
-                </div>
-                <i data-lucide="chevrons-up-down" class="w-4 h-4 text-white/40 shrink-0"></i>
-              </button>
-              <!-- Hidden spans keep IDs working in JS -->
-              <span id="nav-name" class="hidden"></span>
-              <span id="dd-name" class="hidden"></span>
-            </li>
-
-          </ul>
-        </nav>
-      </div>
-    </div>
-
-    <!-- ── Mobile top bar ── -->
-    <div id="mobile-topbar" class="lg:hidden fixed top-0 left-0 right-0 z-20 flex items-center gap-x-4 px-4 py-3 shadow-sm">
-      <button id="mobile-menu-btn" type="button" class="text-white">
-        <i data-lucide="menu" class="w-6 h-6"></i>
-      </button>
-      <img src="/logo-landscape-white.png" alt="ION" class="h-7 object-contain" />
-    </div>
-
-    <!-- ── Mobile sidebar overlay ── -->
-    <div id="mobile-sidebar-overlay" class="hidden fixed inset-0 z-40 lg:hidden">
-      <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900/80"></div>
-      <div id="mobile-sidebar-panel" class="fixed inset-y-0 left-0 flex w-64 flex-col">
-        <div class="flex grow flex-col overflow-y-auto pb-4">
-          <div class="flex h-16 shrink-0 items-center justify-between px-6">
-            <img src="/logo-landscape-white.png" class="h-7 object-contain" />
-            <button id="mobile-sidebar-close" type="button" class="text-white/70 hover:text-white">
-              <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-          </div>
-          <nav class="flex flex-col px-6 gap-y-1">
-            <a href="/order"
-              class="sidebar-nav-item sidebar-nav-active group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white">
-              <i data-lucide="credit-card" class="w-6 h-6 shrink-0 text-white"></i>
-              Order Cards
-            </a>
-            <a href="/history"
-              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-              <i data-lucide="clock" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-              Order History
-            </a>
-            <a href="/account"
-              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-              <i data-lucide="user" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-              My Account
-            </a>
-            <a href="/settings"
-              class="sidebar-nav-item group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-              <i data-lucide="settings" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-              Settings
-            </a>
-            <button type="button" id="mobile-nav-logout"
-              class="sidebar-nav-item w-full group flex gap-x-3 rounded-md p-2 text-sm font-semibold text-white/70 hover:text-white transition-colors">
-              <i data-lucide="log-out" class="w-6 h-6 shrink-0 text-white/70 group-hover:text-white"></i>
-              Sign out
-            </button>
-          </nav>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Main content ── -->
-    <div class="flex flex-1 flex-col lg:pl-64">
-      <main class="flex-1 overflow-y-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-16 lg:pt-10">
-      <div class="mb-10">
-        <h1 class="text-2xl font-bold text-gray-900">Order Business Cards</h1>
-        <p class="text-gray-400 mt-1">Fill in your details and see a live preview of your card</p>
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-white">Order Business Cards</h1>
+        <p class="text-sm mt-1" style="color:#94a3b8;">Fill in the details and see a live preview of your card.</p>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
         <!-- ── LEFT: Form ── -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        <div class="rounded-2xl p-6" style="background:#1e293b;border:1px solid #334155;">
 
-          <!-- Form header with refresh -->
-          <div class="flex items-center justify-between mb-8">
-            <h2 class="text-lg font-semibold text-gray-900">Card Details</h2>
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-base font-semibold text-white">Card Details</h2>
             <button id="refresh-btn" type="button" title="Reset to defaults"
-              class="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-gray-100">
+              class="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-colors"
+              style="color:#64748b;" onmouseover="this.style.color='#e2e8f0';this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.color='#64748b';this.style.background='transparent'">
               <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
               Reset
             </button>
@@ -193,77 +64,61 @@ const clientsJson = JSON.stringify(clients);
           </form>
 
           <!-- Visible form -->
-          <form id="order-form" class="space-y-6" novalidate>
+          <form id="order-form" class="space-y-5" novalidate>
             <input type="text" name="bot-field" class="hidden" aria-hidden="true" />
-            <!-- Hidden fields populated by prefill for preview + submission -->
             <input type="hidden" id="f-company" name="company" />
             <input type="hidden" id="f-website" name="website" />
 
             <!-- Name + Title -->
-            <div id="row-name" data-field-row class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-name">
-                  Full Name <span class="text-red-500">*</span>
-                </label>
-                <input id="f-name" name="name" type="text" placeholder="First Last Name"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+            <div id="row-name" data-field-row class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="of-field">
+                <label class="of-label" for="f-name">Full Name <span style="color:#f87171;">*</span></label>
+                <input id="f-name" name="name" type="text" placeholder="First Last Name" class="of-input" />
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-title">
-                  Job Title <span class="text-red-500">*</span>
-                </label>
-                <input id="f-title" name="job_title" type="text" placeholder="Enter Title"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+              <div class="of-field">
+                <label class="of-label" for="f-title">Job Title <span style="color:#f87171;">*</span></label>
+                <input id="f-title" name="job_title" type="text" placeholder="Enter Title" class="of-input" />
               </div>
             </div>
 
             <!-- Email -->
-            <div id="row-email" data-field-row>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-email">
-                Email <span class="text-red-500">*</span>
-              </label>
-              <input id="f-email" name="email" type="email" placeholder="jane@company.com"
-                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+            <div id="row-email" data-field-row class="of-field">
+              <label class="of-label" for="f-email">Email <span style="color:#f87171;">*</span></label>
+              <input id="f-email" name="email" type="email" placeholder="jane@company.com" class="of-input" />
             </div>
 
             <!-- Phone / Ext / Cell -->
-            <div id="row-phone-ext-cell" data-field-row class="grid grid-cols-2 sm:grid-cols-3 gap-5">
-              <div class="col-span-2 sm:col-span-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-phone">Phone</label>
-                <input id="f-phone" name="phone" type="tel" placeholder="(705) 526-1344"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+            <div id="row-phone-ext-cell" data-field-row class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div class="col-span-2 sm:col-span-1 of-field">
+                <label class="of-label" for="f-phone">Phone</label>
+                <input id="f-phone" name="phone" type="tel" placeholder="(705) 526-1344" class="of-input" />
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-extension">Ext.</label>
-                <input id="f-extension" name="extension" type="text" placeholder="000" inputmode="numeric"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+              <div class="of-field">
+                <label class="of-label" for="f-extension">Ext.</label>
+                <input id="f-extension" name="extension" type="text" placeholder="000" inputmode="numeric" class="of-input" />
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-cell">Cell</label>
-                <input id="f-cell" name="cell" type="tel" placeholder="(000) 000-0000" inputmode="numeric"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+              <div class="of-field">
+                <label class="of-label" for="f-cell">Cell</label>
+                <input id="f-cell" name="cell" type="tel" placeholder="(000) 000-0000" inputmode="numeric" class="of-input" />
               </div>
             </div>
 
             <!-- Address -->
-            <div id="row-website-address" data-field-row>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-address">Address</label>
-              <input id="f-address" name="address" type="text" placeholder="947 Jones Road, Midland, ON"
-                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
+            <div id="row-website-address" data-field-row class="of-field">
+              <label class="of-label" for="f-address">Address</label>
+              <input id="f-address" name="address" type="text" placeholder="947 Jones Road, Midland, ON" class="of-input" />
             </div>
 
             <input type="hidden" id="f-style" name="card_style" value="classic" />
 
-            <!-- Divider -->
-            <div class="border-t border-gray-100 pt-1"></div>
+            <div style="height:1px;background:#334155;"></div>
 
             <!-- Quantity -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-qty">Quantity</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="of-field">
+                <label class="of-label" for="f-qty">Quantity</label>
                 <div class="relative">
-                  <select id="f-qty" name="quantity"
-                    class="w-full px-4 py-3 pr-10 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white">
+                  <select id="f-qty" name="quantity" class="of-input pr-10">
                     <option value="250">250 cards</option>
                     <option value="500" selected>500 cards</option>
                     <option value="1000">1,000 cards</option>
@@ -271,29 +126,32 @@ const clientsJson = JSON.stringify(clients);
                     <option value="5000">5,000 cards</option>
                   </select>
                   <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+                    <i data-lucide="chevron-down" style="width:14px;height:14px;color:#64748b;"></i>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Notes -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5" for="f-notes">Notes / Special Instructions</label>
+            <div class="of-field">
+              <label class="of-label" for="f-notes">Notes / Special Instructions</label>
               <textarea id="f-notes" name="notes" rows="3"
                 placeholder="Any special requests, logo notes, paper finish preferences…"
-                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm resize-none"></textarea>
+                class="of-input resize-none"></textarea>
             </div>
 
             <!-- Additional people -->
-            <div class="border-t border-gray-100 pt-5">
+            <div style="border-top:1px solid #334155;padding-top:20px;">
               <div class="flex items-center justify-between mb-3">
                 <div>
-                  <p class="text-sm font-medium text-gray-700">Additional people</p>
-                  <p class="text-xs text-gray-400 mt-0.5">Ordering cards for multiple people?</p>
+                  <p class="text-sm font-medium" style="color:#e2e8f0;">Additional people</p>
+                  <p class="text-xs mt-0.5" style="color:#64748b;">Ordering cards for multiple people?</p>
                 </div>
                 <button type="button" id="add-person-btn"
-                  class="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-800 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                  class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg transition-colors"
+                  style="color:#94a3b8;border:1px solid #334155;background:transparent;"
+                  onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='#e2e8f0'"
+                  onmouseout="this.style.background='transparent';this.style.color='#94a3b8'">
                   <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
                   Add person
                 </button>
@@ -301,11 +159,12 @@ const clientsJson = JSON.stringify(clients);
               <div id="extra-people-list" class="space-y-2"></div>
             </div>
 
-            <!-- Error message -->
-            <div id="form-error" class="hidden text-red-600 text-sm bg-red-50 rounded-xl px-4 py-3"></div>
+            <!-- Error -->
+            <div id="form-error" class="hidden text-sm px-4 py-3 rounded-xl" style="color:#fca5a5;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);"></div>
 
             <button type="submit" id="submit-btn"
-              class="w-full py-3 px-6 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold rounded-xl transition-colors duration-200 disabled:opacity-60">
+              class="w-full py-3 px-6 text-white text-sm font-semibold rounded-xl transition-colors duration-200 disabled:opacity-60"
+              style="background:var(--ta,#0ea5e9);">
               <span id="submit-text">Submit Order</span>
               <span id="submit-loading" class="hidden">Submitting…</span>
             </button>
@@ -313,21 +172,18 @@ const clientsJson = JSON.stringify(clients);
         </div>
 
         <!-- ── RIGHT: Live Preview ── -->
-        <div class="lg:sticky lg:top-8 space-y-6">
+        <div class="lg:sticky lg:top-8 space-y-5">
 
           <div>
-            <h2 class="text-lg font-semibold text-gray-900 mb-5">Live Preview</h2>
+            <h2 class="text-base font-semibold text-white mb-4">Live Preview</h2>
 
-            <!-- Card preview — 3.5" × 2" aspect ratio -->
-            <div class="w-full" style="perspective: 1000px;">
+            <div class="w-full" style="perspective:1000px;">
               <div id="card-preview"
                 class="relative w-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-300"
                 style="aspect-ratio: 3.5 / 2;">
 
-                <!-- SVG template preview (shown when client has card_template) -->
-                <div id="svg-preview" class="hidden absolute inset-0 bg-white">
-                  <!-- SVG injected here by JS -->
-                </div>
+                <!-- SVG template preview -->
+                <div id="svg-preview" class="hidden absolute inset-0 bg-white"></div>
 
                 <!-- Classic style -->
                 <div id="style-classic" class="card-style absolute inset-0 bg-white flex">
@@ -425,674 +281,552 @@ const clientsJson = JSON.stringify(clients);
               </div>
             </div>
 
-            <p class="text-xs text-gray-400 mt-3 text-center">Preview is approximate — final design may vary slightly</p>
+            <p class="text-xs text-center mt-2" style="color:#475569;">Preview is approximate — final design may vary slightly</p>
           </div>
 
           <!-- Order summary -->
-          <div class="bg-white rounded-2xl border border-gray-200 p-6">
-            <h3 class="text-sm font-semibold text-gray-700 mb-4">Order Summary</h3>
+          <div class="rounded-2xl p-5" style="background:#1e293b;border:1px solid #334155;">
+            <h3 class="text-sm font-semibold mb-4" style="color:#94a3b8;">Order Summary</h3>
             <dl class="space-y-3 text-sm">
               <div class="flex justify-between gap-3">
-                <dt class="text-gray-400 shrink-0">Name</dt>
-                <dd id="summary-name" class="font-medium text-gray-900 text-right truncate">—</dd>
+                <dt style="color:#64748b;">Name</dt>
+                <dd id="summary-name" class="font-medium text-right truncate" style="color:#e2e8f0;">—</dd>
               </div>
               <div class="flex justify-between gap-3">
-                <dt class="text-gray-400 shrink-0">Title</dt>
-                <dd id="summary-title" class="font-medium text-gray-900 text-right truncate">—</dd>
+                <dt style="color:#64748b;">Title</dt>
+                <dd id="summary-title" class="font-medium text-right truncate" style="color:#e2e8f0;">—</dd>
               </div>
-              <div class="flex justify-between">
-                <dt class="text-gray-400">Quantity</dt>
-                <dd id="summary-qty" class="font-medium text-gray-900">500 cards</dd>
+              <div class="flex justify-between gap-3">
+                <dt style="color:#64748b;">Quantity</dt>
+                <dd id="summary-qty" class="font-medium" style="color:#e2e8f0;">500 cards</dd>
               </div>
             </dl>
           </div>
-        </div>
 
-      </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   </div>
 
-  <!-- ── Account modal ── -->
-  <div id="edit-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-y-auto" style="max-height: 90vh;">
-      <!-- Header -->
-      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
-        <h3 class="text-base font-semibold text-gray-900">My Account</h3>
-        <button id="edit-modal-close" class="text-gray-400 hover:text-gray-600 transition-colors">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-      <!-- Details section -->
-      <div class="px-6 py-6 space-y-4">
-        <!-- Email: preset/readonly -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1.5" for="acct-email">Email</label>
-          <input id="acct-email" type="email" readonly
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-400 text-sm cursor-not-allowed outline-none" />
-          <p class="text-xs text-gray-400 mt-1">Managed by your administrator</p>
-        </div>
-        <!-- Display name -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1.5" for="edit-display-name">Full Name</label>
-          <input id="edit-display-name" type="text" placeholder="Your name"
-            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
-        </div>
-        <!-- Phone -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1.5" for="acct-phone">Phone</label>
-          <input id="acct-phone" type="tel" placeholder="(000) 000-0000"
-            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm" />
-        </div>
-        <div class="flex gap-3 pt-2">
-          <button id="edit-modal-cancel"
-            class="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
-            Cancel
-          </button>
-          <button id="edit-modal-save"
-            class="flex-1 py-2.5 px-4 rounded-xl bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium transition-colors">
-            Save
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+</body>
+</Layout>
 
-  <script>
-    // ── Per-client theme ──
-    function applyClientTheme(theme) {
-      if (!theme) return;
-      if (theme.accent)    document.documentElement.style.setProperty('--ta',         theme.accent);
-      if (theme.dark)      document.documentElement.style.setProperty('--ta-h',       theme.dark);
-      if (theme.sidebarBg) document.documentElement.style.setProperty('--sidebar-bg', theme.sidebarBg);
-    }
+<style>
+  /* Form field styles */
+  .of-field { display: flex; flex-direction: column; gap: 5px; }
+  .of-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #94a3b8;
+    letter-spacing: .02em;
+  }
+  .of-input {
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 10px 13px;
+    font-size: 13.5px;
+    color: #f1f5f9;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 150ms;
+  }
+  .of-input:focus { border-color: var(--ta, #0ea5e9); }
+  .of-input::placeholder { color: #2d3f55; }
+  .of-input[readonly] { color: #475569; cursor: not-allowed; }
+  select.of-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+</style>
 
-    // ── Auth + pre-populate from clients.json ──
-    const CLIENT_DATA = JSON.parse(document.getElementById('client-data').textContent);
+<script>
+  // ── Per-client theme ──
+  function applyClientTheme(theme) {
+    if (!theme) return;
+    if (theme.accent)    document.documentElement.style.setProperty('--ta',         theme.accent);
+    if (theme.dark)      document.documentElement.style.setProperty('--ta-h',       theme.dark);
+    if (theme.sidebarBg) document.documentElement.style.setProperty('--sidebar-bg', theme.sidebarBg);
+  }
 
-    let currentUser = null;
+  const CLIENT_DATA = JSON.parse(document.getElementById('client-data').textContent);
+  let currentUser = null;
 
-    const FIELD_ROWS = {
-      name:      'row-name',
-      title:     'row-name',
-      email:     'row-email',
-      phone:     'row-phone-ext-cell',
-      extension: 'row-phone-ext-cell',
-      cell:      'row-phone-ext-cell',
-      website:   'row-website-address',
-      address:   'row-website-address',
+  const FIELD_ROWS = {
+    name:      'row-name',
+    title:     'row-name',
+    email:     'row-email',
+    phone:     'row-phone-ext-cell',
+    extension: 'row-phone-ext-cell',
+    cell:      'row-phone-ext-cell',
+    website:   'row-website-address',
+    address:   'row-website-address',
+  };
+
+  function prefill(email) {
+    const data = CLIENT_DATA[email] || {};
+    const allowedFields = data.fields || ['name','title','email','phone','extension','cell','website','address'];
+    const lockedFields  = data.locked || [];
+
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (val !== undefined && val !== null) {
+        el.value = val;
+        el.dispatchEvent(new Event('input'));
+      }
+      const fieldKey = id.replace('f-', '');
+      if (lockedFields.includes(fieldKey)) {
+        el.readOnly = true;
+        el.style.color  = '#475569';
+        el.style.cursor = 'not-allowed';
+      }
     };
 
-    function prefill(email) {
-      const data = CLIENT_DATA[email] || {};
-      const allowedFields = data.fields || ['name','title','email','phone','extension','cell','website','address'];
-      const lockedFields  = data.locked || [];
+    set('f-name',      data.full_name  || '');
+    set('f-title',     data.job_title  || '');
+    set('f-company',   data.company    || '');
+    set('f-email',     data.email      || email || '');
+    set('f-phone',     data.phone      || '');
+    set('f-extension', data.extension  || '');
+    set('f-cell',      data.cell       || '');
+    set('f-address',   data.address    || '');
+    set('f-website',   data.website    || '');
 
-      const set = (id, val) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (val !== undefined && val !== null) {
-          el.value = val;
-          el.dispatchEvent(new Event('input'));
-        }
-        const fieldKey = id.replace('f-', '');
-        if (lockedFields.includes(fieldKey)) {
-          el.readOnly = true;
-          el.classList.add('bg-gray-50', 'text-gray-500', 'cursor-not-allowed');
-        }
-      };
+    const visibleRows = new Set(allowedFields.map(f => FIELD_ROWS[f]).filter(Boolean));
+    document.querySelectorAll('[data-field-row]').forEach(row => {
+      row.style.display = visibleRows.has(row.id) ? '' : 'none';
+    });
+  }
 
-      set('f-name',      data.full_name  || '');
-      set('f-title',     data.job_title  || '');
-      set('f-company',   data.company    || '');
-      set('f-email',     data.email      || email || '');
-      set('f-phone',     data.phone      || '');
-      set('f-extension', data.extension  || '');
-      set('f-cell',      data.cell       || '');
-      set('f-address',   data.address    || '');
-      set('f-website',   data.website    || '');
-
-      const visibleRows = new Set(allowedFields.map(f => FIELD_ROWS[f]).filter(Boolean));
-      document.querySelectorAll('[data-field-row]').forEach(row => {
-        row.style.display = visibleRows.has(row.id) ? '' : 'none';
-      });
+  function getInitials(name, email) {
+    if (name && name.trim()) {
+      return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
     }
+    return (email || '?')[0].toUpperCase();
+  }
 
-    function getInitials(name, email) {
-      if (name && name.trim()) {
-        return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
-      }
-      return (email || '?')[0].toUpperCase();
-    }
+  function initUser(user) {
+    if (!user) { window.location.href = '/'; return; }
+    currentUser = user;
+    const data = CLIENT_DATA[user.email] || {};
+    const savedName   = localStorage.getItem('portal.displayName');
+    const displayName = savedName || data.full_name || user.user_metadata?.full_name || '';
 
-    function updateDisplayName(name, email) {
-      const initials = getInitials(name, email);
-      document.getElementById('user-initials').textContent = initials;
-      document.getElementById('nav-name').textContent      = name || email || '';
-      document.getElementById('dd-name').textContent       = name || email || '';
+    // Prefill name field only (sidebar handles its own user display)
+    if (displayName) {
       const nameField = document.getElementById('f-name');
-      if (nameField && !nameField.readOnly && name) {
-        nameField.value = name;
+      if (nameField && !nameField.readOnly) {
+        nameField.value = displayName;
         nameField.dispatchEvent(new Event('input'));
       }
     }
 
-    function updateClientLabel(clientName, email) {
-      const el = document.getElementById('dd-client-name');
-      if (el) el.textContent = clientName || email || '';
-    }
+    // Apply client-specific theme
+    if (data.theme) applyClientTheme(data.theme);
 
-    function initUser(user) {
-      if (!user) { window.location.href = '/'; return; }
-      currentUser = user;
-      const data = CLIENT_DATA[user.email] || {};
-      const savedName   = localStorage.getItem('portal.displayName');
-      const displayName = savedName || data.full_name || user.user_metadata?.full_name || '';
-      updateDisplayName(displayName, user.email);
-      document.getElementById('dd-email').textContent = user.email;
-      updateClientLabel(data.company || displayName, user.email);
+    prefill(user.email);
 
-      // Apply client-specific theme before prefill so colors are live
-      if (data.theme) applyClientTheme(data.theme);
-
-      prefill(user.email);
-      if (savedName) {
-        const nameField = document.getElementById('f-name');
-        if (nameField && !nameField.readOnly) {
-          nameField.value = savedName;
-          nameField.dispatchEvent(new Event('input'));
-        }
-      }
-      // Load client-specific SVG card template if available
-      if (data.card_template) {
-        const tryLoad = (attempts = 0) => {
-          if (window._portal?.loadSvgTemplate) {
-            window._portal.loadSvgTemplate(data.card_template);
-          } else if (attempts < 10) {
-            setTimeout(() => tryLoad(attempts + 1), 50);
-          }
-        };
-        tryLoad();
-      }
-      // Load draft order if coming from history page
-      const draft = localStorage.getItem('portal.draftOrder');
-      if (draft) {
-        localStorage.removeItem('portal.draftOrder');
-        try { loadOrder(JSON.parse(draft)); } catch {}
+    if (savedName) {
+      const nameField = document.getElementById('f-name');
+      if (nameField && !nameField.readOnly) {
+        nameField.value = savedName;
+        nameField.dispatchEvent(new Event('input'));
       }
     }
 
-    function getUserFromStorage() {
-      try { return JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch { return null; }
-    }
-
-    // ── Title case ──
-    function toTitleCase(str: string): string {
-      return str.replace(/\S+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
-    }
-
-    // ── Cell phone formatting: digits → (XXX) XXX-XXXX ──
-    function formatCellPhone(raw: string): string {
-      const d = raw.replace(/\D/g, '').slice(0, 10);
-      if (d.length < 4)  return d.length ? `(${d}` : '';
-      if (d.length < 7)  return `(${d.slice(0,3)}) ${d.slice(3)}`;
-      return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
-    }
-
-    // ── Extra people (max 5) ──
-    const MAX_PEOPLE = 5;
-
-    function updateAddBtn() {
-      const addBtn = document.getElementById('add-person-btn');
-      if (!addBtn) return;
-      const count = document.querySelectorAll('#extra-people-list [data-person]').length;
-      addBtn.style.display = count >= MAX_PEOPLE ? 'none' : '';
-    }
-
-    function renumberPeople() {
-      document.querySelectorAll('#extra-people-list [data-person]').forEach((row, i) => {
-        const label = row.querySelector('.person-num');
-        if (label) label.textContent = String(i + 2);
-      });
-    }
-
-    function addExtraPerson(defaults: { name?: string; title?: string; email?: string; phone?: string; extension?: string; cell?: string; address?: string } = {}) {
-      const list = document.getElementById('extra-people-list');
-      if (!list) return;
-      if (list.querySelectorAll('[data-person]').length >= MAX_PEOPLE) return;
-
-      const num = list.querySelectorAll('[data-person]').length + 2;
-      const id  = `person-${Date.now()}`;
-      const row = document.createElement('div');
-      row.dataset.person = id;
-      row.className = 'border border-gray-200 rounded-2xl p-5 bg-gray-50 space-y-4';
-      row.innerHTML = `
-        <div class="flex items-center justify-between">
-          <p class="text-sm font-semibold text-gray-700">Person <span class="person-num">${num}</span></p>
-          <button type="button" data-remove="${id}"
-            class="text-gray-300 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-50">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <input type="text" placeholder="Full Name" value="${defaults.name || ''}"
-            class="person-name w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white" />
-          <input type="text" placeholder="Job Title" value="${defaults.title || ''}"
-            class="person-title w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white" />
-        </div>
-        <input type="email" placeholder="Email" value="${defaults.email || ''}"
-          class="person-email w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white" />
-        <div class="grid grid-cols-3 gap-4">
-          <input type="tel" placeholder="Phone" value="${defaults.phone || ''}"
-            class="person-phone w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white" />
-          <input type="text" placeholder="Ext." value="${defaults.extension || ''}" inputmode="numeric"
-            class="person-ext w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white" />
-          <input type="tel" placeholder="Cell" value="${defaults.cell || ''}" inputmode="numeric"
-            class="person-cell w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white" />
-        </div>
-        <input type="text" placeholder="Address" value="${defaults.address || ''}"
-          class="person-address w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition text-sm bg-white" />`;
-      row.querySelector('[data-remove]')?.addEventListener('click', () => {
-        row.remove();
-        updateAddBtn();
-        renumberPeople();
-      });
-      list.appendChild(row);
-      updateAddBtn();
-      (row.querySelector('.person-name') as HTMLInputElement | null)?.focus();
-    }
-
-    function clearExtraPeople() {
-      const list = document.getElementById('extra-people-list');
-      if (list) list.innerHTML = '';
-      updateAddBtn();
-    }
-
-    function getExtraPeople() {
-      return Array.from(document.querySelectorAll('#extra-people-list [data-person]')).map(row => ({
-        name:      (row.querySelector('.person-name')    as HTMLInputElement | null)?.value.trim()  || '',
-        title:     (row.querySelector('.person-title')   as HTMLInputElement | null)?.value.trim()  || '',
-        email:     (row.querySelector('.person-email')   as HTMLInputElement | null)?.value.trim()  || '',
-        phone:     (row.querySelector('.person-phone')   as HTMLInputElement | null)?.value.trim()  || '',
-        extension: (row.querySelector('.person-ext')     as HTMLInputElement | null)?.value.trim()  || '',
-        cell:      (row.querySelector('.person-cell')    as HTMLInputElement | null)?.value.trim()  || '',
-        address:   (row.querySelector('.person-address') as HTMLInputElement | null)?.value.trim()  || '',
-      })).filter(p => p.name);
-    }
-
-    // ── Order history ──
-    function getOrders() {
-      try { return JSON.parse(localStorage.getItem('portal.orders') || '[]'); } catch { return []; }
-    }
-
-    function saveOrder(orderData) {
-      const orders = getOrders();
-      orders.unshift({ id: Date.now(), date: new Date().toLocaleDateString(), ...orderData });
-      localStorage.setItem('portal.orders', JSON.stringify(orders.slice(0, 200))); // keep last 200
-    }
-
-    function loadOrder(order) {
-      const setField = (id, val) => {
-        const el = document.getElementById(id);
-        if (el && !el.readOnly && val !== undefined) {
-          el.value = val;
-          el.dispatchEvent(new Event('input'));
+    // Load client-specific SVG card template if available
+    if (data.card_template) {
+      const tryLoad = (attempts = 0) => {
+        if (window._portal?.loadSvgTemplate) {
+          window._portal.loadSvgTemplate(data.card_template);
+        } else if (attempts < 10) {
+          setTimeout(() => tryLoad(attempts + 1), 50);
         }
       };
-      setField('f-name',      order.name);
-      setField('f-title',     order.title);
-      setField('f-email',     order.email);
-      setField('f-phone',     order.phone);
-      setField('f-extension', order.extension);
-      setField('f-cell',      order.cell);
-      setField('f-address',   order.address);
-      setField('f-notes',     order.notes);
-      setField('f-qty',       order.quantity);
+      tryLoad();
+    }
 
+    // Load draft order if coming from history page
+    const draft = localStorage.getItem('portal.draftOrder');
+    if (draft) {
+      localStorage.removeItem('portal.draftOrder');
+      try { loadOrder(JSON.parse(draft)); } catch {}
+    }
+  }
+
+  function getUserFromStorage() {
+    try { return JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch { return null; }
+  }
+
+  // ── Title case ──
+  function toTitleCase(str) {
+    return str.replace(/\S+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+  }
+
+  // ── Cell phone formatting ──
+  function formatCellPhone(raw) {
+    const d = raw.replace(/\D/g, '').slice(0, 10);
+    if (d.length < 4)  return d.length ? `(${d}` : '';
+    if (d.length < 7)  return `(${d.slice(0,3)}) ${d.slice(3)}`;
+    return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+  }
+
+  // ── Extra people (max 5) ──
+  const MAX_PEOPLE = 5;
+
+  function updateAddBtn() {
+    const addBtn = document.getElementById('add-person-btn');
+    if (!addBtn) return;
+    const count = document.querySelectorAll('#extra-people-list [data-person]').length;
+    addBtn.style.display = count >= MAX_PEOPLE ? 'none' : '';
+  }
+
+  function renumberPeople() {
+    document.querySelectorAll('#extra-people-list [data-person]').forEach((row, i) => {
+      const label = row.querySelector('.person-num');
+      if (label) label.textContent = String(i + 2);
+    });
+  }
+
+  function addExtraPerson(defaults = {}) {
+    const list = document.getElementById('extra-people-list');
+    if (!list) return;
+    if (list.querySelectorAll('[data-person]').length >= MAX_PEOPLE) return;
+
+    const num = list.querySelectorAll('[data-person]').length + 2;
+    const id  = `person-${Date.now()}`;
+    const row = document.createElement('div');
+    row.dataset.person = id;
+    row.style.cssText = 'border:1px solid #334155;border-radius:12px;padding:16px;background:#0f172a;';
+    row.className = 'space-y-3';
+    row.innerHTML = `
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-semibold" style="color:#e2e8f0;">Person <span class="person-num">${num}</span></p>
+        <button type="button" data-remove="${id}" style="color:#475569;padding:4px;border-radius:6px;background:transparent;border:none;cursor:pointer;"
+          onmouseover="this.style.color='#f87171';this.style.background='rgba(239,68,68,0.1)'"
+          onmouseout="this.style.color='#475569';this.style.background='transparent'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <input type="text" placeholder="Full Name" value="${defaults.name || ''}" class="of-input person-name" />
+        <input type="text" placeholder="Job Title" value="${defaults.title || ''}" class="of-input person-title" />
+      </div>
+      <input type="email" placeholder="Email" value="${defaults.email || ''}" class="of-input person-email" />
+      <div class="grid grid-cols-3 gap-3">
+        <input type="tel" placeholder="Phone" value="${defaults.phone || ''}" class="of-input person-phone" />
+        <input type="text" placeholder="Ext." value="${defaults.extension || ''}" inputmode="numeric" class="of-input person-ext" />
+        <input type="tel" placeholder="Cell" value="${defaults.cell || ''}" inputmode="numeric" class="of-input person-cell" />
+      </div>
+      <input type="text" placeholder="Address" value="${defaults.address || ''}" class="of-input person-address" />`;
+    row.querySelector('[data-remove]')?.addEventListener('click', () => {
+      row.remove();
+      updateAddBtn();
+      renumberPeople();
+    });
+    list.appendChild(row);
+    updateAddBtn();
+    row.querySelector('.person-name')?.focus();
+  }
+
+  function clearExtraPeople() {
+    const list = document.getElementById('extra-people-list');
+    if (list) list.innerHTML = '';
+    updateAddBtn();
+  }
+
+  function getExtraPeople() {
+    return Array.from(document.querySelectorAll('#extra-people-list [data-person]')).map(row => ({
+      name:      row.querySelector('.person-name')?.value.trim()  || '',
+      title:     row.querySelector('.person-title')?.value.trim() || '',
+      email:     row.querySelector('.person-email')?.value.trim() || '',
+      phone:     row.querySelector('.person-phone')?.value.trim() || '',
+      extension: row.querySelector('.person-ext')?.value.trim()   || '',
+      cell:      row.querySelector('.person-cell')?.value.trim()   || '',
+      address:   row.querySelector('.person-address')?.value.trim()|| '',
+    })).filter(p => p.name);
+  }
+
+  // ── Order history ──
+  function getOrders() {
+    try { return JSON.parse(localStorage.getItem('portal.orders') || '[]'); } catch { return []; }
+  }
+
+  function saveOrder(orderData) {
+    const orders = getOrders();
+    orders.unshift({ id: Date.now(), date: new Date().toLocaleDateString(), ...orderData });
+    localStorage.setItem('portal.orders', JSON.stringify(orders.slice(0, 200)));
+  }
+
+  function loadOrder(order) {
+    const setField = (id, val) => {
+      const el = document.getElementById(id);
+      if (el && !el.readOnly && val !== undefined) {
+        el.value = val;
+        el.dispatchEvent(new Event('input'));
+      }
+    };
+    setField('f-name',      order.name);
+    setField('f-title',     order.title);
+    setField('f-email',     order.email);
+    setField('f-phone',     order.phone);
+    setField('f-extension', order.extension);
+    setField('f-cell',      order.cell);
+    setField('f-address',   order.address);
+    setField('f-notes',     order.notes);
+    setField('f-qty',       order.quantity);
+    clearExtraPeople();
+    (order.extra || []).forEach(p => addExtraPerson(p));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.lucide) window.lucide.createIcons();
+
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', (user) => initUser(user || getUserFromStorage()));
+    } else {
+      initUser(getUserFromStorage());
+    }
+
+    // ── Refresh / reset ──
+    document.getElementById('refresh-btn')?.addEventListener('click', () => {
+      if (!currentUser) return;
+      const notesEl = document.getElementById('f-notes');
+      if (notesEl) notesEl.value = '';
       clearExtraPeople();
-      (order.extra || []).forEach(p => addExtraPerson(p));
+      prefill(currentUser.email);
+      const btn = document.getElementById('refresh-btn');
+      btn.style.color = '#22c55e';
+      setTimeout(() => btn.style.color = '#64748b', 800);
+    });
 
-      document.getElementById('edit-modal')?.classList.add('hidden');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      if (window.lucide) window.lucide.createIcons();
-
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on('init', (user) => initUser(user || getUserFromStorage()));
-      } else {
-        initUser(getUserFromStorage());
+    // ── Title case on name blur ──
+    document.getElementById('f-name')?.addEventListener('blur', (e) => {
+      const titled = toTitleCase(e.target.value);
+      if (titled !== e.target.value) {
+        e.target.value = titled;
+        e.target.dispatchEvent(new Event('input'));
       }
+    });
 
-      // ── Mobile sidebar ──
-      const mobileOverlay = document.getElementById('mobile-sidebar-overlay');
-      const openMobileSidebar  = () => mobileOverlay?.classList.remove('hidden');
-      const closeMobileSidebar = () => mobileOverlay?.classList.add('hidden');
-      document.getElementById('mobile-menu-btn')?.addEventListener('click', openMobileSidebar);
-      document.getElementById('mobile-sidebar-close')?.addEventListener('click', closeMobileSidebar);
-      document.getElementById('sidebar-backdrop')?.addEventListener('click', closeMobileSidebar);
+    // ── Extension: digits only ──
+    document.getElementById('f-extension')?.addEventListener('input', (e) => {
+      const clean = e.target.value.replace(/\D/g, '');
+      if (clean !== e.target.value) e.target.value = clean;
+    });
 
-      // ── User flyout menu ──
-      const userFlyout  = document.getElementById('user-flyout');
-      const userMenuBtn = document.getElementById('user-menu-btn');
-      userMenuBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        userFlyout?.classList.toggle('hidden');
-      });
-      document.addEventListener('click', () => userFlyout?.classList.add('hidden'));
-      userFlyout?.addEventListener('click', (e) => e.stopPropagation());
+    // ── Cell: auto-format ──
+    document.getElementById('f-cell')?.addEventListener('input', (e) => {
+      const formatted = formatCellPhone(e.target.value);
+      if (formatted !== e.target.value) {
+        e.target.value = formatted;
+        e.target.dispatchEvent(new Event('input'));
+      }
+    });
 
-      // ── Account modal ──
-      const editModal = document.getElementById('edit-modal');
+    // ── Add person ──
+    document.getElementById('add-person-btn')?.addEventListener('click', () => addExtraPerson());
+  });
 
-      const openEditModal = () => {
-        closeMobileSidebar();
-        userFlyout?.classList.add('hidden');
-        const saved = localStorage.getItem('portal.displayName')
-          || (currentUser ? (CLIENT_DATA[currentUser.email]?.full_name || '') : '');
-        (document.getElementById('edit-display-name') as HTMLInputElement).value = saved;
-        (document.getElementById('acct-email') as HTMLInputElement).value = currentUser?.email || '';
-        (document.getElementById('acct-phone') as HTMLInputElement).value =
-          localStorage.getItem('portal.phone') || (currentUser ? (CLIENT_DATA[currentUser.email]?.phone || '') : '');
-        editModal?.classList.remove('hidden');
-        setTimeout(() => document.getElementById('edit-display-name')?.focus(), 50);
-      };
-      document.getElementById('nav-account-btn')?.addEventListener('click', openEditModal);
-      document.getElementById('mobile-nav-account-btn')?.addEventListener('click', openEditModal);
+  // Expose to submission script
+  window._portal = { getExtraPeople, saveOrder, clearExtraPeople };
+</script>
 
-      const closeModal = () => editModal?.classList.add('hidden');
-      document.getElementById('edit-modal-close')?.addEventListener('click', closeModal);
-      document.getElementById('edit-modal-cancel')?.addEventListener('click', closeModal);
-      editModal?.addEventListener('click', (e) => { if (e.target === editModal) closeModal(); });
+<script>
+  // ── Live Preview ──
+  const fields = {
+    name:      document.getElementById('f-name'),
+    title:     document.getElementById('f-title'),
+    company:   document.getElementById('f-company'),
+    email:     document.getElementById('f-email'),
+    phone:     document.getElementById('f-phone'),
+    extension: document.getElementById('f-extension'),
+    cell:      document.getElementById('f-cell'),
+    website:   document.getElementById('f-website'),
+    address:   document.getElementById('f-address'),
+    qty:       document.getElementById('f-qty'),
+  };
 
-      document.getElementById('edit-modal-save')?.addEventListener('click', () => {
-        const name  = (document.getElementById('edit-display-name') as HTMLInputElement).value.trim();
-        const phone = (document.getElementById('acct-phone') as HTMLInputElement).value.trim();
-        if (name) {
-          localStorage.setItem('portal.displayName', name);
-          updateDisplayName(name, currentUser?.email);
+  const placeholders = {
+    name:    'Your Name',
+    title:   'Job Title',
+    company: 'Company Name',
+    email:   'email@company.com',
+    phone:   '+1 (555) 000-0000',
+    website: 'www.company.com',
+    address: '',
+  };
+
+  let currentStyle = 'classic';
+  let svgTemplateHTML = null;
+
+  async function loadSvgTemplate(url) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return;
+      svgTemplateHTML = await res.text();
+      const container = document.getElementById('svg-preview');
+      if (container) {
+        container.innerHTML = svgTemplateHTML;
+        const svg = container.querySelector('svg');
+        if (svg) { svg.style.width = '100%'; svg.style.height = '100%'; }
+        container.classList.remove('hidden');
+        document.querySelectorAll('.card-style').forEach(el => el.style.display = 'none');
+      }
+      updateSvgPreview();
+    } catch (e) {
+      console.warn('SVG template load failed, using generic preview', e);
+    }
+  }
+
+  function svgSet(id, text, fallback = '') {
+    const el = document.getElementById('svg-preview')?.querySelector(`#${id}`);
+    if (!el) return;
+    el.textContent = text || fallback;
+    el.setAttribute('visibility', (text || fallback) ? 'visible' : 'hidden');
+  }
+
+  function updateSvgPreview() {
+    if (!svgTemplateHTML) return;
+    const v = (id) => fields[id]?.value?.trim() || '';
+    svgSet('svg-name',  v('name'),  'First Last Name');
+    svgSet('svg-title', v('title'), 'Enter Title');
+    const email = v('email');
+    svgSet('svg-email', email ? `e : ${email}` : '', '');
+    const phone = v('phone');
+    const ext   = v('extension');
+    svgSet('svg-phone', phone ? `t : ${phone}${ext ? `  x ${ext}` : ''}` : '', '');
+    const cell = v('cell');
+    svgSet('svg-cell', cell ? `c : ${cell}` : '', '');
+  }
+
+  function updatePreview() {
+    const vals = {
+      name:    fields.name?.value    || placeholders.name,
+      title:   fields.title?.value   || placeholders.title,
+      company: fields.company?.value || placeholders.company,
+      email:   fields.email?.value   || placeholders.email,
+      phone:   fields.phone?.value   || placeholders.phone,
+      website: fields.website?.value || placeholders.website,
+      address: fields.address?.value || '',
+    };
+
+    ['c','d','b'].forEach(prefix => {
+      const set  = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      const show = (id, vis) => { const el = document.getElementById(id); if (el) el.style.display = vis ? '' : 'none'; };
+      set(`${prefix}-name`,    vals.name);
+      set(`${prefix}-title`,   vals.title);
+      set(`${prefix}-company`, vals.company);
+      set(`${prefix}-email`,   vals.email);
+      set(`${prefix}-phone`,   vals.phone);
+      set(`${prefix}-website`, vals.website);
+      set(`${prefix}-address`, vals.address);
+      show(`${prefix}-website-row`, !!vals.website);
+      show(`${prefix}-address-row`, !!vals.address);
+    });
+
+    if (svgTemplateHTML) updateSvgPreview();
+
+    const summaryQty   = document.getElementById('summary-qty');
+    const summaryName  = document.getElementById('summary-name');
+    const summaryTitle = document.getElementById('summary-title');
+    if (summaryQty)   summaryQty.textContent   = `${Number(fields.qty?.value || 500).toLocaleString()} cards`;
+    if (summaryName)  summaryName.textContent  = fields.name?.value?.trim()  || '—';
+    if (summaryTitle) summaryTitle.textContent = fields.title?.value?.trim() || '—';
+  }
+
+  Object.values(fields).forEach(el => { if (el) el.addEventListener('input', updatePreview); });
+  updatePreview();
+
+  window._portal = window._portal || {};
+  window._portal.loadSvgTemplate = loadSvgTemplate;
+</script>
+
+<script>
+  // ── Form submission to Netlify Forms ──
+  document.getElementById('order-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const submitBtn     = document.getElementById('submit-btn');
+    const submitText    = document.getElementById('submit-text');
+    const submitLoading = document.getElementById('submit-loading');
+    const errorDiv      = document.getElementById('form-error');
+
+    const required = ['f-name','f-title','f-email'];
+    const missing  = required.filter(id => !document.getElementById(id)?.value.trim());
+    if (missing.length) {
+      if (errorDiv) { errorDiv.textContent = 'Please fill in all required fields.'; errorDiv.classList.remove('hidden'); }
+      return;
+    }
+    errorDiv?.classList.add('hidden');
+
+    const storedUser = (() => { try { return JSON.parse(localStorage.getItem('gotrue.user') || '{}'); } catch { return {}; } })();
+    const user = window.netlifyIdentity?.currentUser?.();
+    const orderedBy = user?.email || storedUser.email || 'unknown';
+
+    const nameVal      = document.getElementById('f-name')?.value      || '';
+    const titleVal     = document.getElementById('f-title')?.value     || '';
+    const companyVal   = document.getElementById('f-company')?.value   || '';
+    const emailVal     = document.getElementById('f-email')?.value     || '';
+    const phoneVal     = document.getElementById('f-phone')?.value     || '';
+    const extensionVal = document.getElementById('f-extension')?.value || '';
+    const cellVal      = document.getElementById('f-cell')?.value      || '';
+    const addressVal   = document.getElementById('f-address')?.value   || '';
+    const styleVal     = document.getElementById('f-style')?.value     || 'classic';
+    const accentVal    = document.getElementById('f-accent')?.value    || '';
+    const qtyVal       = document.getElementById('f-qty')?.value       || '500';
+    const notesVal     = document.getElementById('f-notes')?.value     || '';
+    const extraPeople  = window._portal?.getExtraPeople?.() ?? [];
+
+    const formData = new FormData();
+    formData.append('form-name',         'business-card-order');
+    formData.append('name',              nameVal);
+    formData.append('job_title',         titleVal);
+    formData.append('company',           companyVal);
+    formData.append('email',             emailVal);
+    formData.append('phone',             phoneVal);
+    formData.append('extension',         extensionVal);
+    formData.append('cell',              cellVal);
+    formData.append('address',           addressVal);
+    formData.append('card_style',        styleVal);
+    formData.append('accent_color',      accentVal);
+    formData.append('quantity',          qtyVal);
+    formData.append('notes',             notesVal);
+    formData.append('ordered_by',        orderedBy);
+    formData.append('additional_people', JSON.stringify(extraPeople));
+
+    if (submitBtn)  submitBtn.disabled = true;
+    submitText?.classList.add('hidden');
+    submitLoading?.classList.remove('hidden');
+
+    try {
+      const response = await fetch('/', { method: 'POST', body: formData });
+      if (response.ok) {
+        if (window._portal?.saveOrder) {
+          const shared = { company: companyVal, quantity: qtyVal, notes: notesVal };
+          window._portal.saveOrder({
+            name: nameVal, title: titleVal, email: emailVal,
+            phone: phoneVal, extension: extensionVal, cell: cellVal,
+            address: addressVal, ...shared,
+          });
+          extraPeople.forEach(p => window._portal.saveOrder({ ...shared, ...p }));
         }
-        if (phone) localStorage.setItem('portal.phone', phone);
-        closeModal();
-      });
-
-      document.getElementById('edit-display-name')?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') document.getElementById('edit-modal-save')?.click();
-        if (e.key === 'Escape') closeModal();
-      });
-
-      const doLogout = () => {
-        localStorage.removeItem('gotrue.user');
-        localStorage.removeItem('portal.displayName');
-        window.netlifyIdentity?.logout();
-        window.location.href = '/';
-      };
-      document.getElementById('nav-logout')?.addEventListener('click', doLogout);
-      document.getElementById('mobile-nav-logout')?.addEventListener('click', doLogout);
-
-      // ── Refresh / reset ──
-      document.getElementById('refresh-btn')?.addEventListener('click', () => {
-        if (!currentUser) return;
         const notesEl = document.getElementById('f-notes');
         if (notesEl) notesEl.value = '';
-        clearExtraPeople();
-        prefill(currentUser.email);
-        const btn = document.getElementById('refresh-btn');
-        btn.classList.add('text-green-600');
-        setTimeout(() => btn.classList.remove('text-green-600'), 800);
-      });
-
-      // ── Title case on name blur ──
-      document.getElementById('f-name')?.addEventListener('blur', (e) => {
-        const input = e.target as HTMLInputElement;
-        const titled = toTitleCase(input.value);
-        if (titled !== input.value) {
-          input.value = titled;
-          input.dispatchEvent(new Event('input'));
-        }
-      });
-
-      // ── Extension: digits only ──
-      document.getElementById('f-extension')?.addEventListener('input', (e) => {
-        const input = e.target as HTMLInputElement;
-        const clean = input.value.replace(/\D/g, '');
-        if (clean !== input.value) input.value = clean;
-      });
-
-      // ── Cell: digits only, auto-format as (XXX) XXX-XXXX ──
-      document.getElementById('f-cell')?.addEventListener('input', (e) => {
-        const input = e.target as HTMLInputElement;
-        const formatted = formatCellPhone(input.value);
-        if (formatted !== input.value) {
-          input.value = formatted;
-          input.dispatchEvent(new Event('input'));
-        }
-      });
-
-      // ── Add person (max 1) ──
-      document.getElementById('add-person-btn')?.addEventListener('click', () => addExtraPerson());
-    });
-
-    // Expose to submission script (separate Astro module scope)
-    window._portal = { getExtraPeople, saveOrder, clearExtraPeople };
-  </script>
-
-  <script>
-    // ── Live Preview ──
-    const fields = {
-      name:      document.getElementById('f-name'),
-      title:     document.getElementById('f-title'),
-      company:   document.getElementById('f-company'),
-      email:     document.getElementById('f-email'),
-      phone:     document.getElementById('f-phone'),
-      extension: document.getElementById('f-extension'),
-      cell:      document.getElementById('f-cell'),
-      website:   document.getElementById('f-website'),
-      address:   document.getElementById('f-address'),
-      qty:       document.getElementById('f-qty'),
-    };
-
-    const placeholders = {
-      name:    'Your Name',
-      title:   'Job Title',
-      company: 'Company Name',
-      email:   'email@company.com',
-      phone:   '+1 (555) 000-0000',
-      website: 'www.company.com',
-      address: '',
-    };
-
-    let currentStyle = 'classic';
-    let svgTemplateHTML: string | null = null; // cached raw SVG markup
-
-    // ── SVG template preview ──
-    async function loadSvgTemplate(url: string) {
-      try {
-        const res = await fetch(url);
-        if (!res.ok) return;
-        svgTemplateHTML = await res.text();
-        const container = document.getElementById('svg-preview');
-        if (container) {
-          container.innerHTML = svgTemplateHTML;
-          // Make the SVG fill its container
-          const svg = container.querySelector('svg');
-          if (svg) {
-            svg.style.width  = '100%';
-            svg.style.height = '100%';
-          }
-          container.classList.remove('hidden');
-          // Hide the generic HTML card styles
-          document.querySelectorAll('.card-style').forEach(el => el.style.display = 'none');
-        }
-        updateSvgPreview();
-      } catch (e) {
-        console.warn('SVG template load failed, using generic preview', e);
+        window._portal?.clearExtraPeople?.();
+        window.location.href = '/success';
+      } else {
+        throw new Error(`Server returned ${response.status}`);
       }
+    } catch (err) {
+      if (errorDiv) { errorDiv.textContent = 'Something went wrong. Please try again or contact us directly.'; errorDiv.classList.remove('hidden'); }
+      if (submitBtn)  submitBtn.disabled = false;
+      submitText?.classList.remove('hidden');
+      submitLoading?.classList.add('hidden');
     }
-
-    function svgSet(id: string, text: string, fallback = '') {
-      const el = document.getElementById('svg-preview')?.querySelector(`#${id}`);
-      if (!el) return;
-      el.textContent = text || fallback;
-      el.setAttribute('visibility', (text || fallback) ? 'visible' : 'hidden');
-    }
-
-    function updateSvgPreview() {
-      if (!svgTemplateHTML) return;
-      const v = (id: string) => (fields[id as keyof typeof fields] as HTMLInputElement | null)?.value?.trim() || '';
-
-      svgSet('svg-name',  v('name'),  'First Last Name');
-      svgSet('svg-title', v('title'), 'Enter Title');
-
-      // e : email
-      const email = v('email');
-      svgSet('svg-email', email ? `e : ${email}` : '', '');
-
-      // t : phone  x  ext
-      const phone = v('phone');
-      const ext   = v('extension');
-      svgSet('svg-phone', phone ? `t : ${phone}${ext ? `  x ${ext}` : ''}` : '', '');
-
-      // c : cell (hidden if empty)
-      const cell = v('cell');
-      svgSet('svg-cell', cell ? `c : ${cell}` : '', '');
-    }
-
-    // ── Generic HTML preview ──
-    function updatePreview() {
-      const vals = {
-        name:    fields.name?.value    || placeholders.name,
-        title:   fields.title?.value   || placeholders.title,
-        company: fields.company?.value || placeholders.company,
-        email:   fields.email?.value   || placeholders.email,
-        phone:   fields.phone?.value   || placeholders.phone,
-        website: fields.website?.value || placeholders.website,
-        address: fields.address?.value || '',
-      };
-
-      ['c','d','b'].forEach(prefix => {
-        const set  = (id: string, val: string)       => { const el = document.getElementById(id); if (el) el.textContent = val; };
-        const show = (id: string, visible: boolean)  => { const el = document.getElementById(id); if (el) el.style.display = visible ? '' : 'none'; };
-        set(`${prefix}-name`,    vals.name);
-        set(`${prefix}-title`,   vals.title);
-        set(`${prefix}-company`, vals.company);
-        set(`${prefix}-email`,   vals.email);
-        set(`${prefix}-phone`,   vals.phone);
-        set(`${prefix}-website`, vals.website);
-        set(`${prefix}-address`, vals.address);
-        show(`${prefix}-website-row`, !!vals.website);
-        show(`${prefix}-address-row`, !!vals.address);
-      });
-
-      if (svgTemplateHTML) updateSvgPreview();
-
-      const summaryQty   = document.getElementById('summary-qty');
-      const summaryName  = document.getElementById('summary-name');
-      const summaryTitle = document.getElementById('summary-title');
-      if (summaryQty)   summaryQty.textContent   = `${Number(fields.qty?.value || 500).toLocaleString()} cards`;
-      if (summaryName)  summaryName.textContent   = fields.name?.value?.trim()  || '—';
-      if (summaryTitle) summaryTitle.textContent  = fields.title?.value?.trim() || '—';
-    }
-
-    // Wire up all form inputs
-    Object.values(fields).forEach(el => {
-      if (el) el.addEventListener('input', updatePreview);
-    });
-
-    updatePreview();
-
-    // Expose so auth script can trigger SVG load after user is resolved
-    window._portal = window._portal || {};
-    window._portal.loadSvgTemplate = loadSvgTemplate;
-  </script>
-
-  <script>
-    // ── Form submission to Netlify Forms ──
-    document.getElementById('order-form')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const submitBtn     = document.getElementById('submit-btn')     as HTMLButtonElement | null;
-      const submitText    = document.getElementById('submit-text')    as HTMLElement | null;
-      const submitLoading = document.getElementById('submit-loading') as HTMLElement | null;
-      const errorDiv      = document.getElementById('form-error')     as HTMLElement | null;
-
-      const required = ['f-name','f-title','f-email'];
-      const missing  = required.filter(id => !document.getElementById(id)?.value.trim());
-      if (missing.length) {
-        if (errorDiv) { errorDiv.textContent = 'Please fill in all required fields.'; errorDiv.classList.remove('hidden'); }
-        return;
-      }
-      errorDiv?.classList.add('hidden');
-
-      const storedUser = (() => { try { return JSON.parse(localStorage.getItem('gotrue.user') || '{}'); } catch { return {}; } })();
-      const user = window.netlifyIdentity?.currentUser?.() as { email?: string } | null | undefined;
-      const orderedBy = user?.email || storedUser.email || 'unknown';
-
-      const nameVal      = document.getElementById('f-name')?.value      || '';
-      const titleVal     = document.getElementById('f-title')?.value     || '';
-      const companyVal   = document.getElementById('f-company')?.value   || '';
-      const emailVal     = document.getElementById('f-email')?.value     || '';
-      const phoneVal     = document.getElementById('f-phone')?.value     || '';
-      const extensionVal = document.getElementById('f-extension')?.value || '';
-      const cellVal      = document.getElementById('f-cell')?.value      || '';
-      const addressVal   = document.getElementById('f-address')?.value   || '';
-      const styleVal     = document.getElementById('f-style')?.value     || 'classic';
-      const accentVal    = document.getElementById('f-accent')?.value    || '';
-      const qtyVal       = document.getElementById('f-qty')?.value       || '500';
-      const notesVal     = document.getElementById('f-notes')?.value     || '';
-      const extraPeople  = window._portal?.getExtraPeople?.() ?? [];
-
-      const formData = new FormData();
-      formData.append('form-name',          'business-card-order');
-      formData.append('name',               nameVal);
-      formData.append('job_title',          titleVal);
-      formData.append('company',            companyVal);
-      formData.append('email',              emailVal);
-      formData.append('phone',              phoneVal);
-      formData.append('extension',          extensionVal);
-      formData.append('cell',               cellVal);
-      formData.append('address',            addressVal);
-      formData.append('card_style',         styleVal);
-      formData.append('accent_color',       accentVal);
-      formData.append('quantity',           qtyVal);
-      formData.append('notes',              notesVal);
-      formData.append('ordered_by',         orderedBy);
-      formData.append('additional_people',  JSON.stringify(extraPeople));
-
-      if (submitBtn)     submitBtn.disabled = true;
-      submitText?.classList.add('hidden');
-      submitLoading?.classList.remove('hidden');
-
-      try {
-        const response = await fetch('/', { method: 'POST', body: formData });
-        if (response.ok) {
-          // Save one history entry per person
-          if (window._portal?.saveOrder) {
-            const shared = { company: companyVal, quantity: qtyVal, notes: notesVal };
-            window._portal.saveOrder({
-              name: nameVal, title: titleVal, email: emailVal,
-              phone: phoneVal, extension: extensionVal, cell: cellVal,
-              address: addressVal, ...shared,
-            });
-            extraPeople.forEach(p => {
-              window._portal.saveOrder({ ...shared, ...p });
-            });
-          }
-          // Reset form state before redirect
-          const notesEl = document.getElementById('f-notes') as HTMLInputElement | null;
-          if (notesEl) notesEl.value = '';
-          window._portal?.clearExtraPeople?.();
-          window.location.href = '/success';
-        } else {
-          throw new Error(`Server returned ${response.status}`);
-        }
-      } catch (err) {
-        if (errorDiv) { errorDiv.textContent = 'Something went wrong. Please try again or contact us directly.'; errorDiv.classList.remove('hidden'); }
-        if (submitBtn)  submitBtn.disabled = false;
-        submitText?.classList.remove('hidden');
-        submitLoading?.classList.add('hidden');
-      }
-    });
-  </script>
-</Layout>
+  });
+</script>

@@ -39,10 +39,34 @@
   --transition-fast:    all 200ms ease;
 }
 
+/* ── Dark dashboard palette ── */
+:root {
+  --dash-bg:         #0f172a;
+  --dash-surface:    #1e293b;
+  --dash-surface-2:  #273549;
+  --dash-border:     #334155;
+  --dash-text:       #e2e8f0;
+  --dash-text-muted: #94a3b8;
+  --dash-text-dim:   #475569;
+
+  /* Per-client accent (defaults to sky-500) */
+  --ta:   #0ea5e9;
+  --ta-h: #0284c7;
+
+  /* Sidebar background (override per client) */
+  --sidebar-bg: #1e293b;
+}
+
 @layer base {
   html, body {
     font-family: var(--font-family-base);
     @apply bg-gray-50 text-gray-900;
+  }
+
+  /* Pages that opt into dark dashboard */
+  body.dash {
+    background: var(--dash-bg);
+    color: var(--dash-text);
   }
 }
 

@@ -1,0 +1,283 @@
+---
+/**
+ * Sidebar.astro — shared dark dashboard sidebar
+ * Props:
+ *   activePage: 'dashboard' | 'order' | 'history' | 'account' | 'artwork'
+ */
+interface Props {
+  activePage?: string;
+}
+const { activePage = '' } = Astro.props;
+
+function active(page: string) {
+  return activePage === page
+    ? 'sidebar-link sidebar-link-active'
+    : 'sidebar-link';
+}
+---
+
+<!-- ═══════════════════════════════════════════
+     MOBILE TOP BAR
+════════════════════════════════════════════ -->
+<div id="mobile-topbar" class="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 h-14" style="background:#1e293b;border-bottom:1px solid #334155;">
+  <button id="mobile-menu-btn" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-colors" aria-label="Open menu">
+    <i data-lucide="menu" style="width:20px;height:20px;"></i>
+  </button>
+  <span class="text-sm font-semibold text-white tracking-wide">ION Portal</span>
+  <div style="width:36px;"></div><!-- spacer -->
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MOBILE OVERLAY
+════════════════════════════════════════════ -->
+<div id="sidebar-overlay" class="fixed inset-0 z-40 bg-black/60 hidden md:hidden" style="backdrop-filter:blur(2px);"></div>
+
+<!-- ═══════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════ -->
+<aside id="sidebar" class="
+  fixed top-0 left-0 h-full z-50 flex flex-col
+  w-64 -translate-x-full md:translate-x-0 transition-transform duration-300
+" style="background:var(--sidebar-bg,#1e293b);border-right:1px solid #334155;">
+
+  <!-- Logo / brand -->
+  <div class="flex items-center gap-3 px-5 h-16 shrink-0" style="border-bottom:1px solid #334155;">
+    <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:var(--ta,#0ea5e9);">
+      <i data-lucide="layers" style="width:16px;height:16px;color:#fff;"></i>
+    </div>
+    <div>
+      <div class="text-sm font-bold text-white leading-none">ION Portal</div>
+      <div class="text-xs mt-0.5" style="color:#64748b;" id="sidebar-client-name">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+
+    <!-- HOME -->
+    <div>
+      <div class="sidebar-section-label">Home</div>
+      <a href="/dashboard" class={active('dashboard')}>
+        <i data-lucide="layout-dashboard" class="sidebar-icon"></i>
+        Dashboard
+      </a>
+    </div>
+
+    <!-- ORDERS -->
+    <div>
+      <div class="sidebar-section-label">Orders</div>
+      <a href="/order" class={active('order')}>
+        <i data-lucide="credit-card" class="sidebar-icon"></i>
+        Business Cards
+      </a>
+      <a href="/artwork" class={`${active('artwork')} sidebar-soon`} aria-disabled="true" tabindex="-1">
+        <i data-lucide="image" class="sidebar-icon"></i>
+        Artwork Request
+        <span class="sidebar-badge">Soon</span>
+      </a>
+      <a href="/history" class={active('history')}>
+        <i data-lucide="clock" class="sidebar-icon"></i>
+        Order History
+      </a>
+    </div>
+
+    <!-- ADMIN — hidden until role added -->
+    <div id="sidebar-admin-section" class="hidden">
+      <div class="sidebar-section-label">Admin</div>
+      <a href="/admin" class={active('admin')}>
+        <i data-lucide="shield" class="sidebar-icon"></i>
+        Admin Panel
+      </a>
+    </div>
+
+  </nav>
+
+  <!-- User flyout area -->
+  <div class="shrink-0 px-3 pb-4" style="border-top:1px solid #334155;">
+    <button id="sidebar-user-btn" class="w-full flex items-center gap-3 px-3 py-3 rounded-lg mt-3 transition-colors hover:bg-slate-700/50 text-left">
+      <div id="sidebar-avatar" class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0" style="background:var(--ta,#0ea5e9);color:#fff;">
+        ?
+      </div>
+      <div class="flex-1 min-w-0">
+        <div id="sidebar-user-name" class="text-sm font-medium text-white truncate">Loading…</div>
+        <div id="sidebar-user-email" class="text-xs truncate" style="color:#64748b;">—</div>
+      </div>
+      <i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:#64748b;shrink:0;"></i>
+    </button>
+
+    <!-- Flyout menu -->
+    <div id="sidebar-flyout" class="hidden mt-1 rounded-lg overflow-hidden" style="background:#0f172a;border:1px solid #334155;">
+      <a href="/account" class="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700/50 transition-colors">
+        <i data-lucide="user" style="width:14px;height:14px;"></i>
+        My Account
+      </a>
+      <div style="height:1px;background:#334155;margin:0 12px;"></div>
+      <button id="sidebar-signout-btn" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700/50 transition-colors">
+        <i data-lucide="log-out" style="width:14px;height:14px;"></i>
+        Sign Out
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════
+     SIDEBAR STYLES
+════════════════════════════════════════════ -->
+<style>
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #475569;
+    padding: 0 12px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: background 150ms, color 150ms;
+    margin-bottom: 2px;
+  }
+
+  .sidebar-link:hover {
+    background: rgba(255,255,255,0.06);
+    color: #e2e8f0;
+  }
+
+  .sidebar-link-active {
+    background: rgba(14,165,233,0.15) !important;
+    color: #38bdf8 !important;
+  }
+
+  .sidebar-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-soon {
+    pointer-events: none;
+    opacity: 0.45;
+  }
+
+  .sidebar-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 99px;
+    background: rgba(14,165,233,0.2);
+    color: #38bdf8;
+    letter-spacing: 0.03em;
+  }
+</style>
+
+<!-- ═══════════════════════════════════════════
+     SIDEBAR SCRIPTS
+════════════════════════════════════════════ -->
+<script>
+(function() {
+  // ── Mobile toggle ──
+  const btn   = document.getElementById('mobile-menu-btn');
+  const sb    = document.getElementById('sidebar');
+  const ov    = document.getElementById('sidebar-overlay');
+
+  function openSidebar() {
+    sb.classList.remove('-translate-x-full');
+    ov.classList.remove('hidden');
+  }
+  function closeSidebar() {
+    sb.classList.add('-translate-x-full');
+    ov.classList.add('hidden');
+  }
+
+  btn?.addEventListener('click', openSidebar);
+  ov?.addEventListener('click', closeSidebar);
+
+  // ── User flyout ──
+  const userBtn = document.getElementById('sidebar-user-btn');
+  const flyout  = document.getElementById('sidebar-flyout');
+
+  userBtn?.addEventListener('click', () => {
+    flyout?.classList.toggle('hidden');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!userBtn?.contains(e.target) && !flyout?.contains(e.target)) {
+      flyout?.classList.add('hidden');
+    }
+  });
+
+  // ── Sign out ──
+  document.getElementById('sidebar-signout-btn')?.addEventListener('click', () => {
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.logout();
+    } else {
+      localStorage.removeItem('gotrue.user');
+      window.location.href = '/';
+    }
+  });
+
+  // ── Populate user info ──
+  function initSidebarUser() {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('gotrue.user') || 'null'); } catch(e) {}
+
+    if (!user) {
+      window.location.href = '/';
+      return;
+    }
+
+    const email     = user.email || '';
+    const meta      = user.user_metadata || {};
+    const firstName = localStorage.getItem('portal.firstName') || meta.first_name || '';
+    const lastName  = localStorage.getItem('portal.lastName')  || meta.last_name  || '';
+    const fullName  = (firstName + ' ' + lastName).trim() || meta.full_name || email.split('@')[0];
+
+    // Initials
+    const initials = firstName && lastName
+      ? (firstName[0] + lastName[0]).toUpperCase()
+      : fullName.slice(0,2).toUpperCase();
+
+    const avatarEl    = document.getElementById('sidebar-avatar');
+    const nameEl      = document.getElementById('sidebar-user-name');
+    const emailEl     = document.getElementById('sidebar-user-email');
+
+    if (avatarEl)    avatarEl.textContent    = initials;
+    if (nameEl)      nameEl.textContent      = fullName;
+    if (emailEl)     emailEl.textContent     = email;
+
+    // Client name from clients.json lookup (best-effort)
+    const clientSlug = meta.client_id || meta.clientId || '';
+    if (clientSlug) {
+      fetch('/clients.json')
+        .then(r => r.json())
+        .then(clients => {
+          const client = clients[clientSlug];
+          const labelEl = document.getElementById('sidebar-client-name');
+          if (client && labelEl) labelEl.textContent = client.company || client.full_name || clientSlug;
+        })
+        .catch(() => {});
+    } else {
+      const labelEl = document.getElementById('sidebar-client-name');
+      if (labelEl) labelEl.textContent = 'ION Print & Promo';
+    }
+  }
+
+  // Run after page ready, also wait for netlify identity
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSidebarUser);
+  } else {
+    initSidebarUser();
+  }
+})();
+</script>

@@ -70,8 +70,19 @@
   --ta:         #0ea5e9;
   --ta-h:       #0284c7;
 
-  /* Sidebar always dark */
-  --sidebar-bg: #1e293b;
+  /* Sidebar tokens — dark */
+  --sb-bg:          #1e293b;
+  --sb-bg-flyout:   #0f172a;
+  --sb-border:      #334155;
+  --sb-text:        #94a3b8;
+  --sb-text-hover:  #e2e8f0;
+  --sb-text-label:  #475569;
+  --sb-text-muted:  #64748b;
+  --sb-title:       #ffffff;
+  --sb-active-bg:   rgba(14,165,233,0.15);
+  --sb-active-text: #38bdf8;
+  --sb-item-hover:  rgba(255,255,255,0.06);
+  --sb-user-hover:  rgba(255,255,255,0.05);
 }
 
 /* Light */
@@ -93,8 +104,19 @@
   --ds-badge-muted-bg:  rgba(71,85,105,0.1);
   --ds-badge-muted-txt: #475569;
 
-  /* Sidebar stays dark even in light mode */
-  --sidebar-bg: #1e293b;
+  /* Sidebar tokens — light */
+  --sb-bg:          #ffffff;
+  --sb-bg-flyout:   #f8fafc;
+  --sb-border:      #e2e8f0;
+  --sb-text:        #64748b;
+  --sb-text-hover:  #0f172a;
+  --sb-text-label:  #94a3b8;
+  --sb-text-muted:  #94a3b8;
+  --sb-title:       #0f172a;
+  --sb-active-bg:   rgba(14,165,233,0.1);
+  --sb-active-text: var(--ta, #0ea5e9);
+  --sb-item-hover:  rgba(0,0,0,0.04);
+  --sb-user-hover:  rgba(0,0,0,0.04);
 }
 
 /* ── Dashboard base ── */

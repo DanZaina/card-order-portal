@@ -6,8 +6,8 @@ import Sidebar from '../components/Sidebar.astro';
 
   <Sidebar activePage="account" />
 
-  <div class="md:ml-64 pt-14 md:pt-0 min-h-screen">
-    <main class="p-6 max-w-2xl mx-auto">
+  <div class="md:ml-64 pt-14 md:pt-0 min-h-screen flex flex-col">
+    <main class="flex-1 flex flex-col justify-center p-6 max-w-2xl w-full mx-auto">
 
       <!-- Header -->
       <div class="mb-6">
@@ -38,7 +38,7 @@ import Sidebar from '../components/Sidebar.astro';
         <div class="flex items-center gap-4 mb-6 pb-5" style="border-bottom:1px solid var(--ds-border);">
           <div id="profile-avatar" class="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold shrink-0" style="background:var(--ta,#0ea5e9);color:#fff;">?</div>
           <div>
-            <div id="profile-name-display" class="font-semibold text-white text-sm">—</div>
+            <div id="profile-name-display" class="font-semibold text-sm" style="color:var(--ds-text);">—</div>
             <div id="profile-company-display" class="text-xs mt-0.5" style="color:var(--ds-text-dim);">—</div>
           </div>
         </div>
@@ -102,19 +102,6 @@ import Sidebar from '../components/Sidebar.astro';
             </label>
           </div>
 
-          <div style="height:1px;background:var(--ds-border);"></div>
-
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Proof Ready</div>
-              <div class="toggle-desc">Get notified when your card proof is ready for review.</div>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" id="notif-proof">
-              <span class="toggle-track"></span>
-            </label>
-          </div>
-
         </div>
 
         <div class="mt-5 pt-4 flex items-center gap-3" style="border-top:1px solid var(--ds-border);">
@@ -157,15 +144,7 @@ import Sidebar from '../components/Sidebar.astro';
         <div style="height:1px;background:var(--ds-border);" class="mb-5"></div>
 
         <h3 class="text-sm font-semibold mb-3" style="color:var(--ds-text);">Appearance</h3>
-        <div class="toggle-row" style="opacity:.45;pointer-events:none;">
-          <div>
-            <div class="toggle-label">Light Mode</div>
-            <div class="toggle-desc">Switch between dark and light interface.</div>
-          </div>
-          <div>
-            <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:rgba(14,165,233,0.15);color:#38bdf8;">Soon</span>
-          </div>
-        </div>
+        <p class="text-sm" style="color:var(--ds-text-dim);">Use the sun/moon icon in the sidebar to toggle between dark and light mode.</p>
 
         <div class="mt-5 pt-4 flex items-center gap-3" style="border-top:1px solid var(--ds-border);">
           <button id="pref-save-btn" class="save-btn">Save Preferences</button>
@@ -354,11 +333,10 @@ import Sidebar from '../components/Sidebar.astro';
 
   // ── Notifications ──
   document.getElementById('notif-confirm').checked = localStorage.getItem('portal.notifConfirm') !== 'false';
-  document.getElementById('notif-proof').checked   = localStorage.getItem('portal.notifProof')   !== 'false';
+  // notif-proof removed
 
   document.getElementById('notif-save-btn')?.addEventListener('click', () => {
     localStorage.setItem('portal.notifConfirm', document.getElementById('notif-confirm').checked);
-    localStorage.setItem('portal.notifProof',   document.getElementById('notif-proof').checked);
     showSaved('notif-saved-msg');
   });
 

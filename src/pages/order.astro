@@ -20,8 +20,8 @@ const clientsJson = JSON.stringify(clients);
   <Sidebar activePage="order" />
 
   <!-- ── Main content ── -->
-  <div class="md:ml-64 pt-14 md:pt-0 min-h-screen">
-    <main class="p-6 max-w-6xl mx-auto">
+  <div class="md:ml-64 pt-14 md:pt-0 min-h-screen flex flex-col">
+    <main class="flex-1 flex flex-col justify-center p-6 max-w-5xl w-full mx-auto">
 
       <div class="mb-8">
         <h1 class="text-2xl font-bold" style="color:var(--ds-text);">Order Business Cards</h1>
@@ -36,8 +36,7 @@ const clientsJson = JSON.stringify(clients);
           <div class="flex items-center justify-between mb-6">
             <h2 class="text-base font-semibold" style="color:var(--ds-text);">Card Details</h2>
             <button id="refresh-btn" type="button" title="Reset to defaults"
-              class="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-colors"
-              style="color:#64748b;" onmouseover="this.style.color='#e2e8f0';this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.color='#64748b';this.style.background='transparent'">
+              class="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-colors of-reset-btn">
               <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
               Reset
             </button>
@@ -146,10 +145,7 @@ const clientsJson = JSON.stringify(clients);
                   <p class="text-xs mt-0.5" style="color:var(--ds-text-dim);">Ordering cards for multiple people?</p>
                 </div>
                 <button type="button" id="add-person-btn"
-                  class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg transition-colors"
-                  style="color:#94a3b8;border:1px solid #334155;background:transparent;"
-                  onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='#e2e8f0'"
-                  onmouseout="this.style.background='transparent';this.style.color='#94a3b8'">
+                  class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg transition-colors of-add-btn">
                   <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
                   Add person
                 </button>
@@ -279,7 +275,7 @@ const clientsJson = JSON.stringify(clients);
               </div>
             </div>
 
-            <p class="text-xs text-center mt-2" style="color:#475569;">Preview is approximate — final design may vary slightly</p>
+            <p class="text-xs text-center mt-2" style="color:var(--ds-text-dim2);">Preview is approximate — final design may vary slightly</p>
           </div>
 
           <!-- Order summary -->
@@ -338,15 +334,31 @@ const clientsJson = JSON.stringify(clients);
     background-repeat: no-repeat;
     background-position: right 12px center;
   }
+  .of-reset-btn {
+    color: var(--ds-text-dim);
+    background: transparent;
+    border: none;
+  }
+  .of-reset-btn:hover { color: var(--ds-text); background: var(--ds-surface-2); }
+  .of-add-btn {
+    color: var(--ds-text-muted);
+    border: 1px solid var(--ds-border);
+    background: transparent;
+  }
+  .of-add-btn:hover { color: var(--ds-text); background: var(--ds-surface-2); }
+  .of-remove-btn {
+    color: var(--ds-text-dim);
+    transition: color 150ms, background 150ms;
+  }
+  .of-remove-btn:hover { color: #f87171; background: rgba(239,68,68,0.1); }
 </style>
 
 <script>
   // ── Per-client theme ──
   function applyClientTheme(theme) {
     if (!theme) return;
-    if (theme.accent)    document.documentElement.style.setProperty('--ta',         theme.accent);
-    if (theme.dark)      document.documentElement.style.setProperty('--ta-h',       theme.dark);
-    if (theme.sidebarBg) document.documentElement.style.setProperty('--sidebar-bg', theme.sidebarBg);
+    if (theme.accent) document.documentElement.style.setProperty('--ta',   theme.accent);
+    if (theme.dark)   document.documentElement.style.setProperty('--ta-h', theme.dark);
   }
 
   const CLIENT_DATA = JSON.parse(document.getElementById('client-data').textContent);
@@ -410,30 +422,12 @@ const clientsJson = JSON.stringify(clients);
     if (!user) { window.location.href = '/'; return; }
     currentUser = user;
     const data = CLIENT_DATA[user.email] || {};
-    const savedName   = localStorage.getItem('portal.displayName');
-    const displayName = savedName || data.full_name || user.user_metadata?.full_name || '';
-
-    // Prefill name field only (sidebar handles its own user display)
-    if (displayName) {
-      const nameField = document.getElementById('f-name');
-      if (nameField && !nameField.readOnly) {
-        nameField.value = displayName;
-        nameField.dispatchEvent(new Event('input'));
-      }
-    }
 
     // Apply client-specific theme
     if (data.theme) applyClientTheme(data.theme);
 
+    // Prefill form fields from clients.json (name comes from client config, not account profile)
     prefill(user.email);
-
-    if (savedName) {
-      const nameField = document.getElementById('f-name');
-      if (nameField && !nameField.readOnly) {
-        nameField.value = savedName;
-        nameField.dispatchEvent(new Event('input'));
-      }
-    }
 
     // Load client-specific SVG card template if available
     if (data.card_template) {
@@ -502,10 +496,8 @@ const clientsJson = JSON.stringify(clients);
     row.className = 'space-y-3';
     row.innerHTML = `
       <div class="flex items-center justify-between">
-        <p class="text-sm font-semibold" style="color:#e2e8f0;">Person <span class="person-num">${num}</span></p>
-        <button type="button" data-remove="${id}" style="color:#475569;padding:4px;border-radius:6px;background:transparent;border:none;cursor:pointer;"
-          onmouseover="this.style.color='#f87171';this.style.background='rgba(239,68,68,0.1)'"
-          onmouseout="this.style.color='#475569';this.style.background='transparent'">
+        <p class="text-sm font-semibold" style="color:var(--ds-text);">Person <span class="person-num">${num}</span></p>
+        <button type="button" data-remove="${id}" class="of-remove-btn" style="padding:4px;border-radius:6px;background:transparent;border:none;cursor:pointer;">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>

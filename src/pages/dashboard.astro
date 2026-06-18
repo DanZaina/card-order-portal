@@ -1,13 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Sidebar from '../components/Sidebar.astro';
+import clients from '../data/clients.json';
+const clientsJson = JSON.stringify(clients);
 ---
 <Layout title="Dashboard — ION Portal" bodyClass="dash">
+  <script id="client-data" type="application/json" set:html={clientsJson}></script>
 
   <Sidebar activePage="dashboard" />
 
-  <div class="md:ml-64 pt-14 md:pt-0 min-h-screen">
-    <main class="p-6 max-w-5xl mx-auto">
+  <div class="md:ml-64 pt-14 md:pt-0 min-h-screen flex flex-col">
+    <main class="flex-1 flex flex-col justify-center p-6 max-w-5xl w-full mx-auto">
 
       <!-- Header -->
       <div class="mb-8">
@@ -187,19 +190,13 @@ import Sidebar from '../components/Sidebar.astro';
 
   if (greetEl) greetEl.textContent = `${greet}, ${displayName}`;
 
-  // Apply client accent
-  const clientSlug = meta.client_id || meta.clientId || '';
-  if (clientSlug) {
-    fetch('/clients.json')
-      .then(r => r.json())
-      .then(clients => {
-        const c = clients[clientSlug];
-        if (c?.theme) {
-          if (c.theme.accent) document.documentElement.style.setProperty('--ta', c.theme.accent);
-          if (c.theme.dark)   document.documentElement.style.setProperty('--ta-h', c.theme.dark);
-        }
-      })
-      .catch(() => {});
+  // Apply client accent (look up by email, matching clients.json key structure)
+  const CLIENT_DATA = JSON.parse(document.getElementById('client-data').textContent);
+  const clientData = CLIENT_DATA[user.email];
+  if (clientData?.theme) {
+    if (clientData.theme.accent)    document.documentElement.style.setProperty('--ta',         clientData.theme.accent);
+    if (clientData.theme.dark)      document.documentElement.style.setProperty('--ta-h',       clientData.theme.dark);
+    if (clientData.theme.sidebarBg) document.documentElement.style.setProperty('--sb-bg',      clientData.theme.sidebarBg);
   }
 
   // Load orders

@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar.astro';
 import clients from '../data/clients.json';
 const clientsJson = JSON.stringify(clients);
 ---
-<Layout title="Business Cards — ION Portal">
+<Layout title="Business Cards — ION Portal" bodyClass="dash">
   <!-- Client data (server-injected, read by auth script) -->
   <script id="client-data" type="application/json" set:html={clientsJson}></script>
 
@@ -17,8 +17,6 @@ const clientsJson = JSON.stringify(clients);
     select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
   </style>
 
-<body class="dash">
-
   <Sidebar activePage="order" />
 
   <!-- ── Main content ── -->
@@ -26,17 +24,17 @@ const clientsJson = JSON.stringify(clients);
     <main class="p-6 max-w-6xl mx-auto">
 
       <div class="mb-8">
-        <h1 class="text-2xl font-bold text-white">Order Business Cards</h1>
-        <p class="text-sm mt-1" style="color:#94a3b8;">Fill in the details and see a live preview of your card.</p>
+        <h1 class="text-2xl font-bold" style="color:var(--ds-text);">Order Business Cards</h1>
+        <p class="text-sm mt-1" style="color:var(--ds-text-muted);">Fill in the details and see a live preview of your card.</p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
         <!-- ── LEFT: Form ── -->
-        <div class="rounded-2xl p-6" style="background:#1e293b;border:1px solid #334155;">
+        <div class="rounded-2xl p-6" style="background:var(--ds-surface);border:1px solid var(--ds-border);">
 
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-base font-semibold text-white">Card Details</h2>
+            <h2 class="text-base font-semibold" style="color:var(--ds-text);">Card Details</h2>
             <button id="refresh-btn" type="button" title="Reset to defaults"
               class="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-colors"
               style="color:#64748b;" onmouseover="this.style.color='#e2e8f0';this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.color='#64748b';this.style.background='transparent'">
@@ -111,7 +109,7 @@ const clientsJson = JSON.stringify(clients);
 
             <input type="hidden" id="f-style" name="card_style" value="classic" />
 
-            <div style="height:1px;background:#334155;"></div>
+            <div style="height:1px;background:var(--ds-border);"></div>
 
             <!-- Quantity -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -141,11 +139,11 @@ const clientsJson = JSON.stringify(clients);
             </div>
 
             <!-- Additional people -->
-            <div style="border-top:1px solid #334155;padding-top:20px;">
+            <div style="border-top:1px solid var(--ds-border);padding-top:20px;">
               <div class="flex items-center justify-between mb-3">
                 <div>
-                  <p class="text-sm font-medium" style="color:#e2e8f0;">Additional people</p>
-                  <p class="text-xs mt-0.5" style="color:#64748b;">Ordering cards for multiple people?</p>
+                  <p class="text-sm font-medium" style="color:var(--ds-text-2);">Additional people</p>
+                  <p class="text-xs mt-0.5" style="color:var(--ds-text-dim);">Ordering cards for multiple people?</p>
                 </div>
                 <button type="button" id="add-person-btn"
                   class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg transition-colors"
@@ -175,7 +173,7 @@ const clientsJson = JSON.stringify(clients);
         <div class="lg:sticky lg:top-8 space-y-5">
 
           <div>
-            <h2 class="text-base font-semibold text-white mb-4">Live Preview</h2>
+            <h2 class="text-base font-semibold mb-4" style="color:var(--ds-text);">Live Preview</h2>
 
             <div class="w-full" style="perspective:1000px;">
               <div id="card-preview"
@@ -285,20 +283,20 @@ const clientsJson = JSON.stringify(clients);
           </div>
 
           <!-- Order summary -->
-          <div class="rounded-2xl p-5" style="background:#1e293b;border:1px solid #334155;">
-            <h3 class="text-sm font-semibold mb-4" style="color:#94a3b8;">Order Summary</h3>
+          <div class="rounded-2xl p-5" style="background:var(--ds-surface);border:1px solid var(--ds-border);">
+            <h3 class="text-sm font-semibold mb-4" style="color:var(--ds-text-muted);">Order Summary</h3>
             <dl class="space-y-3 text-sm">
               <div class="flex justify-between gap-3">
-                <dt style="color:#64748b;">Name</dt>
-                <dd id="summary-name" class="font-medium text-right truncate" style="color:#e2e8f0;">—</dd>
+                <dt style="color:var(--ds-text-dim);">Name</dt>
+                <dd id="summary-name" class="font-medium text-right truncate" style="color:var(--ds-text-2);">—</dd>
               </div>
               <div class="flex justify-between gap-3">
-                <dt style="color:#64748b;">Title</dt>
-                <dd id="summary-title" class="font-medium text-right truncate" style="color:#e2e8f0;">—</dd>
+                <dt style="color:var(--ds-text-dim);">Title</dt>
+                <dd id="summary-title" class="font-medium text-right truncate" style="color:var(--ds-text-2);">—</dd>
               </div>
               <div class="flex justify-between gap-3">
-                <dt style="color:#64748b;">Quantity</dt>
-                <dd id="summary-qty" class="font-medium" style="color:#e2e8f0;">500 cards</dd>
+                <dt style="color:var(--ds-text-dim);">Quantity</dt>
+                <dd id="summary-qty" class="font-medium" style="color:var(--ds-text-2);">500 cards</dd>
               </div>
             </dl>
           </div>
@@ -308,7 +306,6 @@ const clientsJson = JSON.stringify(clients);
     </main>
   </div>
 
-</body>
 </Layout>
 
 <style>
@@ -317,24 +314,24 @@ const clientsJson = JSON.stringify(clients);
   .of-label {
     font-size: 12px;
     font-weight: 500;
-    color: #94a3b8;
+    color: var(--ds-text-muted);
     letter-spacing: .02em;
   }
   .of-input {
     width: 100%;
-    background: #0f172a;
-    border: 1px solid #334155;
+    background: var(--ds-input-bg);
+    border: 1px solid var(--ds-input-border);
     border-radius: 10px;
     padding: 10px 13px;
     font-size: 13.5px;
-    color: #f1f5f9;
+    color: var(--ds-input-text);
     font-family: inherit;
     outline: none;
     transition: border-color 150ms;
   }
   .of-input:focus { border-color: var(--ta, #0ea5e9); }
-  .of-input::placeholder { color: #2d3f55; }
-  .of-input[readonly] { color: #475569; cursor: not-allowed; }
+  .of-input::placeholder { color: var(--ds-input-ph); }
+  .of-input[readonly] { color: var(--ds-text-dim); cursor: not-allowed; }
   select.of-input {
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");

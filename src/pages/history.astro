@@ -4,14 +4,12 @@ import Sidebar from '../components/Sidebar.astro';
 import clients from '../data/clients.json';
 const clientsJson = JSON.stringify(clients);
 ---
-<Layout title="Order History — ION Portal">
+<Layout title="Order History — ION Portal" bodyClass="dash">
   <script id="client-data" type="application/json" set:html={clientsJson}></script>
 
   <style is:global>
     button svg, a svg { display: block; }
   </style>
-
-<body class="dash">
 
   <Sidebar activePage="history" />
 
@@ -21,8 +19,8 @@ const clientsJson = JSON.stringify(clients);
       <!-- Header -->
       <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-white">Order History</h1>
-          <p class="text-sm mt-1" style="color:#94a3b8;">All previously submitted card orders</p>
+          <h1 class="text-2xl font-bold" style="color:var(--ds-text);">Order History</h1>
+          <p class="text-sm mt-1" style="color:var(--ds-text-muted);">All previously submitted card orders</p>
         </div>
         <a href="/order" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
           style="background:var(--ta,#0ea5e9);">
@@ -33,14 +31,14 @@ const clientsJson = JSON.stringify(clients);
 
       <!-- Loading -->
       <div id="history-loading" class="flex items-center justify-center py-20">
-        <div class="text-sm" style="color:#475569;">Loading…</div>
+        <div class="text-sm" style="color:var(--ds-text-dim2);">Loading…</div>
       </div>
 
       <!-- Empty state -->
       <div id="history-empty" class="hidden flex flex-col items-center justify-center py-20">
-        <i data-lucide="inbox" style="width:40px;height:40px;color:#334155;margin-bottom:16px;display:block;"></i>
-        <p class="font-medium" style="color:#64748b;">No orders yet</p>
-        <p class="text-sm mt-1" style="color:#475569;">Orders you submit will appear here</p>
+        <i data-lucide="inbox" style="width:40px;height:40px;color:var(--ds-border);margin-bottom:16px;display:block;"></i>
+        <p class="font-medium" style="color:var(--ds-text-dim);">No orders yet</p>
+        <p class="text-sm mt-1" style="color:var(--ds-text-dim2);">Orders you submit will appear here</p>
         <a href="/order" class="mt-6 px-4 py-2 rounded-xl text-sm font-semibold text-white"
           style="background:var(--ta,#0ea5e9);">
           Place your first order
@@ -52,26 +50,26 @@ const clientsJson = JSON.stringify(clients);
 
         <!-- Stats row -->
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-2">
-          <div class="rounded-2xl p-5" style="background:#1e293b;border:1px solid #334155;">
-            <p class="text-xs font-semibold uppercase tracking-wider" style="color:#475569;">Total Orders</p>
-            <p id="stat-total" class="mt-1 text-2xl font-bold text-white">0</p>
+          <div class="rounded-2xl p-5" style="background:var(--ds-surface);border:1px solid var(--ds-border);">
+            <p class="text-xs font-semibold uppercase tracking-wider" style="color:var(--ds-text-dim2);">Total Orders</p>
+            <p id="stat-total" class="mt-1 text-2xl font-bold" style="color:var(--ds-text);">0</p>
           </div>
-          <div class="rounded-2xl p-5" style="background:#1e293b;border:1px solid #334155;">
-            <p class="text-xs font-semibold uppercase tracking-wider" style="color:#475569;">Latest Order</p>
-            <p id="stat-latest" class="mt-1 text-sm font-semibold leading-tight" style="color:#e2e8f0;">—</p>
+          <div class="rounded-2xl p-5" style="background:var(--ds-surface);border:1px solid var(--ds-border);">
+            <p class="text-xs font-semibold uppercase tracking-wider" style="color:var(--ds-text-dim2);">Latest Order</p>
+            <p id="stat-latest" class="mt-1 text-sm font-semibold leading-tight" style="color:var(--ds-text);">—</p>
           </div>
-          <div class="rounded-2xl p-5 hidden sm:block" style="background:#1e293b;border:1px solid #334155;">
-            <p class="text-xs font-semibold uppercase tracking-wider" style="color:#475569;">Total Cards</p>
-            <p id="stat-cards" class="mt-1 text-2xl font-bold text-white">0</p>
+          <div class="rounded-2xl p-5 hidden sm:block" style="background:var(--ds-surface);border:1px solid var(--ds-border);">
+            <p class="text-xs font-semibold uppercase tracking-wider" style="color:var(--ds-text-dim2);">Total Cards</p>
+            <p id="stat-cards" class="mt-1 text-2xl font-bold" style="color:var(--ds-text);">0</p>
           </div>
         </div>
 
         <!-- Table -->
-        <div class="rounded-2xl overflow-hidden" style="background:#1e293b;border:1px solid #334155;">
+        <div class="rounded-2xl overflow-hidden" style="background:var(--ds-surface);border:1px solid var(--ds-border);">
           <div class="overflow-x-auto">
             <table class="min-w-full">
               <thead>
-                <tr style="border-bottom:1px solid #334155;">
+                <tr style="border-bottom:1px solid var(--ds-border);">
                   <th class="hist-th text-left">Name</th>
                   <th class="hist-th text-left hidden sm:table-cell">Title</th>
                   <th class="hist-th text-left hidden md:table-cell">Date</th>
@@ -86,16 +84,16 @@ const clientsJson = JSON.stringify(clients);
 
         <!-- Pagination -->
         <div id="pagination" class="hidden flex items-center justify-between px-1 py-2">
-          <p id="page-info" class="text-sm" style="color:#64748b;"></p>
+          <p id="page-info" class="text-sm" style="color:var(--ds-text-dim);"></p>
           <div class="flex gap-2">
             <button id="page-prev" type="button"
               class="px-4 py-2 text-sm font-medium rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              style="border:1px solid #334155;color:#94a3b8;background:transparent;">
+              style="border:1px solid var(--ds-border);color:var(--ds-text-muted);background:transparent;">
               Previous
             </button>
             <button id="page-next" type="button"
               class="px-4 py-2 text-sm font-medium rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              style="border:1px solid #334155;color:#94a3b8;background:transparent;">
+              style="border:1px solid var(--ds-border);color:var(--ds-text-muted);background:transparent;">
               Next
             </button>
           </div>
@@ -105,7 +103,6 @@ const clientsJson = JSON.stringify(clients);
     </main>
   </div>
 
-</body>
 </Layout>
 
 <style>
@@ -115,7 +112,7 @@ const clientsJson = JSON.stringify(clients);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .06em;
-    color: #475569;
+    color: var(--ds-text-dim2);
   }
 </style>
 
@@ -178,20 +175,20 @@ const clientsJson = JSON.stringify(clients);
 
     pageOrders.forEach(order => {
       const tr = document.createElement('tr');
-      tr.style.borderBottom = '1px solid #273549';
+      tr.style.borderBottom = '1px solid var(--ds-surface-2)';
       tr.innerHTML = `
         <td class="px-5 py-4">
-          <p class="text-sm font-medium truncate max-w-[160px]" style="color:#e2e8f0;">${order.name || 'Unnamed'}</p>
-          ${order.company ? `<p class="text-xs truncate max-w-[160px]" style="color:#64748b;">${order.company}</p>` : ''}
+          <p class="text-sm font-medium truncate max-w-[160px]" style="color:var(--ds-text);">${order.name || 'Unnamed'}</p>
+          ${order.company ? `<p class="text-xs truncate max-w-[160px]" style="color:var(--ds-text-dim);">${order.company}</p>` : ''}
         </td>
         <td class="px-5 py-4 hidden sm:table-cell">
-          <p class="text-sm truncate max-w-[140px]" style="color:#94a3b8;">${order.title || '—'}</p>
+          <p class="text-sm truncate max-w-[140px]" style="color:var(--ds-text-muted);">${order.title || '—'}</p>
         </td>
         <td class="px-5 py-4 hidden md:table-cell">
-          <p class="text-sm" style="color:#94a3b8;">${order.date || '—'}</p>
+          <p class="text-sm" style="color:var(--ds-text-muted);">${order.date || '—'}</p>
         </td>
         <td class="px-5 py-4 hidden lg:table-cell">
-          <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:rgba(148,163,184,0.1);color:#94a3b8;">
+          <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--ds-badge-muted-bg);color:var(--ds-badge-muted-txt);">
             ${Number(order.quantity || 500).toLocaleString()}
           </span>
         </td>
@@ -204,7 +201,7 @@ const clientsJson = JSON.stringify(clients);
             </button>
             <button data-delete="${order.id}" type="button"
               class="text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
-              style="border:1px solid #334155;color:#64748b;background:transparent;">
+              style="border:1px solid var(--ds-border);color:var(--ds-text-dim);background:transparent;">
               Delete
             </button>
           </div>

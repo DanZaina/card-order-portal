@@ -2,8 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Sidebar from '../components/Sidebar.astro';
 ---
-<Layout title="Account — ION Portal">
-<body class="dash">
+<Layout title="Account — ION Portal" bodyClass="dash">
 
   <Sidebar activePage="account" />
 
@@ -12,12 +11,12 @@ import Sidebar from '../components/Sidebar.astro';
 
       <!-- Header -->
       <div class="mb-6">
-        <h1 class="text-2xl font-bold text-white">Account Settings</h1>
-        <p class="text-sm mt-1" style="color:#94a3b8;">Manage your profile, notifications, and preferences.</p>
+        <h1 class="text-2xl font-bold" style="color:var(--ds-text);">Account Settings</h1>
+        <p class="text-sm mt-1" style="color:var(--ds-text-muted);">Manage your profile, notifications, and preferences.</p>
       </div>
 
       <!-- Tabs -->
-      <div class="flex gap-1 mb-6 p-1 rounded-xl" style="background:#1e293b;border:1px solid #334155;">
+      <div class="tab-strip flex gap-1 mb-6 p-1 rounded-xl">
         <button class="tab-btn tab-active" data-tab="profile">
           <i data-lucide="user" style="width:14px;height:14px;"></i> Profile
         </button>
@@ -36,11 +35,11 @@ import Sidebar from '../components/Sidebar.astro';
       <div id="tab-profile" class="tab-panel dash-card">
 
         <!-- Avatar row -->
-        <div class="flex items-center gap-4 mb-6 pb-5" style="border-bottom:1px solid #334155;">
+        <div class="flex items-center gap-4 mb-6 pb-5" style="border-bottom:1px solid var(--ds-border);">
           <div id="profile-avatar" class="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold shrink-0" style="background:var(--ta,#0ea5e9);color:#fff;">?</div>
           <div>
             <div id="profile-name-display" class="font-semibold text-white text-sm">—</div>
-            <div id="profile-company-display" class="text-xs mt-0.5" style="color:#64748b;">—</div>
+            <div id="profile-company-display" class="text-xs mt-0.5" style="color:var(--ds-text-dim);">—</div>
           </div>
         </div>
 
@@ -74,7 +73,7 @@ import Sidebar from '../components/Sidebar.astro';
           <div class="field-group">
             <label class="field-label">Email</label>
             <input id="acc-email" type="email" class="field-input field-readonly" readonly>
-            <p class="text-xs mt-1.5" style="color:#475569;">Managed by your administrator</p>
+            <p class="text-xs mt-1.5" style="color:var(--ds-text-dim2);">Managed by your administrator</p>
           </div>
 
           <div class="flex items-center gap-3 pt-2">
@@ -89,7 +88,7 @@ import Sidebar from '../components/Sidebar.astro';
 
       <!-- ── TAB: Notifications ── -->
       <div id="tab-notifications" class="tab-panel dash-card hidden">
-        <h3 class="text-sm font-semibold text-white mb-4">Email Notifications</h3>
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--ds-text);">Email Notifications</h3>
         <div class="space-y-4">
 
           <div class="toggle-row">
@@ -103,7 +102,7 @@ import Sidebar from '../components/Sidebar.astro';
             </label>
           </div>
 
-          <div style="height:1px;background:#334155;"></div>
+          <div style="height:1px;background:var(--ds-border);"></div>
 
           <div class="toggle-row">
             <div>
@@ -118,7 +117,7 @@ import Sidebar from '../components/Sidebar.astro';
 
         </div>
 
-        <div class="mt-5 pt-4 flex items-center gap-3" style="border-top:1px solid #334155;">
+        <div class="mt-5 pt-4 flex items-center gap-3" style="border-top:1px solid var(--ds-border);">
           <button id="notif-save-btn" class="save-btn">Save Preferences</button>
           <span id="notif-saved-msg" class="text-xs hidden" style="color:#22c55e;">
             <i data-lucide="check" style="width:12px;height:12px;display:inline;"></i> Saved
@@ -128,8 +127,8 @@ import Sidebar from '../components/Sidebar.astro';
 
       <!-- ── TAB: Security ── -->
       <div id="tab-security" class="tab-panel dash-card hidden">
-        <h3 class="text-sm font-semibold text-white mb-1">Change Password</h3>
-        <p class="text-sm mb-5" style="color:#64748b;">We'll send a password reset link to your email address.</p>
+        <h3 class="text-sm font-semibold mb-1" style="color:var(--ds-text);">Change Password</h3>
+        <p class="text-sm mb-5" style="color:var(--ds-text-dim);">We'll send a password reset link to your email address.</p>
 
         <div class="field-group mb-4">
           <label class="field-label">Email</label>
@@ -143,7 +142,7 @@ import Sidebar from '../components/Sidebar.astro';
 
       <!-- ── TAB: Preferences ── -->
       <div id="tab-preferences" class="tab-panel dash-card hidden">
-        <h3 class="text-sm font-semibold text-white mb-4">Order Defaults</h3>
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--ds-text);">Order Defaults</h3>
 
         <div class="field-group mb-6">
           <label class="field-label" for="pref-qty">Default Quantity</label>
@@ -155,9 +154,9 @@ import Sidebar from '../components/Sidebar.astro';
           </select>
         </div>
 
-        <div style="height:1px;background:#334155;" class="mb-5"></div>
+        <div style="height:1px;background:var(--ds-border);" class="mb-5"></div>
 
-        <h3 class="text-sm font-semibold text-white mb-3">Appearance</h3>
+        <h3 class="text-sm font-semibold mb-3" style="color:var(--ds-text);">Appearance</h3>
         <div class="toggle-row" style="opacity:.45;pointer-events:none;">
           <div>
             <div class="toggle-label">Light Mode</div>
@@ -168,7 +167,7 @@ import Sidebar from '../components/Sidebar.astro';
           </div>
         </div>
 
-        <div class="mt-5 pt-4 flex items-center gap-3" style="border-top:1px solid #334155;">
+        <div class="mt-5 pt-4 flex items-center gap-3" style="border-top:1px solid var(--ds-border);">
           <button id="pref-save-btn" class="save-btn">Save Preferences</button>
           <span id="pref-saved-msg" class="text-xs hidden" style="color:#22c55e;">
             <i data-lucide="check" style="width:12px;height:12px;display:inline;"></i> Saved
@@ -179,15 +178,20 @@ import Sidebar from '../components/Sidebar.astro';
     </main>
   </div>
 
-</body>
 </Layout>
 
 <style>
   .dash-card {
-    background: #1e293b;
-    border: 1px solid #334155;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
     border-radius: 12px;
     padding: 24px;
+  }
+
+  /* Tabs pill container */
+  .tab-strip {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
   }
 
   /* Tabs */
@@ -201,18 +205,18 @@ import Sidebar from '../components/Sidebar.astro';
     border-radius: 9px;
     font-size: 12.5px;
     font-weight: 500;
-    color: #64748b;
+    color: var(--ds-text-dim);
     background: transparent;
     border: none;
     cursor: pointer;
     transition: all 150ms;
     white-space: nowrap;
   }
-  .tab-btn:hover { color: #e2e8f0; }
+  .tab-btn:hover { color: var(--ds-text); }
   .tab-active {
-    background: #0f172a !important;
-    color: #e2e8f0 !important;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    background: var(--ds-bg) !important;
+    color: var(--ds-text) !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   }
 
   /* Fields */
@@ -220,24 +224,24 @@ import Sidebar from '../components/Sidebar.astro';
   .field-label {
     font-size: 12px;
     font-weight: 500;
-    color: #94a3b8;
+    color: var(--ds-text-muted);
     letter-spacing: .02em;
   }
   .field-input {
-    background: #0f172a;
-    border: 1px solid #334155;
+    background: var(--ds-input-bg);
+    border: 1px solid var(--ds-input-border);
     border-radius: 8px;
     padding: 9px 12px;
     font-size: 14px;
-    color: #f1f5f9;
+    color: var(--ds-input-text);
     font-family: inherit;
     outline: none;
     transition: border-color 150ms;
     width: 100%;
   }
   .field-input:focus { border-color: var(--ta, #0ea5e9); }
-  .field-input::placeholder { color: #334155; }
-  .field-readonly { color: #475569 !important; cursor: not-allowed; }
+  .field-input::placeholder { color: var(--ds-input-ph); }
+  .field-readonly { color: var(--ds-text-dim) !important; cursor: not-allowed; }
   select.field-input {
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
@@ -263,13 +267,13 @@ import Sidebar from '../components/Sidebar.astro';
 
   /* Toggle */
   .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-  .toggle-label { font-size: 13.5px; font-weight: 500; color: #e2e8f0; }
-  .toggle-desc  { font-size: 12px; color: #64748b; margin-top: 2px; }
+  .toggle-label { font-size: 13.5px; font-weight: 500; color: var(--ds-text); }
+  .toggle-desc  { font-size: 12px; color: var(--ds-text-dim); margin-top: 2px; }
   .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
   .toggle-switch input { opacity: 0; width: 0; height: 0; }
   .toggle-track {
     position: absolute; inset: 0;
-    background: #334155; border-radius: 99px; cursor: pointer; transition: background 150ms;
+    background: var(--ds-border); border-radius: 99px; cursor: pointer; transition: background 150ms;
   }
   .toggle-track::before {
     content: '';

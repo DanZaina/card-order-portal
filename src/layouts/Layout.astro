@@ -3,8 +3,9 @@ import '../styles/global.css';
 export interface Props {
   title: string;
   description?: string;
+  bodyClass?: string;
 }
-const { title, description = 'Business Card Order Portal' } = Astro.props;
+const { title, description = 'Business Card Order Portal', bodyClass = '' } = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
@@ -14,10 +15,17 @@ const { title, description = 'Business Card Order Portal' } = Astro.props;
     <meta name="description" content={description} />
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- No-FOUC theme init: runs synchronously before paint -->
+    <script is:inline>
+      (function() {
+        var t = localStorage.getItem('portal.theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   </head>
-  <body class="min-h-screen">
+  <body class={`min-h-screen ${bodyClass}`}>
     <slot />
   </body>
 </html>

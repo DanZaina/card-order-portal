@@ -2,19 +2,17 @@
 import Layout from '../layouts/Layout.astro';
 import Sidebar from '../components/Sidebar.astro';
 ---
-<Layout title="Dashboard — ION Portal">
-<body class="dash">
+<Layout title="Dashboard — ION Portal" bodyClass="dash">
 
   <Sidebar activePage="dashboard" />
 
-  <!-- ── Main content (offset for sidebar) ── -->
   <div class="md:ml-64 pt-14 md:pt-0 min-h-screen">
     <main class="p-6 max-w-5xl mx-auto">
 
       <!-- Header -->
       <div class="mb-8">
-        <h1 id="dash-greeting" class="text-2xl font-bold text-white">Good morning</h1>
-        <p class="text-sm mt-1" style="color:#94a3b8;">Here's what's happening with your orders.</p>
+        <h1 id="dash-greeting" class="text-2xl font-bold" style="color:var(--ds-text);">Good morning</h1>
+        <p class="text-sm mt-1" style="color:var(--ds-text-muted);">Here's what's happening with your orders.</p>
       </div>
 
       <!-- Stats row -->
@@ -67,16 +65,16 @@ import Sidebar from '../components/Sidebar.astro';
       <div class="grid lg:grid-cols-3 gap-6">
 
         <!-- Recent orders table -->
-        <div class="lg:col-span-2 dash-card">
+        <div class="lg:col-span-2 ds-card">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="dash-card-title">Recent Orders</h2>
+            <h2 class="ds-card-title">Recent Orders</h2>
             <a href="/history" class="text-xs font-medium hover:underline" style="color:var(--ta,#0ea5e9);">View all →</a>
           </div>
 
           <div id="recent-orders-wrap">
             <table class="w-full text-sm" id="recent-orders-table" style="display:none;">
               <thead>
-                <tr style="border-bottom:1px solid #334155;">
+                <tr style="border-bottom:1px solid var(--ds-border);">
                   <th class="dash-th text-left">Name</th>
                   <th class="dash-th text-left">Qty</th>
                   <th class="dash-th text-left">Submitted</th>
@@ -85,7 +83,7 @@ import Sidebar from '../components/Sidebar.astro';
               </thead>
               <tbody id="recent-orders-body"></tbody>
             </table>
-            <div id="recent-orders-empty" class="py-10 text-center" style="color:#475569;">
+            <div id="recent-orders-empty" class="py-10 text-center" style="color:var(--ds-text-dim);">
               <i data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 8px;display:block;opacity:.4;"></i>
               <div class="text-sm">No orders yet.</div>
               <a href="/order" class="text-xs mt-2 inline-block hover:underline" style="color:var(--ta,#0ea5e9);">Place your first order →</a>
@@ -94,8 +92,8 @@ import Sidebar from '../components/Sidebar.astro';
         </div>
 
         <!-- Quick actions -->
-        <div class="dash-card">
-          <h2 class="dash-card-title mb-4">Quick Actions</h2>
+        <div class="ds-card">
+          <h2 class="ds-card-title mb-4">Quick Actions</h2>
           <div class="flex flex-col gap-3">
 
             <a href="/order" class="quick-action-btn">
@@ -121,7 +119,6 @@ import Sidebar from '../components/Sidebar.astro';
     </main>
   </div>
 
-</body>
 </Layout>
 
 <style>
@@ -131,80 +128,48 @@ import Sidebar from '../components/Sidebar.astro';
     gap: 14px;
     padding: 18px;
     border-radius: 12px;
-    background: #1e293b;
-    border: 1px solid #334155;
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
   }
   .stat-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
-  .stat-value {
-    font-size: 22px;
-    font-weight: 700;
-    color: #f1f5f9;
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: 12px;
-    color: #64748b;
-    margin-top: 3px;
-  }
+  .stat-value { font-size: 22px; font-weight: 700; color: var(--ds-text); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--ds-text-dim); margin-top: 3px; }
 
-  .dash-card {
-    background: #1e293b;
-    border: 1px solid #334155;
+  .ds-card {
+    background: var(--ds-surface);
+    border: 1px solid var(--ds-border);
     border-radius: 12px;
     padding: 20px;
   }
-  .dash-card-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #f1f5f9;
-  }
+  .ds-card-title { font-size: 14px; font-weight: 600; color: var(--ds-text); }
+
   .dash-th {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: #475569;
-    padding: 0 0 10px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--ds-text-dim2); padding: 0 0 10px;
   }
 
   .quick-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 11px 14px;
-    border-radius: 9px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: #e2e8f0;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid #334155;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background 150ms, border-color 150ms;
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 11px 14px; border-radius: 9px; font-size: 13.5px; font-weight: 500;
+    color: var(--ds-text-2);
+    background: var(--ds-surface-2);
+    border: 1px solid var(--ds-border);
+    text-decoration: none; cursor: pointer;
+    transition: background 150ms, border-color 150ms, color 150ms;
   }
   .quick-action-btn:hover:not([disabled]) {
     background: rgba(14,165,233,0.1);
     border-color: rgba(14,165,233,0.4);
     color: #38bdf8;
   }
-  .quick-action-ghost {
-    background: transparent;
-    border-color: #334155;
-  }
+  .quick-action-ghost { background: transparent; }
 </style>
 
 <script>
 (function() {
-  // Greeting
   const h = new Date().getHours();
   const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   const greetEl = document.getElementById('dash-greeting');
@@ -217,12 +182,12 @@ import Sidebar from '../components/Sidebar.astro';
   const firstName = localStorage.getItem('portal.firstName') || meta.first_name || '';
   const lastName  = localStorage.getItem('portal.lastName')  || meta.last_name  || '';
   const displayName = (firstName || lastName)
-    ? firstName || lastName
+    ? (firstName || lastName)
     : (meta.full_name || user.email.split('@')[0]);
 
   if (greetEl) greetEl.textContent = `${greet}, ${displayName}`;
 
-  // Apply client theme
+  // Apply client accent
   const clientSlug = meta.client_id || meta.clientId || '';
   if (clientSlug) {
     fetch('/clients.json')
@@ -230,9 +195,8 @@ import Sidebar from '../components/Sidebar.astro';
       .then(clients => {
         const c = clients[clientSlug];
         if (c?.theme) {
-          if (c.theme.accent)     document.documentElement.style.setProperty('--ta', c.theme.accent);
-          if (c.theme.dark)       document.documentElement.style.setProperty('--ta-h', c.theme.dark);
-          if (c.theme.sidebarBg)  document.documentElement.style.setProperty('--sidebar-bg', c.theme.sidebarBg);
+          if (c.theme.accent) document.documentElement.style.setProperty('--ta', c.theme.accent);
+          if (c.theme.dark)   document.documentElement.style.setProperty('--ta-h', c.theme.dark);
         }
       })
       .catch(() => {});
@@ -242,34 +206,29 @@ import Sidebar from '../components/Sidebar.astro';
   let orders = [];
   try { orders = JSON.parse(localStorage.getItem('portal.orders') || '[]'); } catch(e) {}
 
-  const total   = orders.length;
-  const pending  = orders.filter(o => !o.status || o.status === 'submitted').length;
-  const done     = orders.filter(o => o.status === 'completed').length;
+  document.getElementById('stat-total').textContent   = orders.length;
+  document.getElementById('stat-pending').textContent = orders.filter(o => !o.status || o.status === 'submitted').length;
+  document.getElementById('stat-done').textContent    = orders.filter(o => o.status === 'completed').length;
 
-  document.getElementById('stat-total').textContent   = total;
-  document.getElementById('stat-pending').textContent = pending;
-  document.getElementById('stat-done').textContent    = done;
+  if (orders.length > 0) {
+    const tbody   = document.getElementById('recent-orders-body');
+    const table   = document.getElementById('recent-orders-table');
+    const emptyEl = document.getElementById('recent-orders-empty');
 
-  if (total > 0) {
-    const tbody     = document.getElementById('recent-orders-body');
-    const table     = document.getElementById('recent-orders-table');
-    const emptyEl   = document.getElementById('recent-orders-empty');
-
-    const recent = [...orders].reverse().slice(0, 5);
-    recent.forEach(o => {
-      const name    = o.name || o.full_name || '—';
-      const qty     = o.quantity || o.qty || '—';
+    [...orders].reverse().slice(0, 5).forEach(o => {
+      const name   = o.name || o.full_name || '—';
+      const qty    = o.quantity || o.qty || '—';
       const dateRaw = o.submitted || o.date || o.timestamp || '';
-      const date    = dateRaw ? new Date(dateRaw).toLocaleDateString('en-CA', { month:'short', day:'numeric', year:'numeric'}) : '—';
-      const status  = o.status || 'Submitted';
+      const date   = dateRaw ? new Date(dateRaw).toLocaleDateString('en-CA', { month:'short', day:'numeric', year:'numeric'}) : '—';
+      const status = o.status || 'Submitted';
       const statusColor = status === 'completed' ? '#22c55e' : status === 'cancelled' ? '#f87171' : '#fbbf24';
 
       const tr = document.createElement('tr');
-      tr.style.borderBottom = '1px solid #1e293b';
+      tr.style.borderBottom = '1px solid var(--ds-border)';
       tr.innerHTML = `
-        <td class="py-2.5 pr-3 text-sm font-medium" style="color:#e2e8f0;">${name}</td>
-        <td class="py-2.5 pr-3 text-sm" style="color:#94a3b8;">${qty}</td>
-        <td class="py-2.5 pr-3 text-sm" style="color:#94a3b8;">${date}</td>
+        <td class="py-2.5 pr-3 text-sm font-medium" style="color:var(--ds-text-2);">${name}</td>
+        <td class="py-2.5 pr-3 text-sm" style="color:var(--ds-text-muted);">${qty}</td>
+        <td class="py-2.5 pr-3 text-sm" style="color:var(--ds-text-muted);">${date}</td>
         <td class="py-2.5 text-sm">
           <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:${statusColor}22;color:${statusColor};">
             ${status.charAt(0).toUpperCase() + status.slice(1)}
@@ -282,7 +241,6 @@ import Sidebar from '../components/Sidebar.astro';
     emptyEl.style.display = 'none';
   }
 
-  // Init lucide icons
   if (window.lucide) window.lucide.createIcons();
   else document.addEventListener('DOMContentLoaded', () => window.lucide?.createIcons());
 })();

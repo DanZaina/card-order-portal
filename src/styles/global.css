@@ -39,34 +39,74 @@
   --transition-fast:    all 200ms ease;
 }
 
-/* ── Dark dashboard palette ── */
-:root {
-  --dash-bg:         #0f172a;
-  --dash-surface:    #1e293b;
-  --dash-surface-2:  #273549;
-  --dash-border:     #334155;
-  --dash-text:       #e2e8f0;
-  --dash-text-muted: #94a3b8;
-  --dash-text-dim:   #475569;
+/* ════════════════════════════════════════════════
+   THEME VARIABLES
+   data-theme="dark"  → default (navy/slate)
+   data-theme="light" → clean white/slate
+   Sidebar is ALWAYS dark regardless of theme.
+════════════════════════════════════════════════ */
+
+/* Dark (default — applied when attr missing too) */
+:root,
+[data-theme="dark"] {
+  --ds-bg:              #0f172a;
+  --ds-surface:         #1e293b;
+  --ds-surface-2:       #273549;
+  --ds-border:          #334155;
+  --ds-text:            #f1f5f9;
+  --ds-text-2:          #e2e8f0;
+  --ds-text-muted:      #94a3b8;
+  --ds-text-dim:        #64748b;
+  --ds-text-dim2:       #475569;
+  --ds-input-bg:        #0f172a;
+  --ds-input-border:    #334155;
+  --ds-input-text:      #f1f5f9;
+  --ds-input-ph:        #2d3f55;
+  --ds-row-hover:       rgba(255,255,255,0.03);
+  --ds-badge-muted-bg:  rgba(148,163,184,0.1);
+  --ds-badge-muted-txt: #94a3b8;
 
   /* Per-client accent (defaults to sky-500) */
-  --ta:   #0ea5e9;
-  --ta-h: #0284c7;
+  --ta:         #0ea5e9;
+  --ta-h:       #0284c7;
 
-  /* Sidebar background (override per client) */
+  /* Sidebar always dark */
   --sidebar-bg: #1e293b;
 }
 
+/* Light */
+[data-theme="light"] {
+  --ds-bg:              #f8fafc;
+  --ds-surface:         #ffffff;
+  --ds-surface-2:       #f1f5f9;
+  --ds-border:          #e2e8f0;
+  --ds-text:            #0f172a;
+  --ds-text-2:          #1e293b;
+  --ds-text-muted:      #64748b;
+  --ds-text-dim:        #94a3b8;
+  --ds-text-dim2:       #94a3b8;
+  --ds-input-bg:        #ffffff;
+  --ds-input-border:    #e2e8f0;
+  --ds-input-text:      #0f172a;
+  --ds-input-ph:        #cbd5e1;
+  --ds-row-hover:       rgba(0,0,0,0.02);
+  --ds-badge-muted-bg:  rgba(71,85,105,0.1);
+  --ds-badge-muted-txt: #475569;
+
+  /* Sidebar stays dark even in light mode */
+  --sidebar-bg: #1e293b;
+}
+
+/* ── Dashboard base ── */
 @layer base {
   html, body {
     font-family: var(--font-family-base);
     @apply bg-gray-50 text-gray-900;
   }
 
-  /* Pages that opt into dark dashboard */
   body.dash {
-    background: var(--dash-bg);
-    color: var(--dash-text);
+    background-color: var(--ds-bg);
+    color: var(--ds-text);
   }
 }
 
